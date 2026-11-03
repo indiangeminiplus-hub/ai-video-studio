@@ -12,7 +12,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const CONFIG = path.join(os.homedir(), '.ai-video-studio', 'config.json');
+export const CONFIG = path.join(process.env.AVS_HOME || path.join(os.homedir(), '.ai-video-studio'), 'config.json');
 const UA = 'ai-video-studio/4.0 (b-roll search; local editor)';
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
@@ -170,7 +170,11 @@ ${JSON.stringify(cands)}`;
     const p = spawn(process.env.CLAUDE_BIN || 'claude', ['-p', prompt, '--output-format', 'json', '--model', model], { stdio: ['ignore', 'pipe', 'pipe'] });
     let o = '', e = ''; p.stdout.on('data', d => (o += d)); p.stderr.on('data', d => (e += d));
     p.on('error', () => bad(new Error('Không tìm thấy Claude Code CLI (lệnh "claude"). Cài Claude Code rồi đăng nhập để dùng gợi ý AI.')));
-    p.on('close', code => (code ? bad(new Error(`claude -p lỗi (mã ${code}): ${(e || o).slice(-300)}`)) : ok(o)));
+    p.on('close', code => {
+      let res = e || o, isErr = !!code; try { const j = JSON.parse(o); if (j.result) res = String(j.result); isErr ||= !!j.is_error; } catch {}
+      if (!isErr) return ok(o);
+      bad(new Error(/not logged in|\/login|authenticat|unauthorized|api key/i.test(res) ? 'Claude Code chưa đăng nhập. Mở Terminal, chạy lệnh "claude" một lần để đăng nhập rồi thử lại.' : `claude -p lỗi (mã ${code}): ${res.slice(-300)}`));
+    });
   });
   let txt = r; try { txt = JSON.parse(r).result ?? r; } catch {}
   const m = String(txt).match(/\[[\s\S]*\]/); if (!m) throw new Error('Claude không trả về JSON hợp lệ');
@@ -198,7 +202,7 @@ export async function genImage(prompt, out, { provider, vertical = true } = {}) 
   return { out, provider };
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && fs.realpathSync(path.resolve(process.argv[1])) === fileURLToPath(import.meta.url)) {
   const [cmd, a1, a2] = args, J = o => console.log(JSON.stringify(o, null, 1));
   try {
     if (cmd === 'search') J(await search(a1, { kind: opt('--kind', 'photo'), src: opt('--src'), n: +opt('--n', 18) }));

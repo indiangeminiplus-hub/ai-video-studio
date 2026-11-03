@@ -43,7 +43,7 @@
   };
   function render() {
     const c = counts();
-    $('#libbody').innerHTML = `<div class="af">
+    $('#libbody').innerHTML = `<div class="af">${(S.CAP || []).length ? '' : S.ctaTranscribe('B-roll tự động')}
       <section><div class="sh"><i class="ti ti-bolt"></i>Tự thêm b-roll + âm thanh</div>
         <div class="help">Đọc lời thoại rồi chèn b-roll động, chữ nổi, emoji, ảnh của bạn đúng lúc nói; đặt SFX theo từng cảnh và chọn nhạc theo đoạn. Không che mặt người nói, bỏ qua 1,5 s đầu và thẻ kết. Chạy lại chỉ thay phần tự động — phần bạn tự thêm hoặc đã sửa được giữ.</div>
         <button class="primary big" data-af="all" ${busy ? 'disabled' : ''}><i class="ti ${busy ? 'ti-loader-2 spin' : 'ti-bolt'}"></i> Tự thêm B-roll + âm thanh</button>
@@ -71,7 +71,7 @@
   // run(mode, {noUndo}) -> Promise<summary|null>. noUndo: caller already pushed an undo step (AI dựng giúp).
   async function run(mode = 'all', o = {}) {
     if (busy) return null;
-    if (mode !== 'sfx' && mode !== 'clear' && !(S.CAP || []).length) { S.toast('Chưa có phụ đề — cần lời thoại để chọn b-roll'); return null; }
+    if (mode !== 'sfx' && mode !== 'clear' && !(S.CAP || []).length) return S.needCaptions(() => run(mode, o), 'Tự thêm b-roll');
     busy = true; render();
     await S.saveNow();
     if (!o.noUndo) S.pushUndo();

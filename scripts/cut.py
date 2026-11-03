@@ -47,14 +47,26 @@ for _, w in kept:
     off = starts[si] - spans[si][0]
     out_words.append({"w": w["w"], "s": round(w["s"] + off, 3), "e": round(w["e"] + off, 3)})
 
+def probe(entries, sel=None):
+    cmd = ["ffprobe", "-v", "error", *(["-select_streams", sel] if sel else []), "-show_entries", entries, "-of", "csv=p=0", a.src]
+    return subprocess.run(cmd, capture_output=True, text=True).stdout.strip()
+
+
+# No speech found (silent / music-only clip): keep the whole clip instead of an empty select.
+if not spans:
+    acc = float(probe("format=duration") or 0)
+    spans = [[0.0, acc]]
+# Audio-less source: cut a generated silent track alongside so aroll.mp4 always has an audio stream.
+has_audio = bool(probe("stream=index", "a"))
 expr = "+".join(f"between(t,{s:.3f},{e:.3f})" for s, e in spans)
 # Force CFR first: phone footage is often VFR and N/FRAME_RATE would then drift.
 vf = f"fps={a.fps},select='{expr}',setpts=N/{a.fps}/TB"
 af = f"aselect='{expr}',asetpts=N/SR/TB"
 os.makedirs(a.out_dir, exist_ok=True)
 script = os.path.join(a.out_dir, "cut_filter.txt")
-open(script, "w").write(f"[0:v]{vf}[v];[0:a]{af}[a]")
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.src, "-/filter_complex", script, "-map", "[v]", "-map", "[a]",
+open(script, "w").write(f"[0:v]{vf}[v];[{0 if has_audio else 1}:a]{af}[a]")
+silence = [] if has_audio else ["-f", "lavfi", "-t", f"{float(probe('format=duration') or acc):.3f}", "-i", "anullsrc=r=48000:cl=stereo"]
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.src, *silence, "-/filter_complex", script, "-map", "[v]", "-map", "[a]",
                 "-c:v", "libx264", "-crf", "16", "-preset", "fast", "-c:a", "aac", "-b:a", "192k", os.path.join(a.out_dir, "aroll.mp4")], check=True)
 json.dump(out_words, open(os.path.join(a.out_dir, "words.json"), "w"), ensure_ascii=False, indent=1)
 print(f"{len(spans)} spans, {acc:.2f}s kept, {len(drop)} words dropped")

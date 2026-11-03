@@ -8,7 +8,7 @@
 //   node scripts/style_lab.mjs analyze <video> [--work dir]          (only the offline analysis: scripts/style_analyze.py)
 //   node scripts/style_lab.mjs validate <pack.js> [--id u_x]         (engine check of a pack file)
 //   node scripts/style_lab.mjs apply <id> <project_dir> [--title …]  (apply the style's template to timeline.json)
-//   node scripts/style_lab.mjs list | sync | delete <id> | check
+//   node scripts/style_lab.mjs list | sync [--no-skills] | delete <id> | check
 // Common: [--footage <project>] (default ~/.ai-video-studio/footage/clip-mau) — talking-head footage for validation + preview.
 // Env: AVS_SKILLS_DIR (default ~/.claude/skills), AVS_HOME (default ~/.ai-video-studio), CLAUDE_BIN.
 // Progress lines "@@ <0..1> <step>" on stdout; the run's result is <work>/result.json.
@@ -374,7 +374,7 @@ export async function install(work, { id, code, spec, meta, kind, src, aspect, f
     desc: String(meta.desc || '').slice(0, 200), tags: [...(Array.isArray(meta.tags) ? meta.tags.slice(0, 6) : []), 'style của tôi'], title: String(meta.title || meta.name || 'Tiêu đề').slice(0, 60),
     caption_style: id, music: MOODS.includes(String(meta.music).replace(/_2$/, '')) ? meta.music : undefined, use_recipe: true, base_dur: 20.2,
     needs: Array.isArray(meta.needs) ? meta.needs.slice(0, 5) : [], preview: { from: 0, to: 6, still: 2.2 },
-    style_lab: { kind, src: String(src).slice(0, 300), created: new Date().toISOString(), seen: meta.seen || '', summary: meta.summary || '', skill: sk.name, work },
+    style_lab: { kind, src: String(src).slice(0, 300), created: new Date().toISOString(), seen: meta.seen || '', summary: meta.summary || '', skill: sk.name, skill_desc: String(meta.skill_description || '').slice(0, 800), work },
   };
   fs.writeFileSync(path.join(UTPL, id + '.json'), JSON.stringify(tpl, null, 1)); fs.writeFileSync(path.join(STORE, id + '.json'), JSON.stringify(tpl, null, 1));
   const md = `# Style "${meta.name}" (\`${id}\`)\n\n> ${meta.summary || meta.desc || ''}\n\nNguồn: ${tpl.style_lab.src}. Tạo bởi Style Lab (Claude Code CLI).\n\n${spec}\n`;
@@ -407,6 +407,14 @@ export function sync(quiet) {
     for (const [a, b] of pairs) if (fs.existsSync(path.join(STORE, a)) && !fs.existsSync(b)) { fs.mkdirSync(path.dirname(b), { recursive: true }); fs.copyFileSync(path.join(STORE, a), b); n++; }
   }
   if (n || !fs.existsSync(path.join(UPACK, '_all.js'))) rebuildAll();
+  // Claude skill video-style-* of every installed style (also the bundled ones on a fresh install)
+  if (fs.existsSync(UTPL) && !args.includes('--no-skills')) for (const f of fs.readdirSync(UTPL).filter(f => /^u_.*\.json$/.test(f))) {
+    const t = rd(path.join(UTPL, f)), id = f.slice(0, -5), ref = path.join(UREF, id + '.md');
+    if (!t?.style_lab?.skill || fs.existsSync(path.join(SKILLS, t.style_lab.skill, 'SKILL.md')) || !fs.existsSync(ref)) continue;
+    const spec = fs.readFileSync(ref, 'utf8').split('\n').reduce((a, l) => (a.on ? a.out.push(l) : /^Nguồn:/.test(l) && (a.on = true), a), { on: false, out: [] }).out.join('\n').trim();
+    const sl = t.style_lab, sk = skillMd(id, { name: t.name, desc: t.desc, skill_description: sl.skill_desc, summary: sl.summary }, spec, sl.kind === 'clone' ? `clone từ video tham chiếu "${sl.src}"` : `mô tả: “${String(sl.src).slice(0, 200)}”`);
+    fs.mkdirSync(path.join(SKILLS, sk.name), { recursive: true }); fs.writeFileSync(path.join(SKILLS, sk.name, 'SKILL.md'), sk.text); n++;
+  }
   if (!quiet) console.log(`sync: khôi phục ${n} file`);
   return n;
 }
@@ -569,4 +577,4 @@ async function main() {
   else if (cmd === 'check') { const r = await callClaude('Trả lời đúng một từ: OK', { cwd: os.tmpdir(), model: 'haiku', timeout: 60e3 }); console.log('claude:', r.text.trim()); }
   else { console.error(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(0, 14).join('\n')); process.exit(2); }
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main().catch(e => { console.error('LỖI: ' + e.message); process.exit(1); });
+if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(path.resolve(process.argv[1]))).href) main().catch(e => { console.error('LỖI: ' + e.message); process.exit(1); });

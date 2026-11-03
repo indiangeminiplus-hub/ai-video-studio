@@ -31,7 +31,7 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 
 | Nhóm | Có gì |
 |---|---|
-| **Dựng nhanh** | 47 template chia 8 nhóm: BĐS, Khoá học, Review, Chia sẻ, Tin tức, Bán hàng, AI, Khác. Có popup thư viện lớn và video xem trước. 24 gói style, 227 graphic, 21 kiểu phụ đề |
+| **Dựng nhanh** | 47 template chia 8 nhóm: BĐS, Khoá học, Review, Chia sẻ, Tin tức, Bán hàng, AI, Khác. Có popup thư viện lớn và video xem trước. 24 gói style, 217 graphic, 23 kiểu phụ đề |
 | **24 gói style** | Slate grid (kiểu "Claude edit"), Bubble hướng dẫn, AI Hype Cam, Luxury, Neon, Keynote, Glow, Podcast, Kinetic, Khoá học, BĐS, Review, Chia sẻ, Chia đôi màn hình, Trước/sau, Phông xanh, Bản tin, Podcast nhiều góc máy, Hỏi đáp, Top N, Điện ảnh, Ảnh theo nhịp nhạc, Quay màn hình… |
 | **Edit chuyên sâu** | Track nhiều clip: cắt (⌘B), xoá tự dồn, đảo thứ tự, tốc độ 0,25–4×, lật, nền mờ, 8 bộ lọc màu, chỉnh màu, 15 chuyển cảnh. Keyframe tự do, mặt nạ 8 hình, tách nền và thay phông, sticker người |
 | **AI (Claude)** | **AI dựng giúp**: đọc lời nói rồi tự đặt graphic, sửa phụ đề, chọn nhạc và SFX. **Cắt lỗi nói**: bỏ câu lặp, ngắt dài, nói vấp. **Sửa video bằng chữ**: xoá chữ là cắt video |
@@ -146,7 +146,7 @@ Bấm **Xuất** và chọn chất lượng (720p, 1080p hoặc 4K). Muốn có 
 | **Âm thanh** | 30 bản nhạc nền và 309 SFX, bấm để nghe thử, kéo vào timeline |
 | **Chữ** | 14 kiểu chữ có sẵn (vàng, neon, lửa, sang trọng, đánh máy…) và 9 kiểu hoạt ảnh |
 | **Sticker** | Emoji 3D |
-| **Hiệu ứng** | 227 graphic của 24 gói, có ảnh xem trước trên clip thật |
+| **Hiệu ứng** | 217 graphic của 24 gói (cộng graphic của style bạn tạo), có ảnh xem trước trên clip thật |
 | **Chuyển cảnh** | 15 kiểu, kéo thả vào chỗ nối giữa 2 clip |
 | **Bộ lọc** | 8 bộ màu, xem trước ngay trên khung hình |
 | **Thành phần** | Danh sách mọi thứ đang có trong video, bật hoặc tắt từng cái |
@@ -303,7 +303,7 @@ node $S/scripts/batch.mjs --help                                   # làm hàng 
 $PY  $S/scripts/dub.py --help                                      # dịch + lồng tiếng
 $PY  $S/scripts/face_track.py --help                               # bám mặt
 node $S/scripts/build_templates.mjs ~/.ai-video-studio/footage/clip-mau   # render lại preview mẫu
-node $S/scripts/selftest.mjs engine/index.html ~/.ai-video-studio/footage/clip-mau/timeline.json
+node $S/scripts/selftest.mjs $S/engine/index.html ~/.ai-video-studio/footage/clip-mau/timeline.json
 bash $S/scripts/make_app.sh                                        # tạo lại app Mac
 ```
 
@@ -316,9 +316,10 @@ Tài liệu kỹ thuật chi tiết nằm trong `references/`. Nên bắt đầu
 | Phím | Việc |
 |---|---|
 | Space | Phát / dừng |
-| ← / → | Lùi / tiến 1 khung (đang chọn graphic thì dịch graphic) |
+| ← / → | Lùi / tiến 1 khung (⇧: 1 giây) |
+| ⌥ + mũi tên | Dịch chữ/graphic đang chọn 1 px (⇧: 10 px) |
 | ⌘B | Cắt clip tại playhead |
-| Delete | Xoá (clip thì tự dồn) |
+| Delete / ⌫ | Xoá (clip thì tự dồn) |
 | ⌘D | Nhân bản |
 | ⌘Z / ⇧⌘Z | Hoàn tác / làm lại |
 | ⌘S | Lưu |
@@ -347,13 +348,14 @@ Lúc tạo dự án, chọn độ chính xác cao hơn (model whisper lớn hơn
 Giảm số luồng: `--workers 2`. Mỗi luồng tốn khoảng 300 MB RAM.
 
 **Muốn dời thư mục dữ liệu?**
-Đặt biến môi trường `AVS_HOME` (mặc định `~/.ai-video-studio`) và `AVS_SKILLS_DIR` (mặc định `~/.claude/skills`).
+Đặt biến môi trường `AVS_HOME` (mặc định `~/.ai-video-studio`) trước khi chạy `install.sh` / `studio.sh`. `AVS_SKILLS_DIR` (mặc định `~/.claude/skills`) là nơi lưu skill `video-style-*` của style bạn tạo; `AVS_SKILL_DIR` là chỗ `install.sh` gắn skill chính.
 
 **Gỡ cài đặt:**
 ```bash
-rm -rf ~/.claude/skills/ai-video-studio ~/.ai-video-studio "~/Applications/AI Video Studio.app"
+rm -rf ~/.claude/skills/ai-video-studio ~/.ai-video-studio ~/"Applications/AI Video Studio.app" \
+       ~/"Library/Application Support/AIVideoStudio" ~/Library/Logs/AIVideoStudio.log
 ```
-Sau đó xoá thư mục repo.
+Sau đó xoá thư mục repo. Style bạn đã tạo còn là skill riêng `~/.claude/skills/video-style-*`, xoá nếu không dùng nữa.
 
 ---
 

@@ -128,7 +128,12 @@ export function callClaude(prompt, model = 'sonnet', onTick) {
     p.on('error', e => { clearInterval(tick); bad(new Error(e.code === 'ENOENT' ? 'Không tìm thấy lệnh "claude" (Claude Code CLI). Cài Claude Code rồi thử lại.' : e.message)); });
     p.on('close', code => {
       clearInterval(tick);
-      if (code !== 0) return bad(new Error(`claude -p lỗi (mã ${code}): ${(err || out).slice(-300)}`));
+      if (code !== 0) {
+        let msg = err || out; try { const r = JSON.parse(out); if (r.result) msg = String(r.result); } catch {}
+        if (/not logged in|\/login|invalid api key|authenticat|unauthorized|oauth token/i.test(msg)) return bad(new Error('Claude Code chưa đăng nhập. Mở Terminal, chạy lệnh "claude" một lần để đăng nhập rồi thử lại.'));
+        if (/credit balance|usage limit|rate limit|quota/i.test(msg)) return bad(new Error('Tài khoản Claude đã hết lượt dùng tạm thời. Đợi một lúc rồi thử lại. (' + msg.slice(0, 160) + ')'));
+        return bad(new Error(`claude -p lỗi (mã ${code}): ${msg.slice(-300)}`));
+      }
       try { const r = JSON.parse(out); if (r.is_error) return bad(new Error('Claude báo lỗi: ' + String(r.result).slice(0, 300))); ok(String(r.result || '')); }
       catch { ok(out); }
     });
@@ -318,4 +323,4 @@ async function main() {
   }
   say(1, 'Xong');
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main().catch(e => { console.error('LỖI: ' + e.message); process.exit(1); });
+if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(path.resolve(process.argv[1]))).href) main().catch(e => { console.error('LỖI: ' + e.message); process.exit(1); });

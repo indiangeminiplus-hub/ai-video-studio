@@ -43,7 +43,7 @@ start() {
   serving && return 0
   check
   local proj; proj="$(cat "$STATE/last_project" 2>/dev/null)"; [ -f "$proj/timeline.json" ] || proj=""
-  [ -n "$proj" ] || { [ -f "$HOME/.ai-video-studio/footage/clip-mau/timeline.json" ] && proj="$HOME/.ai-video-studio/footage/clip-mau"; }
+  [ -n "$proj" ] || { [ -f "${AVS_HOME:-$HOME/.ai-video-studio}/footage/clip-mau/timeline.json" ] && proj="${AVS_HOME:-$HOME/.ai-video-studio}/footage/clip-mau"; }
   log "khởi động máy chủ: $SKILL (cổng $PORT) ${proj:+dự án $proj}"
   cd "$SKILL" || die "Không vào được $SKILL"
   # every fd detached, otherwise AppleScript's "do shell script" waits for the server to exit

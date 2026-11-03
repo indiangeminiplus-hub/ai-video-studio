@@ -98,6 +98,7 @@
 
   // ---------- AI dựng giúp ----------
   function openAiModal() {
+    if (!CAP.length && S.needCaptions) return S.needCaptions(openAiModal, 'AI dựng giúp');
     const cur = TL.pack || 'slate';
     S.modal(`<h3><i class="ti ti-wand"></i> AI dựng giúp</h3>
       <p class="muted" style="margin:2px 0 8px">Claude đọc lời thoại (${CAP.length} dòng phụ đề, ${fmt(TL.duration)}) rồi chọn gói style, sửa phụ đề, viết hook, đặt graphic đúng lúc nói từ khoá, chọn nhạc và SFX. Mất khoảng 20–90 giây. Áp dụng xong vẫn hoàn tác được (⌘Z).</p>
@@ -118,7 +119,7 @@
     $('#aigo').onclick = startAi;
   }
   async function startAi() {
-    if (!CAP.length) return S.toast('Chưa có phụ đề — AI cần lời thoại để dựng');
+    if (!CAP.length) return S.needCaptions(openAiModal, 'AI dựng giúp');
     const pm = document.querySelector('[name=aip]:checked').value;
     const body = { goal: $('#aig').value, tone: $('#ait').value, pack: pm === 'pick' ? $('#aipk').value : pm, density: $('#aid .on')?.dataset.d || 'vua', extra: $('#aix').value.trim() };
     const af = !!$('#aiaf')?.checked; if (S.autofill && $('#aiaf')) S.autofill.afterAi = af;
@@ -204,7 +205,7 @@
   const KIND_VI = { filler: 'đệm', repeat: 'lặp', pause: 'ngắt', false_start: 'hỏng' };
   async function detect() {
     const W = allWords().map(x => ({ w: x.w.w, s: x.w.s, e: x.w.e }));
-    if (!W.length) return S.toast('Chưa có phụ đề để dò');
+    if (!W.length) return S.needCaptions(null, 'Dò lỗi nói');
     const body = { words: W, pause: +$('#flpause').value || .7, fillers: $('#fllist').value.trim(), claude: $('#flclaude').checked };
     flBusy = true; renderAi();
     const done = res => { flBusy = false; if (res.error) { S.toast('Lỗi dò: ' + res.error); fl = null; } else { fl = res; flSel = new Set(res.cuts.map((c, i) => (c.conf >= .6 ? i : -1)).filter(i => i >= 0)); } renderAi(); };
@@ -226,7 +227,7 @@
     const seg = `<div class="seg">${[['build', 'Dựng giúp'], ['fix', 'Cắt lỗi nói']].map(([k, l]) => `<button data-aitab="${k}" class="${aiTab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
     if (aiTab === 'build') {
       const nAi = (TL.scenes || []).filter(s => s._ai && !s._base).length, nEd = (TL.scenes || []).filter(s => s._ai && s._orig).length;
-      $('#libbody').innerHTML = seg + `<button class="wide primary" data-ai="open"><i class="ti ti-wand"></i> AI dựng giúp</button>
+      $('#libbody').innerHTML = seg + (CAP.length ? '' : S.ctaTranscribe('AI dựng giúp')) + `<button class="wide primary" data-ai="open"><i class="ti ti-wand"></i> AI dựng giúp</button>
         <div class="help">Claude đọc lời thoại rồi chọn gói style, sửa lỗi nhận dạng trong phụ đề (giữ nguyên thời gian từng từ), viết hook, đặt 6–15 graphic đúng lúc nói từ khoá, chọn nhạc và SFX. Cần Claude Code (lệnh <b>claude</b>) trên máy.</div>
         ${lastPlan ? planCard(lastPlan, true) : ''}
         <div class="ai-card"><h4><i class="ti ti-info-circle"></i> Trên timeline</h4><p>${nAi} cảnh do AI tạo${nEd ? `, ${nEd} cảnh bạn đã chỉnh (sẽ được giữ khi dựng lại)` : ''}.</p>
@@ -275,9 +276,9 @@
     W = allWords(); sig = [CAP, TL.duration];
     const flags = new Set();
     if (fl) for (const c of fl.cuts) for (const [k, x] of W.entries()) if (x.w.s >= c.a - .01 && x.w.e <= c.b + .05) flags.add(k);
-    $('#libact').innerHTML = `<button class="mini danger" id="twdel" ${selRange() ? '' : 'disabled'} title="Cắt đoạn đã chọn khỏi video (Delete)"><i class="ti ti-scissors"></i> Xoá đoạn</button>`;
+    $('#libact').innerHTML = `<button class="mini icon" data-transcribe title="Tạo lại lời thoại tự động (Whisper)"><i class="ti ti-microphone"></i></button><button class="mini danger" id="twdel" ${selRange() ? '' : 'disabled'} title="Cắt đoạn đã chọn khỏi video (Delete)"><i class="ti ti-scissors"></i> Xoá đoạn</button>`;
     $('#twdel').onclick = deleteSel;
-    if (!W.length) { $('#libbody').innerHTML = `<div class="empty"><i class="ti ti-file-text"></i><b>Chưa có lời thoại</b><span>Dự án cần phụ đề (tạo từ “Video mới”) để sửa video bằng chữ.</span></div>`; return; }
+    if (!W.length) { $('#libbody').innerHTML = S.ctaTranscribe('Sửa video bằng chữ'); return; }
     const sr = selRange();
     // flowing text; a time chip where the speaker pauses (≥ 0.5 s) or every ~40 words
     let html = '', lastE = -9, since = 99;

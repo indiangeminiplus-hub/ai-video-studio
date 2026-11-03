@@ -1,5 +1,5 @@
-scripts/.venv/
-scripts/node_modules/
+scripts/.venv
+scripts/node_modules
 __pycache__/
 *.pyc
 .DS_Store

@@ -76,7 +76,7 @@
     const src = TL.lang || 'vi', nTr = CAP.filter(c => c.tr).length, dub = A.dub, trk = (A.tracks || []).find(t => t.id === 'dub');
     const vg = Math.round((A.voice_gain ?? 1) * 100);
     const voices = s.tts === 'edge' ? (V?.edge ? [[V.edge, V.edge + ' (online)']] : []) : (V?.say || []).map(v => [v, v]);
-    $('#libbody').innerHTML = `<div id="dubp">
+    $('#libbody').innerHTML = `<div id="dubp">${CAP.length ? '' : Studio.ctaTranscribe('Dịch và lồng tiếng')}
       ${sect('Ngôn ngữ', `<div class="row"><div><span class="lbl">Gốc</span><select data-db="src">${opt(LANGS, src)}</select></div>
         <div><span class="lbl">Dịch sang</span><select data-db="lang">${opt(LANGS.filter(l => l[0] !== src), s.lang)}</select></div></div>
         <div class="help">Dịch bằng Claude (lệnh <code>claude</code> trên máy), theo từng câu rồi chia lại khớp từng đoạn phụ đề.</div>`, 'ti-language')}
@@ -99,7 +99,7 @@
   function setSub2(fn) { const TL = Studio.TL; Studio.pushUndo('sub2'); TL.sub2 = TL.sub2 || { style: 'plain', lang: state().lang }; fn(TL.sub2); Studio.changed(); }
   async function run(kind) {
     const s = state(), TL = Studio.TL;
-    if (!(Studio.CAP || []).length) return Studio.toast('Chưa có phụ đề để dịch');
+    if (!(Studio.CAP || []).length) return Studio.needCaptions(() => run(kind), 'Dịch và lồng tiếng');
     await Studio.saveNow();
     const body = { lang: s.lang, tts: s.tts, voice: s.voice || undefined, voice_gain: TL.audio?.voice_gain ?? .15,
       translate: kind === 'translate' || TL.sub2?.lang !== s.lang || !(Studio.CAP || []).some(c => c.tr), dub: kind === 'dub', force: kind === 'translate' };

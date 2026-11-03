@@ -51,7 +51,9 @@ function sendFile(req, res, file) {
 }
 // Resolve url path under root; refuses anything escaping it.
 function under(root, rel) {
-  const p = path.resolve(root, decodeURIComponent(rel).replace(/^\/+/, ''));
+  let r; try { r = decodeURIComponent(rel); } catch { return null; }
+  if (r.includes('\0')) return null;
+  const p = path.resolve(root, r.replace(/^\/+/, ''));
   return p === root || p.startsWith(root + path.sep) ? p : null;
 }
 const json = (res, obj, code = 200) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); };
@@ -278,6 +280,10 @@ async function newProject({ video, dir, model = 'small', pack = 'slate', title =
   job.step = 'Trích khung hình 9:16'; job.progress = .6;
   const [FW, FH] = orient === 'horizontal' ? [1280, 720] : [720, 1280];
   await run('ffmpeg', ['-v', 'error', '-y', '-i', path.join(d, 'work/aroll.mp4'), '-vf', `scale=${FW}:${FH}:force_original_aspect_ratio=increase,crop=${FW}:${FH}`, '-q:v', '3', path.join(d, 'work/frames/%05d.jpg')]);
+  // timeline.face (bubble / PIP / hook anchor): find_face.py on a few frames; keep the default if no person is found.
+  job.step = 'Tìm vị trí mặt'; job.progress = .75;
+  let face = orient === 'horizontal' ? { x: 640, y: 300 } : { x: 360, y: 520 };
+  await run(PY, ['-I', S('find_face.py'), path.join(d, 'work/frames'), '--design', `${FW}x${FH}`], l => { try { const f = JSON.parse(l); if (f.x != null) face = f; } catch {} }).catch(() => {});
   job.step = 'Tạo phụ đề'; job.progress = .85;
   await run(PY, ['-I', S('captions.py'), path.join(d, 'work/words.json'), path.join(d, 'work/captions.json'), '--max', '4']);
   const caps = JSON.parse(fs.readFileSync(path.join(d, 'work/captions.json'), 'utf8'));
@@ -287,7 +293,7 @@ async function newProject({ video, dir, model = 'small', pack = 'slate', title =
   const tl = {
     width: orient === 'horizontal' ? 1920 : 1080, height: orient === 'horizontal' ? 1080 : 1920, fps: 30, duration: +(dur + 2.5).toFixed(2),
     pack, _starter: { pack, title, dur: +(dur + 2.5).toFixed(2) },
-    aroll: { frames: 'work/frames/%05d.jpg' }, face: { x: 360, y: 520 },
+    aroll: { frames: 'work/frames/%05d.jpg' }, face,
     caption_style: 'slate', captions: 'work/captions.json',
     scenes: [
       { type: 'frame_grid', t0: 0, t1: dur, badge: { icon: 'si:claude' } },
@@ -303,7 +309,7 @@ function startJob(kind, fn, payload) {
   if (job?.state === 'running') return false;
   job = { kind, state: 'running', progress: 0, step: 'Bắt đầu', log: '', out: null, started: Date.now() };
   fn(payload).then(() => { job.state = 'done'; job.progress = 1; job.step = 'Xong'; })
-    .catch(e => { job.state = 'error'; job.step = e.message; console.error(e); });
+    .catch(e => { job.state = 'error'; job.step = job.cancelled && /lỗi \(mã/.test(e.message) ? 'Đã huỷ theo yêu cầu' : e.message; console.error(e); });
   return true;
 }
 
@@ -323,6 +329,9 @@ const FEATURES = () => fs.readdirSync(path.join(HERE, 'features')).filter(f => f
 const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');
   const p = u.pathname;
+  // Local-only API: refuse other websites (CSRF via a simple POST) and DNS-rebinding hosts.
+  const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
+  if (!LOCAL.test(req.headers.host || '') || (req.headers.origin && !LOCAL.test(req.headers.origin.replace(/^https?:\/\//, '')))) return json(res, { error: 'forbidden' }, 403);
   try {
     if (p === '/' || p === '/index.html') return sendFile(req, res, path.join(HERE, 'index.html'));
     if (p.startsWith('/studio/')) { const f = under(HERE, p.slice(8)); return f ? sendFile(req, res, f) : json(res, {}, 403); }
@@ -353,6 +362,7 @@ const server = http.createServer(async (req, res) => {
       return f ? sendFile(req, res, f) : json(res, {}, 403);
     }
     if (p === '/api/project' && req.method === 'GET') return project ? json(res, readProject()) : json(res, { error: 'Chưa mở dự án' }, 404);
+    if (!project && /^\/api\/(save|history|waveform|export|autosfx|media|upload|still|srt|reveal)(\/|$)/.test(p)) return json(res, { error: 'Chưa mở dự án' }, 400);
     if (p === '/api/save' && req.method === 'POST') return json(res, save(await body(req)));
     if (p === '/api/history') {
       const d = path.join(project.dir, '.studio/history');
@@ -370,8 +380,8 @@ const server = http.createServer(async (req, res) => {
       return execFile('node', [path.join(SKILL, 'scripts/broll.mjs'), 'search', q], { maxBuffer: 1 << 22 }, (e, out) =>
         json(res, (out || '').split('\n').filter(Boolean).slice(0, 30).map(l => { const m = l.trim().split(/\s{2,}/); return { id: m[1], template: m[2], text: m[3] }; }).filter(x => x.id)));
     }
-    if (p === '/api/export' && req.method === 'POST') { const b = await body(req); return json(res, { ok: startJob('export', exportVideo, b) }); }
-    if (p === '/api/new' && req.method === 'POST') { const b = await body(req); return json(res, { ok: startJob('new', newProject, b) }); }
+    if (p === '/api/export' && req.method === 'POST') { const b = await body(req); const ok = startJob('export', exportVideo, b); return json(res, ok ? { ok } : { ok, error: 'Đang có tác vụ khác chạy' }); }
+    if (p === '/api/new' && req.method === 'POST') { const b = await body(req); const ok = startJob('new', newProject, b); return json(res, ok ? { ok } : { ok, error: 'Đang có tác vụ khác chạy' }); }
     if (p === '/api/autosfx' && req.method === 'POST') {
       const b = await body(req);
       return execFile(PY, ['-I', path.join(SKILL, 'scripts/auto_sfx.py'), project.tlFile, ...(b.keep ? ['--keep-manual'] : [])], (e, out, err) =>
@@ -385,7 +395,7 @@ const server = http.createServer(async (req, res) => {
       const out = `out/${path.basename(project.dir)}.srt`; fs.writeFileSync(P(out), srt(captions)); return json(res, { out });
     }
     if (p === '/api/job') return json(res, job ? { ...job, proc: undefined } : null);
-    if (p === '/api/job/cancel' && req.method === 'POST') { if (job?.proc) job.proc.kill('SIGTERM'); return json(res, { ok: true }); }
+    if (p === '/api/job/cancel' && req.method === 'POST') { if (job?.state === 'running') job.cancelled = true; if (job?.proc) job.proc.kill('SIGTERM'); return json(res, { ok: true }); }
     if (p === '/api/open' && req.method === 'POST') { const b = await body(req); openProject(b.path); return json(res, { ok: true }); }
     if (p === '/api/reveal' && req.method === 'POST') { const b = await body(req); const f = under(project.dir, b.path || ''); if (f) spawn('open', ['-R', f]); return json(res, { ok: !!f }); }
     if (p === '/api/features') return json(res, FEATURES());

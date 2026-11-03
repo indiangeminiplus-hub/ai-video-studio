@@ -406,7 +406,7 @@ export async function runJob(jobFile) {
 }
 
 // ---------- CLI ----------
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && fs.realpathSync(path.resolve(process.argv[1])) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
   try {
     if (args[0] === '--parse') console.log(JSON.stringify(parseSheet(path.resolve(args[1])), null, 1));

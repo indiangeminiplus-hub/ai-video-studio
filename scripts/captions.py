@@ -66,4 +66,4 @@ for i, c in enumerate(chunks):
     out.append({"t0": round(c[0]["s"], 3), "t1": round(t1, 3),
                 "words": [{"w": w["w"].strip(",.!"), "s": w["s"], "e": w["e"]} for w in c]})
 json.dump(out, open(a.out, "w"), ensure_ascii=False, indent=1)
-print(f"{len(out)} chunks, avg {sum(len(c['words']) for c in out) / len(out):.1f} words")
+print(f"{len(out)} chunks, avg {sum(len(c['words']) for c in out) / max(1, len(out)):.1f} words")

@@ -217,6 +217,7 @@ body.expanded #lib, body.expanded #right { display: none; }
 .fx .fth.h { aspect-ratio: 16/9; }
 .fx .fth em { font-style: normal; font-size: 22px; opacity: .55; }
 .fx .fth img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fx .fth img + em { display: none; }
 .fx:hover .fth { border-color: var(--acc); box-shadow: 0 0 0 2px var(--acc-soft); }
 .fx small { font-size: 10.5px; color: var(--tx2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 .fxg + .fxg { margin-top: 4px; }

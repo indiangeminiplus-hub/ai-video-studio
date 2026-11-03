@@ -86,7 +86,7 @@ export async function deriveAspects(src, aspects, opts = {}) {
   return { native, outs: res };
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && fs.realpathSync(path.resolve(process.argv[1])) === fileURLToPath(import.meta.url)) {
   const a = process.argv.slice(2), opt = (k, d) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : d; };
   if (!a[0]) { console.log('usage: node export_multi.mjs <video.mp4> --aspects 9:16,1:1,16:9 [--out-dir dir]'); process.exit(1); }
   const r = await deriveAspects(path.resolve(a[0]), opt('--aspects', '9:16,1:1,16:9').split(','), { outDir: opt('--out-dir'), onStep: s => console.log(s) });

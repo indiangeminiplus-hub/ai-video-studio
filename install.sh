@@ -48,8 +48,8 @@ if [ "$(ls "$SAMPLE/work/frames" | wc -l | tr -d ' ')" -lt 100 ]; then
   ffmpeg -v error -y -i "$SAMPLE/work/aroll.mp4" -vf "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280" -q:v 3 "$SAMPLE/work/frames/%05d.jpg"
 fi
 
-# 5. Khôi phục các style người dùng (Tạo style) nếu có
-node "$REPO/scripts/style_lab.mjs" sync >/dev/null 2>&1 || true
+# 5. Khôi phục các style người dùng (Tạo style) + skill video-style-* của chúng
+node "$REPO/scripts/style_lab.mjs" sync $([ "$LINK" = 1 ] || echo --no-skills) >/dev/null 2>&1 || true
 
 # 6. App Mac
 if [ "$APP" = 1 ] && [ "$(uname)" = Darwin ]; then
@@ -63,7 +63,7 @@ cat <<EOF
 
   Mở Studio với clip mẫu:   bash "$REPO/studio.sh"
   Mở với video của bạn:     bash "$REPO/studio.sh" --new /đường/dẫn/video.mp4
-  Hoặc bấm app "AI Video Studio" trong Launchpad / ~/Applications.
+$([ -d "$HOME/Applications/AI Video Studio.app" ] && echo '  Hoặc bấm app "AI Video Studio" trong Launchpad / ~/Applications.')
 
   Trình duyệt sẽ mở http://localhost:5186
 EOF

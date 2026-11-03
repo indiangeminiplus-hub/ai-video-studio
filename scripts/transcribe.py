@@ -20,6 +20,12 @@ a = ap.parse_args()
 
 # Decode with ffmpeg ourselves: PyAV versions bundled with faster-whisper vary and break decode_audio.
 wav = a.out + ".16k.wav"
+# Clip without an audio stream: nothing to transcribe (cut.py then keeps the whole clip).
+if not subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0", a.src],
+                      capture_output=True, text=True).stdout.strip():
+    json.dump([], open(a.out, "w"))
+    print(f"0 words (video không có tiếng) -> {a.out}")
+    raise SystemExit(0)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.src, "-ac", "1", "-ar", "16000", wav], check=True)
 w = wave.open(wav)
 audio = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768

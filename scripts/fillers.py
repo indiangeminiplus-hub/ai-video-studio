@@ -110,7 +110,10 @@ if a.claude:
                   "từ lặp liền nhau (đã xử lý riêng). Nếu không có, trả mảng rỗng.\nTrả về DUY NHẤT JSON: {\"false_starts\":[{\"i0\":số,\"i1\":số,\"reason\":\"…\"}]}\n\n" + listing)
         try:
             r = subprocess.run([exe, "-p", prompt, "--output-format", "json", "--model", a.model], capture_output=True, text=True, timeout=240)
-            res = json.loads(r.stdout).get("result", "")
+            j = json.loads(r.stdout)
+            res = str(j.get("result", ""))
+            if r.returncode or j.get("is_error"):
+                raise RuntimeError("Claude Code chưa đăng nhập (chạy lệnh claude một lần để đăng nhập)" if re.search(r"not logged in|/login|authenticat|api key", res, re.I) else res[:160])
             m = re.search(r"\{.*\}", res, re.S)
             for f in json.loads(m.group(0)).get("false_starts", []) if m else []:
                 i0, i1 = int(f["i0"]), int(f["i1"])
@@ -120,7 +123,7 @@ if a.claude:
                         x1 = round(words[i1 + 1]["s"], 3)
                     add(i0, i1, "false_start", "nói hỏng: " + str(f.get("reason", ""))[:80], 0.55, (x0, x1))
         except Exception as e:  # CLI failure must not lose the local results
-            note = f"Claude lỗi ({type(e).__name__}) — chỉ có kết quả dò tự động."
+            note = f"Claude lỗi ({e if isinstance(e, RuntimeError) else type(e).__name__}) — chỉ có kết quả dò tự động."
 
 # merge overlapping cuts (keep the first reason)
 cuts.sort(key=lambda c: (c["a"], -c["b"]))
