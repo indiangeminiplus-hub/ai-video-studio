@@ -29,7 +29,7 @@ export default ctx => {
     const seq = src.seq || '';
     if (!/%05d\.jpg$/.test(seq)) throw new Error('Chỉ tách nền được chuỗi khung %05d.jpg');
     const frames = ctx.under(ctx.project.dir, path.dirname(seq)); if (!frames || !fs.existsSync(frames)) throw new Error('Không thấy thư mục khung ' + seq);
-    const outDir = path.join(ctx.project.dir, 'work', 'cutouts_' + path.basename(frames).replace(/[^\w-]+/g, '_'));
+    const outDir = path.join(ctx.project.dir, 'work', 'cutouts_' + path.basename(frames).replace(/[^\p{L}\p{N}_-]+/gu, '_'));
     const want = Math.max(1, Math.round((b - a) * fps) + 1), count = () => (fs.existsSync(outDir) ? fs.readdirSync(outDir).length : 0), before = count();
     job.step = `Tách nền ${want} khung (rembg, chạy trên máy)`;
     const tick = setInterval(() => { job.progress = Math.min(.98, (count() - before) / want); }, 500);

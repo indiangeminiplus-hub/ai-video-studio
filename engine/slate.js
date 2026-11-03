@@ -8,6 +8,8 @@ const SL = {
   yellow: '#F3E35A', badge: '#D97757', led: '#FF8A1E', neon: '#FF3348', teal: '#5EE6C8',
 };
 const cidAttr = o => (o && o.cid ? ` data-cid="${o.cid}"` : '');
+// Frame size: 720×1280 (9:16) or 1280×720 when the project is horizontal (VERT() lives in packs/core.js).
+const SLW = () => (typeof VERT === 'function' && !VERT() ? 1280 : 720), SLH = () => (SLW() === 720 ? 1280 : 720);
 // Keyframes [{t, v}] or [{t, x, y, s}] → interpolated value at t (inOutSine between keys).
 function keyAt(keys, t, field = 'v', dflt = 0) {
   if (keys == null) return dflt;
@@ -57,7 +59,7 @@ function slateBg(g = {}) {
 function slateCaption(c, t) {
   const st = [];
   if (c.y != null) st.push(`top:${c.y}px`);
-  if (c.x != null) st.push(`left:${c.x - 360}px;right:${360 - c.x}px`);
+  if (c.x != null) st.push(`left:${c.x - SLW() / 2}px;right:${SLW() / 2 - c.x}px`);
   if (c.size) st.push(`font-size:${c.size}px`);
   if (c.font) st.push(`font-family:${c.font}`);
   if (c.color) st.push(`color:${c.color}`);
@@ -79,7 +81,7 @@ function slateCaption(c, t) {
 const SMOD = {
   // Video card on the slate grid + badge. blur/dim/zoom accept numbers or keyframes [{t,v}] / [{t,s,x,y}].
   frame_grid(s, t, lt) {
-    const c = { ...SL.card, ...(s.card || {}) };
+    const c = { ...(SLW() > SLH() ? { x: 150, y: 96, w: 980, h: 551, r: 8 } : SL.card), ...(s.card || {}) };
     const blur = keyAt(s.blur, t), dim = keyAt(s.dim, t);
     const zs = keyAt(s.zoom, t, 's', 1), zx = keyAt(s.zoom, t, 'x', 50), zy = keyAt(s.zoom, t, 'y', 40);
     // Enter: 'blur' = dissolve from blur (as the reference between shots), 'zoom' = card scales up from .92, 'cut'.
@@ -95,7 +97,7 @@ const SMOD = {
       box-shadow:0 18px 40px rgba(0,0,0,.35);transform:scale(${es.toFixed(4)})">${vid}</div>`;
     let badge = '';
     if (s.badge !== false) {
-      const b = { icon: 'si:claude', bg: SL.badge, size: 118, x: 360, y: c.y, ...(s.badge || {}) };
+      const b = { icon: 'si:claude', bg: SL.badge, size: 118, x: SLW() / 2, y: c.y, ...(s.badge || {}) };
       const bk = E.outBack(prog(lt, 0, .35), 1.8);
       badge = `<div class="abs"${cidAttr(b)} style="left:${b.x - b.size / 2}px;top:${b.y - b.size / 2}px;width:${b.size}px;height:${b.size}px;border-radius:${b.size * .2}px;
         background:${b.bg};display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.3);
@@ -106,7 +108,7 @@ const SMOD = {
 
   // Dot-matrix LED word ("TIN SHOCK"): dark dotted panel, letters type on one by one with an orange glow.
   led_text(s, t, lt) {
-    const size = s.size || 74, x = s.x ?? 360, y = s.y ?? 400, col = s.color || SL.led;
+    const size = s.size || 74, x = s.x ?? SLW() / 2, y = s.y ?? 400, col = s.color || SL.led;
     const chars = [...(s.text || 'TIN SHOCK')], cps = s.cps || 14;
     const shown = Math.min(chars.length, Math.floor(lt * cps) + 1);
     const txt = chars.map((ch, i) => `<span style="opacity:${i < shown ? 1 : .07}">${esc(ch)}</span>`).join('');
@@ -123,7 +125,7 @@ const SMOD = {
 
   // Neon tube word ("đáng sợ"): flickers on, then hums.
   neon_text(s, t, lt) {
-    const size = s.size || 80, x = s.x ?? 360, y = s.y ?? 400, col = s.color || SL.neon;
+    const size = s.size || 80, x = s.x ?? SLW() / 2, y = s.y ?? 400, col = s.color || SL.neon;
     const fl = s.flicker === false ? 1 : (lt < .45 ? [1, .15, .9, .1, 1, .3, 1, 1, .2, 1][Math.floor(lt / .045)] ?? 1 : .93 + .07 * Math.sin(lt * 40));
     const o = inOut(t, s.t0, s.keep ? null : s.t1, .05, .15) * fl;
     return { front: `<div class="abs"${cidAttr(s)} style="left:${x}px;top:${y}px;transform:translate(-50%,-50%) rotate(${s.rotate ?? -3}deg);opacity:${o.toFixed(3)};
@@ -133,7 +135,7 @@ const SMOD = {
 
   // Row of white app tiles with logos, popping in left → right.
   logo_row(s, t, lt) {
-    const icons = s.icons || ['si:openai', 'si:claude', 'si:googlegemini'], sz = s.size || 60, gap = s.gap ?? 14, x = s.x ?? 360, y = s.y ?? 310;
+    const icons = s.icons || ['si:openai', 'si:claude', 'si:googlegemini'], sz = s.size || 60, gap = s.gap ?? 14, x = s.x ?? SLW() / 2, y = s.y ?? 310;
     const W = icons.length * sz + (icons.length - 1) * gap;
     const out = s.keep ? 1 : 1 - E.inCubic(prog(t, s.t1 - .18, .18));
     const tiles = icons.map((ic, i) => {
@@ -201,7 +203,7 @@ const SMOD = {
       return `<path d="${pathD}" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${(1 - k).toFixed(3)}" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2"/>`;
     }).join('');
     const o = s.keep ? 1 : 1 - E.inCubic(prog(t, s.t1 - .2, .2));
-    return { front: `<svg class="full" viewBox="0 0 720 1280" style="opacity:${o.toFixed(3)}">${paths}</svg>` + html.join('') + lines(s, t), hideCaptions: s.hideCaptions ?? true };
+    return { front: `<svg class="full" viewBox="0 0 ${SLW()} ${SLH()}" style="opacity:${o.toFixed(3)}">${paths}</svg>` + html.join('') + lines(s, t), hideCaptions: s.hideCaptions ?? true };
   },
 
   // End title on black: mixed-style title, swoosh, logo pill, italic question.

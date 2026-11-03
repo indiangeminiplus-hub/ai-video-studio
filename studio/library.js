@@ -382,9 +382,19 @@ function panelFx() {
   }).join('');
   $('#libbody').innerHTML = (packs().length ? '' : '<div class="loading"><i class="ti ti-loader-2 spin"></i> Đang nạp engine…</div>') + (groups || (packs().length ? empty('ti-search-off', 'Không tìm thấy hiệu ứng', '') : ''));
 }
-function addPackItem(i, j) {
+// Pack demo items point at sample files (broll/01.jpg, ui/…png) most projects don't have → use the project's own images instead.
+const DEMO_MEDIA = /^(broll|ui)\/[\w.-]+\.(jpe?g|png|webp)$/i;
+async function fillDemoMedia(s) {
+  const refs = []; JSON.stringify(s, (k, v) => { if (typeof v === 'string' && DEMO_MEDIA.test(v)) refs.push(v); return v; });
+  const imgs = MEDIA.filter(m => m.kind === 'image').map(m => m.path);
+  if (!refs.length || !imgs.length) return s;
+  try { if ((await fetch('/project/' + refs[0], { method: 'HEAD' })).ok) return s; } catch { }
+  let k = 0;
+  return JSON.parse(JSON.stringify(s), (key, v) => (typeof v === 'string' && DEMO_MEDIA.test(v) ? imgs[k++ % imgs.length] : v));
+}
+async function addPackItem(i, j) {
   pushUndo();
-  const s = JSON.parse(JSON.stringify(packs()[i].items[j].make(r2(T))));
+  const s = await fillDemoMedia(JSON.parse(JSON.stringify(packs()[i].items[j].make(r2(T)))));
   s.t1 = r2(Math.min(TL.duration, s.t1)); TL.scenes.push(s); changed(); select(compOf(s) || compOf(s.lines?.[0]));
 }
 

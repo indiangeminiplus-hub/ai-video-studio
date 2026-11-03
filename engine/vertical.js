@@ -102,7 +102,9 @@ function facePlaced(t, { cx, cy, z, fx, fy, cut = false, filter = '' }) {
   const n = frameAt(t);
   const raw = url(fmtSeq(TL.aroll.frames, n));
   const src = cut && TL.aroll.cutouts ? url(fmtSeq(TL.aroll.cutouts, n)) : raw;
-  const w = VW * z, h = VH * z, l = cx - fx * z, tp = cy - fy * z;
+  // Camera frames follow the project orientation (1280×720 in a 16:9 project).
+  const [FW, FH] = typeof DIMS === 'function' ? DIMS() : [VW, VH];
+  const w = FW * z, h = FH * z, l = cx - fx * z, tp = cy - fy * z;
   // A missing cutout falls back to the raw frame (circle crop still looks right).
   return `<img src="${src}" ${src !== raw ? `onerror="this.onerror=null;this.src='${raw}'"` : ''} style="position:absolute;left:${l.toFixed(1)}px;top:${tp.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;filter:${GRADES.normal} ${filter}">`;
 }

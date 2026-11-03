@@ -90,6 +90,7 @@ Studio tự nạp mọi `studio/routes/*.mjs` (server) và `studio/features/*.js
 - Route: `export default ctx => async (req, res, p, u) => true|false`. `ctx` có `project, job, startJob, run, json, body, save, readProject, P, PY, SKILL`.
 - Feature: dùng đối tượng toàn cục `Studio`: `TL, CAP, addPanel(id, icon, tên, fn), addTopButton(html, fn), addInspectorTab(c => [key, nhãn, html]), onReady, reload, changed, pushUndo, api, pollJob, toast, modal`.
 - Tính năng có sẵn:
+  - `18_schedule`: Lịch đăng + Kết nối YouTube (`references/publish-schedule.md`).
   - `20_ai`: AI dựng giúp, Cắt lỗi nói, Lời thoại.
   - `30_audio`: Âm thanh+.
   - `40_reframe`: Bám mặt, Lồng tiếng.

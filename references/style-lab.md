@@ -54,7 +54,7 @@ Tiến độ in dạng `@@ <0..1> <bước>`; kết quả ở `<work>/result.jso
 | `templates/user/<id>.json` | template (`pack = caption_style = id`, `use_recipe: true`, `base_dur 20.2`, `style_lab:{kind, src, seen, skill…}`) |
 | `templates/previews/<id>.mp4/.jpg` | xem trước dựng bằng `build_templates.mjs <footage> <id>` (giờ đọc cả `templates/user/`, không ghi vào `index.json`) |
 | `references/user/<id>.md` | style spec |
-| `~/.ai-video-studio/packs/<id>.{js,json,md,mp4,jpg}` | bản lưu bền: `style_lab.mjs sync` khôi phục khi cài lại skill |
+| `~/.ai-video-studio/packs/<id>.{js,json,md,mp4,jpg}` | bản lưu bền: `style_lab.mjs sync` khôi phục khi cài lại skill, đồng thời tạo lại skill `video-style-*` còn thiếu từ `templates/user/` + `references/user/` (`--no-skills` để bỏ qua; `install.sh` tự chạy) |
 | `~/.claude/skills/video-style-<slug>/SKILL.md` | skill Claude Code: mô tả + cụm từ kích hoạt, cách dùng (`apply`, render), spec. Có dòng `avs-style-id` để Xoá biết đúng skill của mình |
 
 API server (`studio/routes/70_stylelab.mjs`): `GET /api/stylelab/check|list|analysis?w=|result?w=|file?w=&f=`,

@@ -91,7 +91,9 @@ const tick = () => {
 // Abort (failed worker, or SIGTERM from the studio's cancel): stop every Chrome + ffmpeg, drop temp segments.
 const procs = []; let tmp = null;
 const abort = () => { for (const p of procs) p.kill('SIGKILL'); for (const b of browsers) b.process()?.kill('SIGKILL'); if (tmp) fs.rmSync(tmp, { recursive: true, force: true }); };
-for (const sig of ['SIGTERM', 'SIGINT']) process.on(sig, () => { abort(); process.exit(130); });
+for (const sig of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(sig, () => { abort(); process.exit(130); });
+// The studio server died (app quit): progress writes hit a closed pipe — clean up instead of leaving Chrome running.
+for (const s of [process.stdout, process.stderr]) s.on('error', () => { abort(); process.exit(1); });
 
 // One worker: frames [a, b) -> ffmpeg (segment file, or the final mp4 when serial).
 async function renderRange(a, b, file, withAudio) {

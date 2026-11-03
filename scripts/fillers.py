@@ -115,7 +115,9 @@ if a.claude:
             if r.returncode or j.get("is_error"):
                 raise RuntimeError("Claude Code chưa đăng nhập (chạy lệnh claude một lần để đăng nhập)" if re.search(r"not logged in|/login|authenticat|api key", res, re.I) else res[:160])
             m = re.search(r"\{.*\}", res, re.S)
-            for f in json.loads(m.group(0)).get("false_starts", []) if m else []:
+            if not m:
+                raise RuntimeError("Claude trả lời không đúng định dạng")
+            for f in json.loads(m.group(0)).get("false_starts", []):
                 i0, i1 = int(f["i0"]), int(f["i1"])
                 if 0 <= i0 <= i1 < n and i1 - i0 < 15:
                     x0, x1 = span(i0, i1)

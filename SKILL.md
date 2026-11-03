@@ -50,7 +50,7 @@ Gồm 3 lớp:
 | Ảnh → video theo nhịp nhạc (BĐS, sản phẩm, sự kiện; không cần người nói) | `beatslide` | `references/pack-beatslide.md` (`scripts/beats.py`, `scripts/beat_project.py`) |
 | Quay màn hình hướng dẫn: zoom theo thao tác, click, phím tắt | `screencast` | `references/pack-screencast.md` (`scripts/screen_focus.py`) |
 
-**Template** (`templates/*.json`, có video xem trước): khoảng 40 mẫu theo ngành (BĐS, khoá học, review, chia sẻ, tin tức, bán hàng, AI, khác). Áp mẫu bằng `applyTemplate()` (trong Studio: tab Mẫu → **Dùng mẫu**). Xem `references/templates.md`. Mỗi mẫu có trường `needs`, cho biết người dùng cần cung cấp những gì.
+**Template** (`templates/*.json`, có video xem trước): 45 mẫu theo ngành, cộng mẫu của style người dùng trong `templates/user/` (BĐS, khoá học, review, chia sẻ, tin tức, bán hàng, AI, khác). Áp mẫu bằng `applyTemplate()` (trong Studio: tab Mẫu → **Dùng mẫu**). Xem `references/templates.md`. Mỗi mẫu có trường `needs`, cho biết người dùng cần cung cấp những gì.
 
 **Track chính nhiều clip** (`TL.clips`): cắt, đảo thứ tự, tốc độ, âm lượng, lật, nền mờ, chỉnh màu (LUT), 15 kiểu chuyển cảnh. Xem `references/clips.md`. Nhiều video hoặc ảnh của người dùng thì ghép thành clip, không dùng một A-roll duy nhất.
 

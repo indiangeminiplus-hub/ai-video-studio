@@ -59,6 +59,13 @@ case "$1" in
     f="$2"; [ -f "$f" ] || die "Không thấy tệp: $f"
     case "$(echo "${f##*.}" | tr A-Z a-z)" in mp4|mov|m4v|mkv|webm|avi|mts) ;; *) die "Chỉ nhận tệp video (mp4, mov, m4v, mkv, webm…): $(basename "$f")";; esac
     start
+    # "Thả vào app = tự lái" (references/autopilot.md): queue the video for the autopilot instead of only building a project
+    if api /api/autopilot/state | grep -q '"appDrop":true'; then
+      log "tự lái: thêm $f vào hàng đợi"
+      r=$(api /api/autopilot/enqueue -H 'Content-Type: application/json' --data-binary "$(F="$f" node -e 'process.stdout.write(JSON.stringify({input: process.env.F, source: "app"}))')")
+      echo "$r" | grep -q '"ok":true' || die "Không thêm được vào hàng đợi Tự lái: $(echo "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')"
+      URL="$URL/#tu-lai"; browse; exit 0
+    fi
     log "tạo dự án từ $f"
     r=$(api /api/new -H 'Content-Type: application/json' --data-binary "$(F="$f" node -e 'process.stdout.write(JSON.stringify({video: process.env.F}))')")
     echo "$r" | grep -q '"ok":true' || die "Studio đang bận một tác vụ khác (đang tạo dự án hoặc xuất video). Đợi xong rồi thả video lại."

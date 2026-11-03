@@ -13,7 +13,7 @@ export default ctx => {
     if (typeof c.src === 'string' || !c.src?.seq) throw new Error('Clip là ảnh tĩnh — chỉnh Tâm X/Y bằng tay.');
     const dir = ctx.P(path.dirname(c.src.seq)), fps = c.src.fps || tl.fps || 30;
     if (!fs.existsSync(dir)) throw new Error(`không thấy khung hình ${c.src.seq}`);
-    const cache = ctx.P(`.studio/facetrack/${path.dirname(c.src.seq).replace(/[^\w-]+/g, '_')}.json`);
+    const cache = ctx.P(`.studio/facetrack/${path.dirname(c.src.seq).replace(/[^\p{L}\p{N}_-]+/gu, '_')}.json`);
     if (!fs.existsSync(cache) || fs.statSync(cache).mtimeMs < fs.statSync(dir).mtimeMs) {
       job.step = 'Dò mặt trong video (YuNet, offline)';
       const total = (c.src.count || fs.readdirSync(dir).length) / fps;

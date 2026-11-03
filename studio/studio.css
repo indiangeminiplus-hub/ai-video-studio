@@ -60,7 +60,8 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--acc)
 /* ---------- top bar ---------- */
 #top { position: absolute; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 14px; background: var(--bg1); border-bottom: 1px solid var(--line); z-index: 5; }
 .logo { display: flex; align-items: center; gap: 9px; }
-.logo b { font-size: 13.5px; font-weight: 700; letter-spacing: -.01em; }
+.logo b { font-size: 13.5px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+@media (max-width: 1400px) { .logo b { display: none; } }
 .logo .mark { width: 24px; height: 24px; border-radius: 7px; background: conic-gradient(from 210deg, #8B7BFF, #2DD4BF, #8B7BFF); position: relative; box-shadow: 0 2px 10px rgba(139,123,255,.45); }
 .logo .mark i { position: absolute; background: #0B0C0F; border-radius: 2px; }
 .logo .mark i:nth-child(1) { left: 6px; top: 6px; width: 3px; height: 12px; }
@@ -69,7 +70,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--acc)
 .ver { font-size: 10px; font-weight: 700; color: var(--acc); background: var(--acc-soft); border-radius: 4px; padding: 1px 5px; }
 .sep { width: 1px; height: 22px; background: var(--line2); margin: 0 6px; }
 .proj { display: flex; align-items: center; gap: 7px; color: var(--tx2); max-width: 340px; min-width: 0; }
-.proj #ptag { font-weight: 600; color: var(--tx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj #ptag { font-weight: 600; color: var(--tx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 3em; }
 .status { font-size: 11px; color: var(--tx3); display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
 .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
 .status.dirty { color: var(--warn); }
@@ -314,7 +315,7 @@ body.expanded #lib, body.expanded #right { display: none; }
 .ihead a.time { color: var(--tx3); cursor: pointer; font-size: 11px; font-variant-numeric: tabular-nums; }
 .ihead a.time:hover { color: var(--acc); }
 .ihead a.time .ti { font-size: 12px; vertical-align: -2px; }
-.itabs { display: flex; gap: 0; padding: 0 8px; border-bottom: 1px solid var(--line); position: sticky; top: 54px; background: var(--bg1); z-index: 2; overflow-x: auto; }
+.itabs { display: flex; gap: 0; padding: 0 8px; border-bottom: 1px solid var(--line); position: sticky; top: 54px; background: var(--bg1); z-index: 2; overflow-x: auto; flex-wrap: wrap; }
 .itabs button { flex: 1 1 auto; justify-content: center; background: transparent; border: 0; border-radius: 0; padding: 9px 5px 10px; color: var(--tx3); font-weight: 600; position: relative; font-size: 12px; }
 .itabs button:hover { color: var(--tx); background: transparent; }
 .itabs button.on { color: var(--tx); }

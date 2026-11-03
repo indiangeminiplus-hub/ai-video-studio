@@ -61,7 +61,7 @@
       <div class="pub-top"><div><label class="lbl" style="margin-top:0">Video đã xuất</label><select id="pub-vid">${S.videos.length ? S.videos.map(v => `<option ${v.path === S.video ? 'selected' : ''}>${esc(v.path)}</option>`).join('') : '<option value="">— chưa có video, bấm Xuất trước —</option>'}</select></div>
         <button class="primary" id="pub-gen" ${S.busy || !S.video ? 'disabled' : ''}>${S.busy ? '<i class="ti ti-loader-2 spin"></i> Đang viết…' : `<i class="ti ti-sparkles"></i> ${S.data ? 'Viết lại' : 'Viết nội dung'} bằng AI`}</button></div>
       <label class="lbl">Ghi chú cho AI (tuỳ chọn)</label><input id="pub-notes" placeholder="VD: nhấn mạnh ưu đãi tháng này, giọng vui vẻ, kêu gọi inbox" value="${esc(S.notes)}">
-      <div class="pub-honest"><i class="ti ti-info-circle"></i> Studio <b>không tự đăng</b> lên mạng xã hội — việc đó cần ứng dụng OAuth được từng nền tảng duyệt. Bấm <b>Chép</b> từng phần, <b>Mở trang đăng</b> rồi kéo file MP4 vào. Thông số kiểm tra là tham khảo (nền tảng đổi thường xuyên).</div>
+      <div class="pub-honest"><i class="ti ti-info-circle"></i> Studio <b>không tự đăng</b> lên TikTok/Facebook/Instagram/Zalo — việc đó cần ứng dụng OAuth được từng nền tảng duyệt. Bấm <b>Chép</b> từng phần, <b>Mở trang đăng</b> rồi kéo file MP4 vào, hoặc <b>Lên lịch</b> để Studio nhắc đúng giờ (YouTube: tự tải lên nếu đã <b>Kết nối YouTube</b> ở mục Lịch đăng). Thông số kiểm tra là tham khảo (nền tảng đổi thường xuyên).</div>
       ${S.busy ? `<div class="muted" id="pub-busy"><i class="ti ti-loader-2 spin"></i> ${esc(S.busy)}</div><div class="bar"><i style="width:45%"></i></div>` : ''}
       <div class="pub-tabs">${Object.entries(P).map(([k, p]) => `<button data-ptab="${k}" class="${k === S.tab ? 'on' : ''}"><input type="checkbox" data-psel="${k}" ${S.sel[k] ? 'checked' : ''} title="Viết cho nền tảng này"><i class="ti ${ICON[k]}"></i> ${esc(p.name)}</button>`).join('')}</div>
       <div class="pub-body"><div>
@@ -80,6 +80,7 @@
         ${d?.thumb_time != null ? `<div class="help">AI gợi ý khung ${d.thumb_time}s</div>` : ''}
         ${S.cover ? `<img src="${esc(S.cover.url)}"><div class="acts"><button data-preveal="${esc(S.cover.out)}"><i class="ti ti-folder"></i> Hiện ảnh bìa</button></div>` : ''}
         <div class="acts"><button class="primary" id="pub-open"><i class="ti ti-external-link"></i> Mở trang đăng ${esc(P[S.tab]?.name || '')}</button>
+          ${window.openScheduleFor ? `<button id="pub-sched" ${S.video ? '' : 'disabled'} title="Lên lịch đăng (dùng caption AI ở trên)"><i class="ti ti-calendar-plus"></i> Lên lịch ${esc(P[S.tab]?.name || '')}…</button>` : ''}
           <button id="pub-reveal" ${S.video ? '' : 'disabled'}><i class="ti ti-folder"></i> Hiện MP4 trong Finder</button></div>
         <div class="help">${esc(P[S.tab]?.note || '')}</div>
       </div></div>
@@ -107,6 +108,8 @@
     document.querySelectorAll('.pub [data-preveal]').forEach(b => (b.onclick = () => Studio.api('/api/reveal', { path: b.dataset.preveal })));
     $('#pub-open').onclick = async () => { const r = await Studio.api('/api/publish/open', { platform: S.tab }); Studio.toast(r.error || 'Đã mở ' + r.url + ' trong trình duyệt'); };
     $('#pub-reveal').onclick = () => Studio.api('/api/reveal', { path: S.video });
+    // 18_schedule.js: schedule this video for the current tab (other platforms selectable) with the AI captions above
+    if ($('#pub-sched')) $('#pub-sched').onclick = () => { if (S.data?.platforms?.[S.tab]) Object.assign(S.data.platforms[S.tab], collect()); window.openScheduleFor({ platform: S.tab, video: S.video, all: S.data?.platforms || {}, thumb: S.cover?.out }); };
   }
   // Wide box only for this dialog; add a "Đăng" button to the export-finished dialog.
   new MutationObserver(() => {

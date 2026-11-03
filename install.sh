@@ -43,7 +43,8 @@ fi
 say "Dựng dự án clip mẫu: $SAMPLE"
 mkdir -p "$SAMPLE/work/frames"
 cp -n "$REPO/sample/clip-mau/timeline.json" "$SAMPLE/" 2>/dev/null || true
-cp "$REPO/sample/clip-mau/work/"{captions.json,words.json,aroll.mp4} "$SAMPLE/work/"
+cp -n "$REPO/sample/clip-mau/work/captions.json" "$SAMPLE/work/" 2>/dev/null || true # giữ phụ đề bạn đã sửa
+cp "$REPO/sample/clip-mau/work/"{words.json,aroll.mp4} "$SAMPLE/work/"
 if [ "$(ls "$SAMPLE/work/frames" | wc -l | tr -d ' ')" -lt 100 ]; then
   ffmpeg -v error -y -i "$SAMPLE/work/aroll.mp4" -vf "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280" -q:v 3 "$SAMPLE/work/frames/%05d.jpg"
 fi

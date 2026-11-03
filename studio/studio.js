@@ -336,6 +336,8 @@ function inspTabs(c) {
   if (o.type === 'emoji_pop') basic += sect('Emoji', `<input data-f="emoji" value="${esc(o.src || '')}"><div class="help">Dán một emoji bất kỳ. Thư viện Sticker bên trái có sẵn emoji 3D.</div>`, 'ti-mood-smile');
   if (o.type === 'logo_row') basic += sect('Logo (cách nhau dấu phẩy)', `<input data-f="icons" value="${esc((o.icons || []).map(i => (typeof i === 'object' ? i.icon : i)).join(', '))}"><div class="help">si:openai, si:claude, si:googlegemini, emoji 🤖…</div>`, 'ti-brand-apple');
   if (o.type === 'title_card') basic += sect('Thẻ kết', `<span class="lbl">Câu hỏi</span><input data-f="question" value="${esc(o.question ?? '')}"><span class="lbl">Chữ trong nhãn</span><input data-f="pilltext" value="${esc(o.pill?.text || 'Claude')}">`);
+  if (o.type === 'photo') { const cur = o.media || o.src, list = (typeof MEDIA !== 'undefined' ? MEDIA : []).filter(m => m.kind !== 'audio');
+    basic += sect('Ảnh / clip', `<select data-f="pmedia">${opt([['', typeof cur === 'object' && cur ? 'Video đã chọn' : '— Chọn từ Media —'], ...list.map(m => [m.path, m.name])], typeof cur === 'string' ? cur : '')}</select><div class="help">Nhập ảnh/video mới ở mục Media bên trái.</div>`, 'ti-photo'); }
   if (o.type === 'frame_grid') basic += sect('Khung video', `<span class="lbl">Làm mờ video (px)</span>${num('blur', typeof o.blur === 'number' ? o.blur : Array.isArray(o.blur) ? o.blur[o.blur.length - 1].v : 0)}<span class="lbl">Vào cảnh</span><select data-f="enter">${opt([['cut', 'Cắt'], ['blur', 'Mờ dần'], ['zoom', 'Phóng to']], o.enter || 'cut')}</select>`);
   basic += timeBlock(c);
   return [['basic', 'Cơ bản', basic], ['pos', 'Vị trí', posBlock(c) || sect('', '<div class="help">Thành phần này không kéo thả được trên preview. Sửa vị trí trong tab Nâng cao (JSON).</div>')],
@@ -423,6 +425,7 @@ function applyField(f, v, el) {
   else if (f === 'icons') o.icons = v.split(',').map(s => s.trim()).filter(Boolean);
   else if (f === 'enter') o.enter = v;
   else if (f === 'blur') o.blur = +v;
+  else if (f === 'pmedia') { const m = MEDIA.find(x => x.path === v); if (m) { o.media = m.kind === 'video' ? { ...m.seq, t0: o.t0 } : m.path; delete o.src; } }
   else if (f === 'captext') setCapText(o, v);
   changed(f === 'captext' || f === 'nkind');
 }
@@ -576,14 +579,15 @@ function duplicateSel() {
   if (c.kind === 'clip') { const cp = duplicateClip(c.idx); changed(); return select(compOf(cp)); }
   const cp = JSON.parse(JSON.stringify(c.obj, (k, v) => (k === 'cid' || k === '_orig' ? undefined : v)));
   const d = Math.min(1, c.t1 - c.t0);
+  let nw = cp;
   if (c.kind === 'scene') { shiftScene(cp, d); cp.t0 += d; cp.t1 += d; TL.scenes.push(cp); }
-  else if (c.kind === 'line') { const s = JSON.parse(JSON.stringify(c.scene, (k, v) => (k === 'cid' || k === '_orig' ? undefined : v))); if (c.scene.type === 'text') { s.lines = [{ ...cp, y: (cp.y ?? 640) + 70 }]; TL.scenes.push(s); } else { cp.y = (cp.y ?? 640) + 70; c.scene.lines.push(cp); } }
+  else if (c.kind === 'line') { const s = JSON.parse(JSON.stringify(c.scene, (k, v) => (k === 'cid' || k === '_orig' ? undefined : v))); if (c.scene.type === 'text') { s.lines = [nw = { ...cp, y: (cp.y ?? 640) + 70 }]; TL.scenes.push(s); } else { cp.y = (cp.y ?? 640) + 70; c.scene.lines.push(cp); } }
   else if (c.kind === 'node') { cp.id = (cp.id || 'n') + '_2'; if (cp.keys) cp.keys.forEach(k => (k.y += 60)); else cp.y = (cp.y ?? 600) + 60; c.scene.nodes.push(cp); }
   else if (c.kind === 'sfx') { cp.t += .5; TL.audio.sfx.push(cp); }
   else if (c.kind === 'cap') { cp.y = (cp.y ?? 790) + 60; CAP.push(cp); }
   else if (c.dup) c.dup(cp);
-  else return;
-  changed(); const n = comps.find(x => JSON.stringify(x.obj, strip) === JSON.stringify(cp, strip)); select(n || null);
+  else { undoStack.pop(); return; }
+  changed(); const n = compOf(nw) || comps.find(x => JSON.stringify(x.obj, strip) === JSON.stringify(cp, strip)); select(n || null);
 }
 function splitAtPlayhead() {
   if (!TL.clips?.length) return toast('Chưa có clip');
@@ -1008,7 +1012,7 @@ $('#export').addEventListener('click', () => {
     if (dirty) await saveNow();
     const from = $('#xfrom').value, to = $('#xto').value;
     const r = await api('/api/export', { quality: document.querySelector('[name=xq]:checked').value, from: from === '' ? undefined : +from, to: to === '' ? undefined : +to, aspects: [...document.querySelectorAll('[name=xasp]:checked')].map(i => i.value) });
-    if (!r.ok) return toast('Đang có tác vụ khác chạy');
+    if (!r.ok) return toast(r.error || 'Đang có tác vụ khác chạy');
     modal(`<h3>Đang xuất video…</h3><div id="jobstep" class="muted">Bắt đầu</div><div class="bar"><i></i></div><pre id="joblog"></pre><div class="actions"><button id="xcancel">Dừng</button></div>`);
     $('#xcancel').onclick = () => api('/api/job/cancel', {});
     pollJob(j => {
@@ -1029,7 +1033,7 @@ $('#newproj').addEventListener('click', () => {
   $('#ngo').onclick = async () => {
     const r = await api('/api/new', { video: $('#npath').value.trim(), dir: $('#ndir').value.trim() || undefined, model: $('#nmodel').value,
       pack: document.querySelector('[name=npack]:checked')?.value || 'slate', title: $('#ntitle').value.trim(), orient: $('#norient').value });
-    if (!r.ok) return toast('Đang có tác vụ khác chạy');
+    if (!r.ok) return toast(r.error || 'Đang có tác vụ khác chạy');
     modal(`<h3>Đang tạo dự án…</h3><div id="jobstep" class="muted"></div><div class="bar"><i></i></div><pre id="joblog"></pre>`);
     pollJob(j => { if (j.state === 'done') location.reload(); else modal(`<h3>Lỗi</h3><p>${esc(j.step)}</p><pre>${esc(j.log.slice(-1500))}</pre><div class="actions"><button onclick="closeModal()">Đóng</button></div>`); });
   };

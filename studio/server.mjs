@@ -57,7 +57,7 @@ function under(root, rel) {
   return p === root || p.startsWith(root + path.sep) ? p : null;
 }
 const json = (res, obj, code = 200) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); };
-const body = req => new Promise((ok, bad) => { let b = ''; req.on('data', c => (b += c)); req.on('end', () => { try { ok(b ? JSON.parse(b) : {}); } catch (e) { bad(e); } }); });
+const body = req => new Promise((ok, bad) => { let b = ''; req.on('data', c => (b += c)); req.on('end', () => { try { ok(b ? JSON.parse(b) : {}); } catch (e) { bad(new Error('Dữ liệu gửi lên không phải JSON hợp lệ')); } }); });
 const P = rel => path.resolve(project.dir, rel);
 
 function frameCount(tl) {
@@ -94,6 +94,7 @@ function writeNotes(tl, captions) {
   return out.length;
 }
 function save({ timeline, captions }) {
+  if (!timeline || typeof timeline !== 'object' || Array.isArray(timeline)) throw new Error('Thiếu timeline — không lưu');
   const tl = timeline;
   const capFile = typeof tl.captions === 'string' ? tl.captions : (captions?.length ? 'work/captions.json' : null);
   if (capFile) { fs.mkdirSync(path.dirname(P(capFile)), { recursive: true }); fs.writeFileSync(P(capFile), JSON.stringify(captions || [], null, 1)); tl.captions = capFile; }
@@ -234,6 +235,8 @@ function run(cmd, argv, onLine) {
 }
 async function exportVideo({ quality = '1080', from, to, aspects }) {
   const tl = JSON.parse(fs.readFileSync(project.tlFile, 'utf8'));
+  // Missing source files (project moved / work/ deleted): say which one instead of a python/node stack trace.
+  for (const f of [tl.aroll?.frames && path.dirname(tl.aroll.frames), tl.audio?.voice]) if (f && !fs.existsSync(P(f))) throw new Error(`Thiếu file nguồn: ${f} — dự án bị di chuyển hoặc đã xoá thư mục work/`);
   const [W, H] = quality === '720' ? [720, 1280] : quality === '4k' ? [2160, 3840] : [1080, 1920];
   const vert = (tl.height || 720) > (tl.width || 1280);
   const tmp = P('.studio/export.json');
@@ -267,41 +270,10 @@ async function exportVideo({ quality = '1080', from, to, aspects }) {
     job.outs = [{ aspect: r.native, out, note: 'Bản gốc (render thật)' }, ...r.outs.map(o => ({ ...o, out: path.relative(project.dir, o.out) }))];
   }
 }
-async function newProject({ video, dir, model = 'small', pack = 'slate', title = '', orient = 'vertical' }) {
-  const src = path.resolve(video);
-  if (!fs.existsSync(src)) throw new Error(`không thấy video ${src}`);
-  const d = path.resolve(dir || path.join(path.dirname(src), path.basename(src, path.extname(src)) + '_studio'));
-  fs.mkdirSync(path.join(d, 'work/frames'), { recursive: true });
-  const S = f => path.join(SKILL, 'scripts', f);
-  job.step = 'Nhận dạng giọng nói (whisper)'; job.progress = .05;
-  await run(PY, ['-I', S('transcribe.py'), src, path.join(d, 'work/words_raw.json'), '--model', model]);
-  job.step = 'Cắt khoảng lặng'; job.progress = .45;
-  await run(PY, ['-I', S('cut.py'), src, path.join(d, 'work/words_raw.json'), path.join(d, 'work')]);
-  job.step = 'Trích khung hình 9:16'; job.progress = .6;
-  const [FW, FH] = orient === 'horizontal' ? [1280, 720] : [720, 1280];
-  await run('ffmpeg', ['-v', 'error', '-y', '-i', path.join(d, 'work/aroll.mp4'), '-vf', `scale=${FW}:${FH}:force_original_aspect_ratio=increase,crop=${FW}:${FH}`, '-q:v', '3', path.join(d, 'work/frames/%05d.jpg')]);
-  // timeline.face (bubble / PIP / hook anchor): find_face.py on a few frames; keep the default if no person is found.
-  job.step = 'Tìm vị trí mặt'; job.progress = .75;
-  let face = orient === 'horizontal' ? { x: 640, y: 300 } : { x: 360, y: 520 };
-  await run(PY, ['-I', S('find_face.py'), path.join(d, 'work/frames'), '--design', `${FW}x${FH}`], l => { try { const f = JSON.parse(l); if (f.x != null) face = f; } catch {} }).catch(() => {});
-  job.step = 'Tạo phụ đề'; job.progress = .85;
-  await run(PY, ['-I', S('captions.py'), path.join(d, 'work/words.json'), path.join(d, 'work/captions.json'), '--max', '4']);
-  const caps = JSON.parse(fs.readFileSync(path.join(d, 'work/captions.json'), 'utf8'));
-  for (const c of caps) for (const w of c.words) w.w = w.w.replace(/[.,!?]+$/, '').toLowerCase();
-  fs.writeFileSync(path.join(d, 'work/captions.json'), JSON.stringify(caps, null, 1));
-  const dur = +(fs.readdirSync(path.join(d, 'work/frames')).length / 30).toFixed(2);
-  const tl = {
-    width: orient === 'horizontal' ? 1920 : 1080, height: orient === 'horizontal' ? 1080 : 1920, fps: 30, duration: +(dur + 2.5).toFixed(2),
-    pack, _starter: { pack, title, dur: +(dur + 2.5).toFixed(2) },
-    aroll: { frames: 'work/frames/%05d.jpg' }, face,
-    caption_style: 'slate', captions: 'work/captions.json',
-    scenes: [
-      { type: 'frame_grid', t0: 0, t1: dur, badge: { icon: 'si:claude' } },
-      { type: 'title_card', t0: dur, t1: +(dur + 2.5).toFixed(2), question: 'Bạn thấy sao?' },
-    ],
-    audio: { voice: 'work/aroll.mp4', mix: 'work/mix.wav', music: [{ t0: 0, t1: +(dur + 2.5).toFixed(2), mood: 'tech', gain: -20 }], sfx: [] },
-  };
-  fs.writeFileSync(path.join(d, 'timeline.json'), JSON.stringify(tl, null, 1));
+// "Video mới" pipeline lives in scripts/new_project.mjs (shared with scripts/autopilot.mjs).
+async function newProject(o) {
+  const { newProject: build } = await import(pathToFileURL(path.join(SKILL, 'scripts/new_project.mjs')).href);
+  const d = await build(o, { run, onStep: (s, p) => { job.step = s; job.progress = p; } });
   openProject(d);
   job.out = d;
 }
@@ -312,6 +284,12 @@ function startJob(kind, fn, payload) {
     .catch(e => { job.state = 'error'; job.step = job.cancelled && /lỗi \(mã/.test(e.message) ? 'Đã huỷ theo yêu cầu' : e.message; console.error(e); });
   return true;
 }
+// Server stopped (app quit, Ctrl+C) while a job runs: stop it (render.mjs then closes its Chromes) and drop this run's temp timelines.
+for (const sig of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(sig, () => {
+  if (job?.state === 'running') job.proc?.kill('SIGTERM');
+  if (project) for (const f of [`.export_${process.pid}.json`, `.still_${process.pid}.json`, `.cover_${process.pid}.json`]) fs.rmSync(path.join(project.dir, f), { force: true });
+  setTimeout(() => process.exit(0), 300);
+});
 
 // ---------- plugins: studio/routes/*.mjs ----------
 // Each module: export default (ctx) => async (req, res, p, u) => true if handled. ctx gives access to the project, jobs and helpers.
