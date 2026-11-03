@@ -395,9 +395,28 @@ window.init = async (timeline) => {
   return true;
 };
 
+// Decode every image of the next frame BEFORE it replaces the visible one, so live playback never shows a
+// half-loaded (black) frame. Decoded images are kept in a small LRU so the swap paints them immediately.
+const PRE = new Map();
+function preload(html) {
+  const urls = new Set();
+  for (const m of html.matchAll(/<img[^>]*?\ssrc="([^"]+)"/g)) urls.add(m[1].replace(/&amp;/g, '&'));
+  for (const m of html.matchAll(/url\((?:&quot;|["'])?([^"')&]+)(?:&quot;|["'])?\)/g)) if (!m[1].startsWith('data:') && !m[1].startsWith('#')) urls.add(m[1]);
+  return Promise.all([...urls].map(u => {
+    let p = PRE.get(u);
+    if (p) { PRE.delete(u); PRE.set(u, p); return p.done; }
+    const im = new Image(); im.src = u;
+    p = { im, done: im.decode().catch(() => {}) };
+    PRE.set(u, p);
+    if (PRE.size > 240) PRE.delete(PRE.keys().next().value);
+    return p.done;
+  }));
+}
 window.renderFrame = async (t) => {
   const stage = document.getElementById('stage');
-  stage.innerHTML = compose(t);
+  const html = compose(t);
+  await Promise.race([preload(html), new Promise(r => setTimeout(r, 1000))]);
+  stage.innerHTML = html;
   placeSub2(stage);
   fixReframe(stage, t);
   if (KF_LINES.length) applyLineKf(stage, t);

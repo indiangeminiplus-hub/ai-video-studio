@@ -236,9 +236,13 @@ async function exportVideo({ quality = '1080', from, to, aspects }) {
   const vert = (tl.height || 720) > (tl.width || 1280);
   const tmp = P('.studio/export.json');
   fs.writeFileSync(tmp, JSON.stringify({ ...tl, width: vert ? W : H, height: vert ? H : W }));
-  if (tl.audio && (tl.audio.voice || tl.audio.music?.length || tl.audio.sfx?.length || tl.audio.tracks?.length)) {
+  // mix_audio.py writes tl.audio.mix (default work/mix.wav); hand that file to render.mjs explicitly so the MP4 always has sound.
+  let mix = null;
+  if (tl.audio && (tl.audio.voice || tl.audio.music?.length || tl.audio.sfx?.length || tl.audio.tracks?.length || tl.clips?.some(c => c.audio))) {
     job.step = 'Trộn âm thanh (giọng + nhạc + SFX, -14 LUFS)';
     await run(PY, ['-I', path.join(SKILL, 'scripts/mix_audio.py'), project.tlFile]);
+    mix = P(tl.audio.mix || 'work/mix.wav');
+    if (!fs.existsSync(mix)) throw new Error('Trộn âm thanh không tạo ra file ' + path.relative(project.dir, mix));
   }
   fs.mkdirSync(P('out'), { recursive: true });
   const out = `out/${path.basename(project.dir)}_${stamp()}.mp4`;
@@ -248,7 +252,7 @@ async function exportVideo({ quality = '1080', from, to, aspects }) {
   const tmpTl = path.join(project.dir, `.export_${process.pid}.json`);
   fs.renameSync(tmp, tmpTl);
   try {
-    await run('node', [path.join(SKILL, 'scripts/render.mjs'), tmpTl, P(out), ...(from != null ? ['--from', String(from)] : []), ...(to != null ? ['--to', String(to)] : [])], l => {
+    await run('node', [path.join(SKILL, 'scripts/render.mjs'), tmpTl, P(out), ...(mix ? ['--audio', mix] : []), ...(from != null ? ['--from', String(from)] : []), ...(to != null ? ['--to', String(to)] : [])], l => {
       const m = /([\d.]+)s \/ ([\d.]+)s/.exec(l);
       if (m) job.progress = Math.min(.99, (+m[1] - (from ?? 0)) / total);
     });

@@ -73,7 +73,9 @@ if (still) {
 
 const t0 = +opt('--from', 0), t1 = +opt('--to', tl.duration);
 const n = Math.round((t1 - t0) * fps);
-const audio = opt('--audio', tl.audio?.mix ? path.resolve(tlDir, tl.audio.mix) : null);
+// Audio: --audio, else tl.audio.mix, else the default mix_audio.py output (work/mix.wav) when it exists.
+const defMix = path.resolve(tlDir, tl.audio?.mix || 'work/mix.wav');
+const audio = opt('--audio', tl.audio && fs.existsSync(defMix) ? defMix : null);
 // Default min(6, cores-2), max 3 above 1080p (each worker is a whole Chrome); never less than ~1 s of frames per worker.
 const workers = Math.max(1, Math.min(+opt('--workers', Math.min(W * H > 2.5e6 ? 3 : 6, os.cpus().length - 2)) || 1, Math.ceil(n / fps)));
 const venc = ['-c:v', 'libx264', '-preset', PRESET, '-crf', '17', '-pix_fmt', 'yuv420p', '-r', String(fps)];

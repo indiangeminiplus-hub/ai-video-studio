@@ -24,7 +24,8 @@
     "gain": -20
    }
   ],
-  "sfx": []
+  "sfx": [],
+  "mix": "work/mix.wav"
  },
  "clips": [
   {
