@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-03T07:55:20.363Z",
+ "generated": "2026-11-04T03:35:02.425Z",
  "size": [
   180,
   320
@@ -1523,6 +1523,1427 @@
    "j": 5,
    "type": "tf_stamp",
    "label": "Con dấu KẾT QUẢ / WOW"
+  },
+  {
+   "key": "hf_sp__0",
+   "pack": "hf_sp",
+   "j": 0,
+   "type": "hf",
+   "label": "3 điện thoại giới thiệu app"
+  },
+  {
+   "key": "hf_sp__1",
+   "pack": "hf_sp",
+   "j": 1,
+   "type": "hf",
+   "label": "Sản phẩm xoay 360°"
+  },
+  {
+   "key": "hf_sp__2",
+   "pack": "hf_sp",
+   "j": 2,
+   "type": "hf",
+   "label": "Tách lớp sản phẩm 3D"
+  },
+  {
+   "key": "hf_sp__3",
+   "pack": "hf_sp",
+   "j": 3,
+   "type": "hf",
+   "label": "Khối kính + tiêu đề lớn"
+  },
+  {
+   "key": "hf_sp__4",
+   "pack": "hf_sp",
+   "j": 4,
+   "type": "hf",
+   "label": "Thẻ tính năng bay quanh"
+  },
+  {
+   "key": "hf_sp__5",
+   "pack": "hf_sp",
+   "j": 5,
+   "type": "hf",
+   "label": "Băng chuyền khối hộp"
+  },
+  {
+   "key": "hf_sp__6",
+   "pack": "hf_sp",
+   "j": 6,
+   "type": "hf",
+   "label": "Lưới ảnh 2–6 ô"
+  },
+  {
+   "key": "hf_sp__7",
+   "pack": "hf_sp",
+   "j": 7,
+   "type": "hf",
+   "label": "Khung điện thoại / máy tính bảng"
+  },
+  {
+   "key": "hf_sp__8",
+   "pack": "hf_sp",
+   "j": 8,
+   "type": "hf",
+   "label": "Khung trình duyệt / app"
+  },
+  {
+   "key": "hf_sp__9",
+   "pack": "hf_sp",
+   "j": 9,
+   "type": "hf",
+   "label": "Điện thoại + tablet + laptop"
+  },
+  {
+   "key": "hf_sp__10",
+   "pack": "hf_sp",
+   "j": 10,
+   "type": "hf",
+   "label": "Lao vào màn hình điện thoại"
+  },
+  {
+   "key": "hf_sp__11",
+   "pack": "hf_sp",
+   "j": 11,
+   "type": "hf",
+   "label": "Dải màn hình app"
+  },
+  {
+   "key": "hf_sp__12",
+   "pack": "hf_sp",
+   "j": 12,
+   "type": "hf",
+   "label": "Đổi trạng thái màn hình app"
+  },
+  {
+   "key": "hf_sp__13",
+   "pack": "hf_sp",
+   "j": 13,
+   "type": "hf",
+   "label": "Zoom vào giao diện"
+  },
+  {
+   "key": "hf_sp__14",
+   "pack": "hf_sp",
+   "j": 14,
+   "type": "hf",
+   "label": "Giao diện lật 3D"
+  },
+  {
+   "key": "hf_sp__15",
+   "pack": "hf_sp",
+   "j": 15,
+   "type": "hf",
+   "label": "Màn đăng ký tài khoản"
+  },
+  {
+   "key": "hf_sp__16",
+   "pack": "hf_sp",
+   "j": 16,
+   "type": "hf",
+   "label": "Các bước hướng dẫn"
+  },
+  {
+   "key": "hf_sp__17",
+   "pack": "hf_sp",
+   "j": 17,
+   "type": "hf",
+   "label": "Bật tắt cài đặt"
+  },
+  {
+   "key": "hf_sp__18",
+   "pack": "hf_sp",
+   "j": 18,
+   "type": "hf",
+   "label": "Quay màn hình tự zoom"
+  },
+  {
+   "key": "hf_sp__19",
+   "pack": "hf_sp",
+   "j": 19,
+   "type": "hf",
+   "label": "Con trỏ kéo thả thẻ"
+  },
+  {
+   "key": "hf_sp__20",
+   "pack": "hf_sp",
+   "j": 20,
+   "type": "hf",
+   "label": "Con trỏ bấm nút"
+  },
+  {
+   "key": "hf_sp__21",
+   "pack": "hf_sp",
+   "j": 21,
+   "type": "hf",
+   "label": "Chạm nút trên điện thoại"
+  },
+  {
+   "key": "hf_sp__22",
+   "pack": "hf_sp",
+   "j": 22,
+   "type": "hf",
+   "label": "Thẻ có đèn rọi"
+  },
+  {
+   "key": "hf_sp__23",
+   "pack": "hf_sp",
+   "j": 23,
+   "type": "hf",
+   "label": "Thẻ nghiêng 3D"
+  },
+  {
+   "key": "hf_sp__24",
+   "pack": "hf_sp",
+   "j": 24,
+   "type": "hf",
+   "label": "Hai thẻ đối xứng"
+  },
+  {
+   "key": "hf_sp__25",
+   "pack": "hf_sp",
+   "j": 25,
+   "type": "hf",
+   "label": "Lưới thẻ tính năng"
+  },
+  {
+   "key": "hf_sp__26",
+   "pack": "hf_sp",
+   "j": 26,
+   "type": "hf",
+   "label": "Lia qua các tính năng"
+  },
+  {
+   "key": "hf_sp__27",
+   "pack": "hf_sp",
+   "j": 27,
+   "type": "hf",
+   "label": "Tính năng bao quanh sản phẩm"
+  },
+  {
+   "key": "hf_sp__28",
+   "pack": "hf_sp",
+   "j": 28,
+   "type": "hf",
+   "label": "Sơ đồ tính năng sáng dần"
+  },
+  {
+   "key": "hf_sp__29",
+   "pack": "hf_sp",
+   "j": 29,
+   "type": "hf",
+   "label": "Quay lại từ màn hình"
+  },
+  {
+   "key": "hf_sp__30",
+   "pack": "hf_sp",
+   "j": 30,
+   "type": "hf",
+   "label": "Chồng thẻ chiều sâu"
+  },
+  {
+   "key": "hf_sp__31",
+   "pack": "hf_sp",
+   "j": 31,
+   "type": "hf",
+   "label": "Xáo chồng thẻ"
+  },
+  {
+   "key": "hf_sp__32",
+   "pack": "hf_sp",
+   "j": 32,
+   "type": "hf",
+   "label": "Lưới ô hiện lần lượt"
+  },
+  {
+   "key": "hf_sp__33",
+   "pack": "hf_sp",
+   "j": 33,
+   "type": "hf",
+   "label": "Dải chữ chạy 3D"
+  },
+  {
+   "key": "hf_sp__34",
+   "pack": "hf_sp",
+   "j": 34,
+   "type": "hf",
+   "label": "Thẻ nhỏ mở thành bảng"
+  },
+  {
+   "key": "hf_so__0",
+   "pack": "hf_so",
+   "j": 0,
+   "type": "hf",
+   "label": "Biểu đồ cột + đường"
+  },
+  {
+   "key": "hf_so__1",
+   "pack": "hf_so",
+   "j": 1,
+   "type": "hf",
+   "label": "Đua top bảng xếp hạng"
+  },
+  {
+   "key": "hf_so__2",
+   "pack": "hf_so",
+   "j": 2,
+   "type": "hf",
+   "label": "Đồ thị đường tăng trưởng"
+  },
+  {
+   "key": "hf_so__3",
+   "pack": "hf_so",
+   "j": 3,
+   "type": "hf",
+   "label": "Con số lớn + thanh tiến độ"
+  },
+  {
+   "key": "hf_so__4",
+   "pack": "hf_so",
+   "j": 4,
+   "type": "hf",
+   "label": "Biểu đồ kể chuyện"
+  },
+  {
+   "key": "hf_so__5",
+   "pack": "hf_so",
+   "j": 5,
+   "type": "hf",
+   "label": "Thẻ biểu đồ cột"
+  },
+  {
+   "key": "hf_so__6",
+   "pack": "hf_so",
+   "j": 6,
+   "type": "hf",
+   "label": "Biểu đồ đi xuống"
+  },
+  {
+   "key": "hf_so__7",
+   "pack": "hf_so",
+   "j": 7,
+   "type": "hf",
+   "label": "Vòng tiến độ"
+  },
+  {
+   "key": "hf_so__8",
+   "pack": "hf_so",
+   "j": 8,
+   "type": "hf",
+   "label": "Đếm số"
+  },
+  {
+   "key": "hf_so__9",
+   "pack": "hf_so",
+   "j": 9,
+   "type": "hf",
+   "label": "Số cuộn bánh xe"
+  },
+  {
+   "key": "hf_so__10",
+   "pack": "hf_so",
+   "j": 10,
+   "type": "hf",
+   "label": "Số bật lên"
+  },
+  {
+   "key": "hf_so__11",
+   "pack": "hf_so",
+   "j": 11,
+   "type": "hf",
+   "label": "Số quay kiểu máy xèng"
+  },
+  {
+   "key": "hf_so__12",
+   "pack": "hf_so",
+   "j": 12,
+   "type": "hf",
+   "label": "Lùi camera lộ số liệu"
+  },
+  {
+   "key": "hf_so__13",
+   "pack": "hf_so",
+   "j": 13,
+   "type": "hf",
+   "label": "Đếm tiền tăng vọt"
+  },
+  {
+   "key": "hf_so__14",
+   "pack": "hf_so",
+   "j": 14,
+   "type": "hf",
+   "label": "Bảng lật chữ sân bay"
+  },
+  {
+   "key": "hf_so__15",
+   "pack": "hf_so",
+   "j": 15,
+   "type": "hf",
+   "label": "Bản đồ thế giới"
+  },
+  {
+   "key": "hf_so__16",
+   "pack": "hf_so",
+   "j": 16,
+   "type": "hf",
+   "label": "Sơ đồ quyết định"
+  },
+  {
+   "key": "hf_so__17",
+   "pack": "hf_so",
+   "j": 17,
+   "type": "hf",
+   "label": "Sơ đồ quyết định dọc"
+  },
+  {
+   "key": "hf_so__18",
+   "pack": "hf_so",
+   "j": 18,
+   "type": "hf",
+   "label": "Quy trình vẽ tay"
+  },
+  {
+   "key": "hf_so__19",
+   "pack": "hf_so",
+   "j": 19,
+   "type": "hf",
+   "label": "Dải trạng thái"
+  },
+  {
+   "key": "hf_so__20",
+   "pack": "hf_so",
+   "j": 20,
+   "type": "hf",
+   "label": "Quay chọn từ khoá"
+  },
+  {
+   "key": "hf_tin__0",
+   "pack": "hf_tin",
+   "j": 0,
+   "type": "hf",
+   "label": "Khách hàng nói gì"
+  },
+  {
+   "key": "hf_tin__1",
+   "pack": "hf_tin",
+   "j": 1,
+   "type": "hf",
+   "label": "Thẻ đánh giá + số liệu"
+  },
+  {
+   "key": "hf_tin__2",
+   "pack": "hf_tin",
+   "j": 2,
+   "type": "hf",
+   "label": "5 sao + lượt tải"
+  },
+  {
+   "key": "hf_tin__3",
+   "pack": "hf_tin",
+   "j": 3,
+   "type": "hf",
+   "label": "Chấm sao"
+  },
+  {
+   "key": "hf_tin__4",
+   "pack": "hf_tin",
+   "j": 4,
+   "type": "hf",
+   "label": "Dải logo đối tác"
+  },
+  {
+   "key": "hf_tin__5",
+   "pack": "hf_tin",
+   "j": 5,
+   "type": "hf",
+   "label": "Tường logo khách hàng"
+  },
+  {
+   "key": "hf_tin__6",
+   "pack": "hf_tin",
+   "j": 6,
+   "type": "hf",
+   "label": "Cộng đồng người dùng"
+  },
+  {
+   "key": "hf_tin__7",
+   "pack": "hf_tin",
+   "j": 7,
+   "type": "hf",
+   "label": "Nhóm avatar"
+  },
+  {
+   "key": "hf_tin__8",
+   "pack": "hf_tin",
+   "j": 8,
+   "type": "hf",
+   "label": "Câu kêu gọi lớn"
+  },
+  {
+   "key": "hf_tin__9",
+   "pack": "hf_tin",
+   "j": 9,
+   "type": "hf",
+   "label": "Kết video + nút hành động"
+  },
+  {
+   "key": "hf_tin__10",
+   "pack": "hf_tin",
+   "j": 10,
+   "type": "hf",
+   "label": "Tải app trên 2 kho"
+  },
+  {
+   "key": "hf_tin__11",
+   "pack": "hf_tin",
+   "j": 11,
+   "type": "hf",
+   "label": "Huy hiệu bật"
+  },
+  {
+   "key": "hf_tin__12",
+   "pack": "hf_tin",
+   "j": 12,
+   "type": "hf",
+   "label": "Nhãn nảy"
+  },
+  {
+   "key": "hf_tin__13",
+   "pack": "hf_tin",
+   "j": 13,
+   "type": "hf",
+   "label": "Dấu tích thành công"
+  },
+  {
+   "key": "hf_tin__14",
+   "pack": "hf_tin",
+   "j": 14,
+   "type": "hf",
+   "label": "Pháo giấy ăn mừng"
+  },
+  {
+   "key": "hf_tin__15",
+   "pack": "hf_tin",
+   "j": 15,
+   "type": "hf",
+   "label": "Thẻ checklist viết tay"
+  },
+  {
+   "key": "hf_tin__16",
+   "pack": "hf_tin",
+   "j": 16,
+   "type": "hf",
+   "label": "Danh sách thông số"
+  },
+  {
+   "key": "hf_tin__17",
+   "pack": "hf_tin",
+   "j": 17,
+   "type": "hf",
+   "label": "So sánh trước / sau"
+  },
+  {
+   "key": "hf_tin__18",
+   "pack": "hf_tin",
+   "j": 18,
+   "type": "hf",
+   "label": "Quét trước / sau"
+  },
+  {
+   "key": "hf_tin__19",
+   "pack": "hf_tin",
+   "j": 19,
+   "type": "hf",
+   "label": "Chồng thông báo"
+  },
+  {
+   "key": "hf_tin__20",
+   "pack": "hf_tin",
+   "j": 20,
+   "type": "hf",
+   "label": "Thông báo có đơn mới"
+  },
+  {
+   "key": "hf_tin__21",
+   "pack": "hf_tin",
+   "j": 21,
+   "type": "hf",
+   "label": "Thông báo dồn dập (dọc)"
+  },
+  {
+   "key": "hf_tin__22",
+   "pack": "hf_tin",
+   "j": 22,
+   "type": "hf",
+   "label": "Thông báo tới tấp"
+  },
+  {
+   "key": "hf_tin__23",
+   "pack": "hf_tin",
+   "j": 23,
+   "type": "hf",
+   "label": "Tin nhắn khách hàng (dọc)"
+  },
+  {
+   "key": "hf_tin__24",
+   "pack": "hf_tin",
+   "j": 24,
+   "type": "hf",
+   "label": "Khung chat"
+  },
+  {
+   "key": "hf_tin__25",
+   "pack": "hf_tin",
+   "j": 25,
+   "type": "hf",
+   "label": "Một tin nhắn đến"
+  },
+  {
+   "key": "hf_tin__26",
+   "pack": "hf_tin",
+   "j": 26,
+   "type": "hf",
+   "label": "Đang soạn tin…"
+  },
+  {
+   "key": "hf_tin__27",
+   "pack": "hf_tin",
+   "j": 27,
+   "type": "hf",
+   "label": "Bình luận hiện dần"
+  },
+  {
+   "key": "hf_tin__28",
+   "pack": "hf_tin",
+   "j": 28,
+   "type": "hf",
+   "label": "Chia sẻ lên mạng (dọc)"
+  },
+  {
+   "key": "hf_tin__29",
+   "pack": "hf_tin",
+   "j": 29,
+   "type": "hf",
+   "label": "Thương hiệu lên top AI"
+  },
+  {
+   "key": "hf_tin__30",
+   "pack": "hf_tin",
+   "j": 30,
+   "type": "hf",
+   "label": "Ghi chú tâm sự (dọc)"
+  },
+  {
+   "key": "hf_logo__0",
+   "pack": "hf_logo",
+   "j": 0,
+   "type": "hf",
+   "label": "Logo đập vào"
+  },
+  {
+   "key": "hf_logo__1",
+   "pack": "hf_logo",
+   "j": 1,
+   "type": "hf",
+   "label": "Logo chạy từng chữ"
+  },
+  {
+   "key": "hf_logo__2",
+   "pack": "hf_logo",
+   "j": 2,
+   "type": "hf",
+   "label": "Chữ khối 3D lật"
+  },
+  {
+   "key": "hf_logo__3",
+   "pack": "hf_logo",
+   "j": 3,
+   "type": "hf",
+   "label": "Logo từ nhiễu màu"
+  },
+  {
+   "key": "hf_logo__4",
+   "pack": "hf_logo",
+   "j": 4,
+   "type": "hf",
+   "label": "Thẻ tiêu đề tinh tế"
+  },
+  {
+   "key": "hf_logo__5",
+   "pack": "hf_logo",
+   "j": 5,
+   "type": "hf",
+   "label": "Tiêu đề tối giản"
+  },
+  {
+   "key": "hf_logo__6",
+   "pack": "hf_logo",
+   "j": 6,
+   "type": "hf",
+   "label": "Tiêu đề đập mạnh"
+  },
+  {
+   "key": "hf_logo__7",
+   "pack": "hf_logo",
+   "j": 7,
+   "type": "hf",
+   "label": "Chữ bay về đập"
+  },
+  {
+   "key": "hf_logo__8",
+   "pack": "hf_logo",
+   "j": 8,
+   "type": "hf",
+   "label": "Mảnh kính ghép chữ"
+  },
+  {
+   "key": "hf_logo__9",
+   "pack": "hf_logo",
+   "j": 9,
+   "type": "hf",
+   "label": "Cổng không gian"
+  },
+  {
+   "key": "hf_logo__10",
+   "pack": "hf_logo",
+   "j": 10,
+   "type": "hf",
+   "label": "Lá rẽ lộ tiêu đề"
+  },
+  {
+   "key": "hf_logo__11",
+   "pack": "hf_logo",
+   "j": 11,
+   "type": "hf",
+   "label": "Chữ hiện + tia sáng"
+  },
+  {
+   "key": "hf_logo__12",
+   "pack": "hf_logo",
+   "j": 12,
+   "type": "hf",
+   "label": "Tiêu đề lăng kính"
+  },
+  {
+   "key": "hf_logo__13",
+   "pack": "hf_logo",
+   "j": 13,
+   "type": "hf",
+   "label": "Dải quét qua logo"
+  },
+  {
+   "key": "hf_logo__14",
+   "pack": "hf_logo",
+   "j": 14,
+   "type": "hf",
+   "label": "Ánh sáng lướt chữ"
+  },
+  {
+   "key": "hf_logo__15",
+   "pack": "hf_logo",
+   "j": 15,
+   "type": "hf",
+   "label": "Thẻ bóng loáng"
+  },
+  {
+   "key": "hf_logo__16",
+   "pack": "hf_logo",
+   "j": 16,
+   "type": "hf",
+   "label": "Chữ giãn khoảng cao cấp"
+  },
+  {
+   "key": "hf_logo__17",
+   "pack": "hf_logo",
+   "j": 17,
+   "type": "hf",
+   "label": "Đẩy camera vào tiêu đề"
+  },
+  {
+   "key": "hf_logo__18",
+   "pack": "hf_logo",
+   "j": 18,
+   "type": "hf",
+   "label": "Sóng độ đậm chữ"
+  },
+  {
+   "key": "hf_logo__19",
+   "pack": "hf_logo",
+   "j": 19,
+   "type": "hf",
+   "label": "Chữ co giãn"
+  },
+  {
+   "key": "hf_logo__20",
+   "pack": "hf_logo",
+   "j": 20,
+   "type": "hf",
+   "label": "Câu dồn từ phải"
+  },
+  {
+   "key": "hf_logo__21",
+   "pack": "hf_logo",
+   "j": 21,
+   "type": "hf",
+   "label": "Đổi một từ trong câu"
+  },
+  {
+   "key": "hf_logo__22",
+   "pack": "hf_logo",
+   "j": 22,
+   "type": "hf",
+   "label": "Đổi dòng"
+  },
+  {
+   "key": "hf_logo__23",
+   "pack": "hf_logo",
+   "j": 23,
+   "type": "hf",
+   "label": "Chữ biến thành chữ"
+  },
+  {
+   "key": "hf_logo__24",
+   "pack": "hf_logo",
+   "j": 24,
+   "type": "hf",
+   "label": "Chữ giải mã"
+  },
+  {
+   "key": "hf_logo__25",
+   "pack": "hf_logo",
+   "j": 25,
+   "type": "hf",
+   "label": "Chữ ma trận"
+  },
+  {
+   "key": "hf_logo__26",
+   "pack": "hf_logo",
+   "j": 26,
+   "type": "hf",
+   "label": "Máy đánh chữ"
+  },
+  {
+   "key": "hf_logo__27",
+   "pack": "hf_logo",
+   "j": 27,
+   "type": "hf",
+   "label": "Gõ câu lệnh"
+  },
+  {
+   "key": "hf_logo__28",
+   "pack": "hf_logo",
+   "j": 28,
+   "type": "hf",
+   "label": "Chữ AI trả lời"
+  },
+  {
+   "key": "hf_logo__29",
+   "pack": "hf_logo",
+   "j": 29,
+   "type": "hf",
+   "label": "Từng từ nổi lên"
+  },
+  {
+   "key": "hf_logo__30",
+   "pack": "hf_logo",
+   "j": 30,
+   "type": "hf",
+   "label": "Từng từ trượt lên"
+  },
+  {
+   "key": "hf_logo__31",
+   "pack": "hf_logo",
+   "j": 31,
+   "type": "hf",
+   "label": "Từng từ hiện êm"
+  },
+  {
+   "key": "hf_logo__32",
+   "pack": "hf_logo",
+   "j": 32,
+   "type": "hf",
+   "label": "Mờ sang rõ"
+  },
+  {
+   "key": "hf_logo__33",
+   "pack": "hf_logo",
+   "j": 33,
+   "type": "hf",
+   "label": "Lấy nét chữ"
+  },
+  {
+   "key": "hf_logo__34",
+   "pack": "hf_logo",
+   "j": 34,
+   "type": "hf",
+   "label": "Chữ bay lên mờ dần"
+  },
+  {
+   "key": "hf_logo__35",
+   "pack": "hf_logo",
+   "j": 35,
+   "type": "hf",
+   "label": "Chữ mọc từ dưới"
+  },
+  {
+   "key": "hf_logo__36",
+   "pack": "hf_logo",
+   "j": 36,
+   "type": "hf",
+   "label": "Chữ rơi bậc thang"
+  },
+  {
+   "key": "hf_logo__37",
+   "pack": "hf_logo",
+   "j": 37,
+   "type": "hf",
+   "label": "Chữ nhiễu RGB"
+  },
+  {
+   "key": "hf_logo__38",
+   "pack": "hf_logo",
+   "j": 38,
+   "type": "hf",
+   "label": "Chữ từ hạt bụi"
+  },
+  {
+   "key": "hf_logo__39",
+   "pack": "hf_logo",
+   "j": 39,
+   "type": "hf",
+   "label": "Chữ khâu chỉ"
+  },
+  {
+   "key": "hf_logo__40",
+   "pack": "hf_logo",
+   "j": 40,
+   "type": "hf",
+   "label": "Gạch chữ cũ, thay chữ mới"
+  },
+  {
+   "key": "hf_logo__41",
+   "pack": "hf_logo",
+   "j": 41,
+   "type": "hf",
+   "label": "Bút dạ quang"
+  },
+  {
+   "key": "hf_logo__42",
+   "pack": "hf_logo",
+   "j": 42,
+   "type": "hf",
+   "label": "Câu nhấn từng từ"
+  },
+  {
+   "key": "hf_logo__43",
+   "pack": "hf_logo",
+   "j": 43,
+   "type": "hf",
+   "label": "Tô nền chữ"
+  },
+  {
+   "key": "hf_logo__44",
+   "pack": "hf_logo",
+   "j": 44,
+   "type": "hf",
+   "label": "Chữ biến hình"
+  },
+  {
+   "key": "hf_logo__45",
+   "pack": "hf_logo",
+   "j": 45,
+   "type": "hf",
+   "label": "Tiêu đề viết tay"
+  },
+  {
+   "key": "hf_logo__46",
+   "pack": "hf_logo",
+   "j": 46,
+   "type": "hf",
+   "label": "Viết tay từng nét"
+  },
+  {
+   "key": "hf_logo__47",
+   "pack": "hf_logo",
+   "j": 47,
+   "type": "hf",
+   "label": "Chữ hoạ tiết"
+  },
+  {
+   "key": "hf_logo__48",
+   "pack": "hf_logo",
+   "j": 48,
+   "type": "hf",
+   "label": "Chữ so le"
+  },
+  {
+   "key": "hf_logo__49",
+   "pack": "hf_logo",
+   "j": 49,
+   "type": "hf",
+   "label": "Đổi chữ mờ"
+  },
+  {
+   "key": "hf_logo__50",
+   "pack": "hf_logo",
+   "j": 50,
+   "type": "hf",
+   "label": "Đổi từ theo trục dọc"
+  },
+  {
+   "key": "hf_lt__0",
+   "pack": "hf_lt",
+   "j": 0,
+   "type": "hf",
+   "label": "Thẻ trắng tối giản"
+  },
+  {
+   "key": "hf_lt__1",
+   "pack": "hf_lt",
+   "j": 1,
+   "type": "hf",
+   "label": "Khối tối mạnh"
+  },
+  {
+   "key": "hf_lt__2",
+   "pack": "hf_lt",
+   "j": 2,
+   "type": "hf",
+   "label": "Khối màu nảy"
+  },
+  {
+   "key": "hf_lt__3",
+   "pack": "hf_lt",
+   "j": 3,
+   "type": "hf",
+   "label": "Thẻ than gạch chân"
+  },
+  {
+   "key": "hf_lt__4",
+   "pack": "hf_lt",
+   "j": 4,
+   "type": "hf",
+   "label": "Nhãn nhỏ + tên lớn"
+  },
+  {
+   "key": "hf_lt__5",
+   "pack": "hf_lt",
+   "j": 5,
+   "type": "hf",
+   "label": "Quét màu lộ tên"
+  },
+  {
+   "key": "hf_lt__6",
+   "pack": "hf_lt",
+   "j": 6,
+   "type": "hf",
+   "label": "Viền neon chạy"
+  },
+  {
+   "key": "hf_lt__7",
+   "pack": "hf_lt",
+   "j": 7,
+   "type": "hf",
+   "label": "Vạch dọc + tên"
+  },
+  {
+   "key": "hf_lt__8",
+   "pack": "hf_lt",
+   "j": 8,
+   "type": "hf",
+   "label": "Viên thuốc trắng"
+  },
+  {
+   "key": "hf_lt__9",
+   "pack": "hf_lt",
+   "j": 9,
+   "type": "hf",
+   "label": "Hai thanh xếp chồng"
+  },
+  {
+   "key": "hf_lt__10",
+   "pack": "hf_lt",
+   "j": 10,
+   "type": "hf",
+   "label": "Tên + gạch nhấn"
+  },
+  {
+   "key": "hf_lt__11",
+   "pack": "hf_lt",
+   "j": 11,
+   "type": "hf",
+   "label": "Thanh tin tức"
+  },
+  {
+   "key": "hf_lt__12",
+   "pack": "hf_lt",
+   "j": 12,
+   "type": "hf",
+   "label": "Dải tin chạy"
+  },
+  {
+   "key": "hf_note__0",
+   "pack": "hf_note",
+   "j": 0,
+   "type": "hf",
+   "label": "Mũi tên vẽ tay"
+  },
+  {
+   "key": "hf_note__1",
+   "pack": "hf_note",
+   "j": 1,
+   "type": "hf",
+   "label": "Khoanh tròn vẽ tay"
+  },
+  {
+   "key": "hf_note__2",
+   "pack": "hf_note",
+   "j": 2,
+   "type": "hf",
+   "label": "Khung chữ vẽ tay"
+  },
+  {
+   "key": "hf_note__3",
+   "pack": "hf_note",
+   "j": 3,
+   "type": "hf",
+   "label": "Gạch chân nguệch ngoạc"
+  },
+  {
+   "key": "hf_note__4",
+   "pack": "hf_note",
+   "j": 4,
+   "type": "hf",
+   "label": "Bong bóng thoại vẽ tay"
+  },
+  {
+   "key": "hf_note__5",
+   "pack": "hf_note",
+   "j": 5,
+   "type": "hf",
+   "label": "Khung ảnh vẽ tay"
+  },
+  {
+   "key": "hf_note__6",
+   "pack": "hf_note",
+   "j": 6,
+   "type": "hf",
+   "label": "Chữ chạy theo đường"
+  },
+  {
+   "key": "hf_note__7",
+   "pack": "hf_note",
+   "j": 7,
+   "type": "hf",
+   "label": "Khoanh + đếm ngược"
+  },
+  {
+   "key": "hf_note__8",
+   "pack": "hf_note",
+   "j": 8,
+   "type": "hf",
+   "label": "Làm tối, rọi một vùng"
+  },
+  {
+   "key": "hf_note__9",
+   "pack": "hf_note",
+   "j": 9,
+   "type": "hf",
+   "label": "Viền khoanh vùng"
+  },
+  {
+   "key": "hf_note__10",
+   "pack": "hf_note",
+   "j": 10,
+   "type": "hf",
+   "label": "Bút vẽ chú thích"
+  },
+  {
+   "key": "hf_note__11",
+   "pack": "hf_note",
+   "j": 11,
+   "type": "hf",
+   "label": "Chú thích kiểu Vox"
+  },
+  {
+   "key": "hf_note__12",
+   "pack": "hf_note",
+   "j": 12,
+   "type": "hf",
+   "label": "Mũi tên lao tới"
+  },
+  {
+   "key": "hf_note__13",
+   "pack": "hf_note",
+   "j": 13,
+   "type": "hf",
+   "label": "Con trỏ khổng lồ"
+  },
+  {
+   "key": "hf_note__14",
+   "pack": "hf_note",
+   "j": 14,
+   "type": "hf",
+   "label": "Nhãn bay theo cung"
+  },
+  {
+   "key": "hf_note__15",
+   "pack": "hf_note",
+   "j": 15,
+   "type": "hf",
+   "label": "Tia sáng nối phần tử"
+  },
+  {
+   "key": "hf_note__16",
+   "pack": "hf_note",
+   "j": 16,
+   "type": "hf",
+   "label": "Nhiều con trỏ cộng tác"
+  },
+  {
+   "key": "hf_note__17",
+   "pack": "hf_note",
+   "j": 17,
+   "type": "hf",
+   "label": "AI tự thao tác"
+  },
+  {
+   "key": "hf_ct__0",
+   "pack": "hf_ct",
+   "j": 0,
+   "type": "hf",
+   "label": "Nguệch ngoạc phủ màn"
+  },
+  {
+   "key": "hf_ct__1",
+   "pack": "hf_ct",
+   "j": 1,
+   "type": "hf",
+   "label": "Tường chữ phủ màn"
+  },
+  {
+   "key": "hf_ct__2",
+   "pack": "hf_ct",
+   "j": 2,
+   "type": "hf",
+   "label": "Xé giấy"
+  },
+  {
+   "key": "hf_ct__3",
+   "pack": "hf_ct",
+   "j": 3,
+   "type": "hf",
+   "label": "Cắt dán giấy"
+  },
+  {
+   "key": "hf_ct__4",
+   "pack": "hf_ct",
+   "j": 4,
+   "type": "hf",
+   "label": "Mở rèm sân khấu"
+  },
+  {
+   "key": "hf_ct__5",
+   "pack": "hf_ct",
+   "j": 5,
+   "type": "hf",
+   "label": "Mực loang"
+  },
+  {
+   "key": "hf_ct__6",
+   "pack": "hf_ct",
+   "j": 6,
+   "type": "hf",
+   "label": "Mở tròn"
+  },
+  {
+   "key": "hf_ct__7",
+   "pack": "hf_ct",
+   "j": 7,
+   "type": "hf",
+   "label": "Đẩy panel"
+  },
+  {
+   "key": "hf_ct__8",
+   "pack": "hf_ct",
+   "j": 8,
+   "type": "hf",
+   "label": "Quét lệch màu"
+  },
+  {
+   "key": "hf_ct__9",
+   "pack": "hf_ct",
+   "j": 9,
+   "type": "hf",
+   "label": "Tan chấm bi"
+  },
+  {
+   "key": "hf_ct__10",
+   "pack": "hf_ct",
+   "j": 10,
+   "type": "hf",
+   "label": "Vỡ ô vuông"
+  },
+  {
+   "key": "hf_ct__11",
+   "pack": "hf_ct",
+   "j": 11,
+   "type": "hf",
+   "label": "Zoom xuyên thẻ"
+  },
+  {
+   "key": "hf_ct__12",
+   "pack": "hf_ct",
+   "j": 12,
+   "type": "hf",
+   "label": "Lia máy nhanh"
+  },
+  {
+   "key": "hf_ct__13",
+   "pack": "hf_ct",
+   "j": 13,
+   "type": "hf",
+   "label": "Cắt khớp hình tròn"
+  },
+  {
+   "key": "hf_ct__14",
+   "pack": "hf_ct",
+   "j": 14,
+   "type": "hf",
+   "label": "Mờ qua trắng"
+  },
+  {
+   "key": "hf_ct__15",
+   "pack": "hf_ct",
+   "j": 15,
+   "type": "hf",
+   "label": "Phóng thẻ ra toàn màn"
+  },
+  {
+   "key": "hf_ct__16",
+   "pack": "hf_ct",
+   "j": 16,
+   "type": "hf",
+   "label": "Thu toàn màn về thẻ"
+  },
+  {
+   "key": "hf_ct__17",
+   "pack": "hf_ct",
+   "j": 17,
+   "type": "hf",
+   "label": "Trượt trang"
+  },
+  {
+   "key": "hf_nen__0",
+   "pack": "hf_nen",
+   "j": 0,
+   "type": "hf",
+   "label": "Nền loang mềm"
+  },
+  {
+   "key": "hf_nen__1",
+   "pack": "hf_nen",
+   "j": 1,
+   "type": "hf",
+   "label": "Nền lưới gradient"
+  },
+  {
+   "key": "hf_nen__2",
+   "pack": "hf_nen",
+   "j": 2,
+   "type": "hf",
+   "label": "Nền cực quang"
+  },
+  {
+   "key": "hf_nen__3",
+   "pack": "hf_nen",
+   "j": 3,
+   "type": "hf",
+   "label": "Nền lưới SaaS"
+  },
+  {
+   "key": "hf_nen__4",
+   "pack": "hf_nen",
+   "j": 4,
+   "type": "hf",
+   "label": "Nền chấm hạt"
+  },
+  {
+   "key": "hf_nen__5",
+   "pack": "hf_nen",
+   "j": 5,
+   "type": "hf",
+   "label": "Nền chấm bi ánh sáng"
+  },
+  {
+   "key": "hf_nen__6",
+   "pack": "hf_nen",
+   "j": 6,
+   "type": "hf",
+   "label": "Nền đập theo nhạc"
+  },
+  {
+   "key": "hf_nen__7",
+   "pack": "hf_nen",
+   "j": 7,
+   "type": "hf",
+   "label": "Nền giấy màn LCD"
+  },
+  {
+   "key": "hf_nen__8",
+   "pack": "hf_nen",
+   "j": 8,
+   "type": "hf",
+   "label": "Quả cầu vũ trụ"
+  },
+  {
+   "key": "hf_nen__9",
+   "pack": "hf_nen",
+   "j": 9,
+   "type": "hf",
+   "label": "Thiên hà xoắn"
+  },
+  {
+   "key": "hf_nen__10",
+   "pack": "hf_nen",
+   "j": 10,
+   "type": "hf",
+   "label": "Đèn lóa điện ảnh"
+  },
+  {
+   "key": "hf_nen__11",
+   "pack": "hf_nen",
+   "j": 11,
+   "type": "hf",
+   "label": "Tối viền điện ảnh"
+  },
+  {
+   "key": "hf_nen__12",
+   "pack": "hf_nen",
+   "j": 12,
+   "type": "hf",
+   "label": "Khung HUD kỹ thuật"
+  },
+  {
+   "key": "hf_nen__13",
+   "pack": "hf_nen",
+   "j": 13,
+   "type": "hf",
+   "label": "Nháy theo nhịp"
+  },
+  {
+   "key": "hf_nen__14",
+   "pack": "hf_nen",
+   "j": 14,
+   "type": "hf",
+   "label": "Đèn quét ngang"
+  },
+  {
+   "key": "hf_nen__15",
+   "pack": "hf_nen",
+   "j": 15,
+   "type": "hf",
+   "label": "Sóng dao động"
   }
  ]
 }

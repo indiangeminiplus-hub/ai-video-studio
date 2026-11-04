@@ -2,7 +2,7 @@
 
 **Phần mềm edit video chạy ngay trên máy của bạn, có AI hỗ trợ.** Làm Reels, TikTok, YouTube Shorts và video ngang YouTube cho khoá học, bất động sản, review, chia sẻ, tin tức, bán hàng, podcast.
 
-Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói style**, **47 template có video xem trước**, AI dựng giúp bằng Claude, b-roll và âm thanh tự động, làm hàng loạt từ Excel. Bạn còn có thể **clone style từ bất kỳ video nào** bạn thích.
+Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói style**, **64 template có video xem trước**, **khoảng 200 khối hoạt ảnh HyperFrames**, AI dựng giúp bằng Claude, b-roll và âm thanh tự động, làm hàng loạt từ Excel. Bạn còn có thể **clone style từ bất kỳ video nào** bạn thích.
 
 **Tự lái:** thả video thô vào, khoảng 2 phút sau có video hoàn chỉnh, gồm phụ đề, graphic, b-roll, nhạc, SFX, ảnh bìa và caption đăng. Thả video vào **thư mục tự động** (hoặc AirDrop từ điện thoại) là app tự dựng. Video dài được tự cắt thành nhiều clip ngắn. Gõ chủ đề là ra video mà không cần quay. Có lịch đăng và tự đăng lên YouTube.
 
@@ -33,7 +33,7 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 
 | Nhóm | Có gì |
 |---|---|
-| **Dựng nhanh** | 47 template chia 8 nhóm: BĐS, Khoá học, Review, Chia sẻ, Tin tức, Bán hàng, AI, Khác. Có popup thư viện lớn và video xem trước. 24 gói style, 217 graphic, 23 kiểu phụ đề |
+| **Dựng nhanh** | 64 template chia 9 nhóm: BĐS, Khoá học, Review, Chia sẻ, Tin tức, Bán hàng, Doanh nghiệp, AI, Khác. Có popup thư viện lớn và video xem trước. 24 gói style, 420 graphic (217 graphic gốc + 203 khối HyperFrames: sản phẩm & demo app, số liệu, đánh giá & chốt đơn, logo & tiêu đề động, tên & chức danh, chú thích, chuyển cảnh, nền), 39 kiểu phụ đề |
 | **24 gói style** | Slate grid (kiểu "Claude edit"), Bubble hướng dẫn, AI Hype Cam, Luxury, Neon, Keynote, Glow, Podcast, Kinetic, Khoá học, BĐS, Review, Chia sẻ, Chia đôi màn hình, Trước/sau, Phông xanh, Bản tin, Podcast nhiều góc máy, Hỏi đáp, Top N, Điện ảnh, Ảnh theo nhịp nhạc, Quay màn hình… |
 | **Edit chuyên sâu** | Track nhiều clip: cắt (⌘B), xoá tự dồn, đảo thứ tự, tốc độ 0,25–4×, lật, nền mờ, 8 bộ lọc màu, chỉnh màu, 15 chuyển cảnh. Keyframe tự do, mặt nạ 8 hình, tách nền và thay phông, sticker người |
 | **AI (Claude)** | **AI dựng giúp**: đọc lời nói rồi tự đặt graphic, sửa phụ đề, chọn nhạc và SFX. **Cắt lỗi nói**: bỏ câu lặp, ngắt dài, nói vấp. **Sửa video bằng chữ**: xoá chữ là cắt video |
@@ -165,12 +165,12 @@ Bấm **Xuất** và chọn chất lượng (720p, 1080p hoặc 4K). Muốn có 
 
 | Mục | Dùng để |
 |---|---|
-| **Mẫu** | 47 template; **Xem lớn** để mở popup; **Lưu thành mẫu** để lưu video đang làm làm mẫu riêng |
+| **Mẫu** | 64 template (có nhóm **Doanh nghiệp**: giới thiệu công ty, ra mắt sản phẩm, demo app, báo cáo số liệu, tuyển dụng, sự kiện…); **Xem lớn** để mở popup; **Lưu thành mẫu** để lưu video đang làm làm mẫu riêng |
 | **Media** | Ảnh và video của bạn (kéo thả để tải lên), b-roll có sẵn |
 | **Âm thanh** | 30 bản nhạc nền và 309 SFX, bấm để nghe thử, kéo vào timeline |
 | **Chữ** | 14 kiểu chữ có sẵn (vàng, neon, lửa, sang trọng, đánh máy…) và 9 kiểu hoạt ảnh |
 | **Sticker** | Emoji 3D |
-| **Hiệu ứng** | 217 graphic của 24 gói (cộng graphic của style bạn tạo), có ảnh xem trước trên clip thật |
+| **Hiệu ứng** | 217 graphic của 24 gói và 203 khối HyperFrames chia 8 nhóm (cộng graphic của style bạn tạo), có ảnh xem trước trên clip thật. Chọn một khối HyperFrames rồi mở tab **Khối** để sửa chữ, màu, số, tốc độ |
 | **Chuyển cảnh** | 15 kiểu, kéo thả vào chỗ nối giữa 2 clip |
 | **Bộ lọc** | 8 bộ màu, xem trước ngay trên khung hình |
 | **Thành phần** | Danh sách mọi thứ đang có trong video, bật hoặc tắt từng cái |
@@ -427,10 +427,10 @@ ai-video-studio/
 ├─ studio.sh               mở Studio
 ├─ SKILL.md                hướng dẫn cho Claude Code (skill)
 ├─ sample/                 video gốc + dự án clip mẫu (phụ đề đã sửa)
-├─ engine/                 engine dựng hình HTML → MP4 (engine.js, 24 gói trong packs/, style người dùng trong packs/user/)
+├─ engine/                 engine dựng hình HTML → MP4 (engine.js, 24 gói trong packs/, style người dùng trong packs/user/, khối HyperFrames trong hf/)
 ├─ studio/                 giao diện editor + server (features/*.js, routes/*.mjs là các tính năng cắm thêm)
 ├─ scripts/                render, trộn âm thanh, nhận giọng, AI, b-roll, hàng loạt, tạo style, app Mac…
-├─ templates/              47 template + previews/ (video xem trước) + user/ (mẫu bạn lưu)
+├─ templates/              64 template + previews/ (video xem trước) + user/ (mẫu bạn lưu)
 ├─ assets/                 309 SFX, 30 nhạc, danh mục 4.232 b-roll động, model nhận diện mặt
 ├─ examples/               timeline ví dụ cho từng gói, ảnh mẫu, file hàng loạt ví dụ
 ├─ references/             tài liệu kỹ thuật từng phần

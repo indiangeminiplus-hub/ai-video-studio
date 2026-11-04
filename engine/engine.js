@@ -420,6 +420,7 @@ window.renderFrame = async (t) => {
   placeSub2(stage);
   fixReframe(stage, t);
   if (KF_LINES.length) applyLineKf(stage, t);
+  if (window.hfMount) await hfMount(stage, t); // HyperFrames blocks: live iframes beside #stage (engine/hf.js)
   // Chat panes and other .autoscroll boxes always show their newest content (deterministic per frame).
   for (const el of stage.querySelectorAll('.autoscroll')) el.scrollTop = el.scrollHeight;
   const imgs = [...stage.querySelectorAll('img')];

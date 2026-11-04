@@ -24,3 +24,10 @@ SOFTWARE.
 Ngoại lệ: video mẫu trong sample/ và mọi hình ảnh/video xem trước dựng từ nó
 (templates/previews/, studio/thumbs/, docs/images/) thuộc chủ sở hữu repo, giữ mọi quyền.
 Chỉ dùng để xem thử phần mềm.
+
+---
+Bên thứ ba: engine/hf/ chứa các khối hoạt ảnh lấy từ HyperFrames của HeyGen
+(https://github.com/heygen-com/hyperframes), giấy phép Apache License 2.0, toàn văn ở
+engine/hf/LICENSE-HyperFrames.txt. Đã sửa: gắn khối con vào trang, thêm shim biến/chữ,
+thay ảnh mẫu bằng ảnh của repo này. Một số khối kèm thư viện có giấy phép riêng
+(GSAP, three.js, font), xem các file *LICENSE* / *NOTICE* trong thư mục của khối.

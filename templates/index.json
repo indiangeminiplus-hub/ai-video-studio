@@ -275,6 +275,48 @@
   "thumb": "previews/bh-bubble-chot-don.jpg"
  },
  {
+  "id": "bh-don-hang-do-ve",
+  "name": "Đơn hàng đổ về",
+  "category": "banhang",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Thông báo có đơn mới bật lên, chồng thông báo thanh toán/giao hàng, tiền tăng vọt, pháo giấy và nút Mua ngay.",
+  "tags": [
+   "đơn hàng",
+   "thông báo",
+   "chốt đơn",
+   "bán hàng online"
+  ],
+  "needs": [
+   "sản phẩm",
+   "doanh số",
+   "lời kêu gọi"
+  ],
+  "preview": "previews/bh-don-hang-do-ve.mp4",
+  "thumb": "previews/bh-don-hang-do-ve.jpg"
+ },
+ {
+  "id": "bh-don-hang-ngang",
+  "name": "Livestream chốt đơn (ngang)",
+  "category": "banhang",
+  "aspect": "16:9",
+  "pack": "hf_tin",
+  "desc": "Video ngang: thông báo đơn mới, chồng tin nhắn khách hỏi giá, bình luận hiện dần, pháo giấy và nút đặt hàng.",
+  "tags": [
+   "livestream",
+   "chốt đơn",
+   "bình luận",
+   "ngang"
+  ],
+  "needs": [
+   "sản phẩm",
+   "giá",
+   "lời kêu gọi"
+  ],
+  "preview": "previews/bh-don-hang-ngang.mp4",
+  "thumb": "previews/bh-don-hang-ngang.jpg"
+ },
+ {
   "id": "bh-flash-sale-coupon",
   "name": "Flash sale mã giảm giá",
   "category": "banhang",
@@ -294,6 +336,27 @@
   ],
   "preview": "previews/bh-flash-sale-coupon.mp4",
   "thumb": "previews/bh-flash-sale-coupon.jpg"
+ },
+ {
+  "id": "bh-khach-hang-noi-gi",
+  "name": "Khách hàng nói gì",
+  "category": "banhang",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Thẻ đánh giá của khách, chấm 4,9 sao, thẻ 12.000+ khách hàng, tường logo và câu kêu gọi đặt hàng.",
+  "tags": [
+   "đánh giá",
+   "feedback",
+   "khách hàng",
+   "uy tín"
+  ],
+  "needs": [
+   "lời khen của khách",
+   "số khách đã mua",
+   "lời kêu gọi"
+  ],
+  "preview": "previews/bh-khach-hang-noi-gi.mp4",
+  "thumb": "previews/bh-khach-hang-noi-gi.jpg"
  },
  {
   "id": "bh-kinetic-cta",
@@ -357,6 +420,48 @@
   ],
   "preview": "previews/bh-san-pham-theo-nhip.mp4",
   "thumb": "previews/bh-san-pham-theo-nhip.jpg"
+ },
+ {
+  "id": "bh-truoc-sau-so-sanh",
+  "name": "Trước & sau dịch vụ",
+  "category": "banhang",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Hai khung trước/sau so sánh, thanh quét trước/sau, danh sách lợi ích và nút đặt lịch.",
+  "tags": [
+   "trước sau",
+   "so sánh",
+   "dịch vụ",
+   "kết quả"
+  ],
+  "needs": [
+   "ảnh trước",
+   "ảnh sau",
+   "lợi ích"
+  ],
+  "preview": "previews/bh-truoc-sau-so-sanh.mp4",
+  "thumb": "previews/bh-truoc-sau-so-sanh.jpg"
+ },
+ {
+  "id": "bh-uu-dai-co-han",
+  "name": "Ưu đãi có hạn",
+  "category": "banhang",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Tiêu đề giảm giá sốc, con số % quay kiểu máy xèng, huy hiệu bật, dấu tích đã áp mã và câu chốt đơn.",
+  "tags": [
+   "khuyến mãi",
+   "giảm giá",
+   "flash sale",
+   "ưu đãi"
+  ],
+  "needs": [
+   "mức giảm",
+   "thời hạn",
+   "lời kêu gọi"
+  ],
+  "preview": "previews/bh-uu-dai-co-han.mp4",
+  "thumb": "previews/bh-uu-dai-co-han.jpg"
  },
  {
   "id": "cs-dien-anh",
@@ -501,6 +606,254 @@
   ],
   "preview": "previews/cs-toi-gian-sang-trong.mp4",
   "thumb": "previews/cs-toi-gian-sang-trong.jpg"
+ },
+ {
+  "id": "dn-ban-tin-doanh-nghiep",
+  "name": "Bản tin doanh nghiệp",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Thanh tin tức + dải tin chạy kiểu truyền hình, bản đồ thị trường, chữ AI trả lời và logo kết.",
+  "tags": [
+   "bản tin",
+   "tin tức",
+   "thông báo",
+   "doanh nghiệp"
+  ],
+  "needs": [
+   "tiêu đề tin",
+   "nội dung chính"
+  ],
+  "preview": "previews/dn-ban-tin-doanh-nghiep.mp4",
+  "thumb": "previews/dn-ban-tin-doanh-nghiep.jpg"
+ },
+ {
+  "id": "dn-bao-cao-ngang",
+  "name": "Báo cáo quý (ngang)",
+  "category": "doanhnghiep",
+  "aspect": "16:9",
+  "pack": "hf_tin",
+  "desc": "Video ngang: đếm số tăng trưởng, đua doanh thu các kênh, thẻ biểu đồ cột và sơ đồ kế hoạch quý sau.",
+  "tags": [
+   "báo cáo",
+   "số liệu",
+   "họp",
+   "ngang"
+  ],
+  "needs": [
+   "số liệu quý",
+   "kế hoạch"
+  ],
+  "preview": "previews/dn-bao-cao-ngang.mp4",
+  "thumb": "previews/dn-bao-cao-ngang.jpg"
+ },
+ {
+  "id": "dn-bao-cao-so-lieu",
+  "name": "Báo cáo số liệu",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Con số tăng trưởng đếm lên, cuộc đua doanh thu giữa các kênh bán, thanh tiến độ mục tiêu và dấu tích hoàn thành.",
+  "tags": [
+   "số liệu",
+   "báo cáo",
+   "tăng trưởng",
+   "doanh thu"
+  ],
+  "needs": [
+   "con số chính",
+   "số liệu theo kênh",
+   "mục tiêu"
+  ],
+  "preview": "previews/dn-bao-cao-so-lieu.mp4",
+  "thumb": "previews/dn-bao-cao-so-lieu.jpg"
+ },
+ {
+  "id": "dn-demo-phan-mem",
+  "name": "Demo phần mềm / app",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Gõ câu lệnh mở đầu, điện thoại + tablet + laptop xoè ra, màn đăng ký, các bước hướng dẫn, tải app trên 2 kho.",
+  "tags": [
+   "app",
+   "phần mềm",
+   "SaaS",
+   "demo"
+  ],
+  "needs": [
+   "tên app",
+   "tính năng chính",
+   "link tải"
+  ],
+  "preview": "previews/dn-demo-phan-mem.mp4",
+  "thumb": "previews/dn-demo-phan-mem.jpg"
+ },
+ {
+  "id": "dn-gioi-thieu-cong-ty",
+  "name": "Giới thiệu công ty",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Thẻ tiêu đề thương hiệu, tên + chức danh người nói, biểu đồ doanh thu, dải đối tác và logo kết.",
+  "tags": [
+   "giới thiệu",
+   "công ty",
+   "thương hiệu",
+   "doanh nghiệp"
+  ],
+  "needs": [
+   "tên công ty",
+   "người nói + chức danh",
+   "số liệu nổi bật"
+  ],
+  "preview": "previews/dn-gioi-thieu-cong-ty.mp4",
+  "thumb": "previews/dn-gioi-thieu-cong-ty.jpg"
+ },
+ {
+  "id": "dn-keynote-ngang",
+  "name": "Keynote doanh nghiệp",
+  "category": "doanhnghiep",
+  "aspect": "16:9",
+  "pack": "hf_tin",
+  "desc": "Video ngang: thẻ tiêu đề, tên người nói, lưới thẻ tính năng, biểu đồ doanh thu và logo kết toàn khung.",
+  "tags": [
+   "keynote",
+   "thuyết trình",
+   "ngang",
+   "YouTube"
+  ],
+  "needs": [
+   "tên công ty",
+   "tính năng",
+   "số liệu"
+  ],
+  "preview": "previews/dn-keynote-ngang.mp4",
+  "thumb": "previews/dn-keynote-ngang.jpg"
+ },
+ {
+  "id": "dn-quy-trinh-dich-vu",
+  "name": "Quy trình dịch vụ",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Sơ đồ quyết định dọc toàn màn hình, quy trình vẽ tay, gạch chân ý chính và dấu tích hoàn thành.",
+  "tags": [
+   "quy trình",
+   "dịch vụ",
+   "các bước",
+   "tư vấn"
+  ],
+  "needs": [
+   "các bước làm việc",
+   "câu hỏi khách hay gặp"
+  ],
+  "preview": "previews/dn-quy-trinh-dich-vu.mp4",
+  "thumb": "previews/dn-quy-trinh-dich-vu.jpg"
+ },
+ {
+  "id": "dn-ra-mat-ngang",
+  "name": "Ra mắt sản phẩm (ngang)",
+  "category": "doanhnghiep",
+  "aspect": "16:9",
+  "pack": "hf_tin",
+  "desc": "Video ngang: tiêu đề đập mạnh, điện thoại + tablet + laptop xoè ra, thẻ tính năng bay quanh, 3 điện thoại giới thiệu app.",
+  "tags": [
+   "ra mắt",
+   "sản phẩm",
+   "3D",
+   "ngang"
+  ],
+  "needs": [
+   "tên sản phẩm",
+   "tính năng"
+  ],
+  "preview": "previews/dn-ra-mat-ngang.mp4",
+  "thumb": "previews/dn-ra-mat-ngang.jpg"
+ },
+ {
+  "id": "dn-ra-mat-san-pham",
+  "name": "Ra mắt sản phẩm mới",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Cổng không gian mở màn, sản phẩm xoay 360°, danh sách thông số trượt vào, chốt bằng nút hành động.",
+  "tags": [
+   "ra mắt",
+   "sản phẩm mới",
+   "launch",
+   "thông số"
+  ],
+  "needs": [
+   "tên sản phẩm",
+   "thông số nổi bật",
+   "lời kêu gọi"
+  ],
+  "preview": "previews/dn-ra-mat-san-pham.mp4",
+  "thumb": "previews/dn-ra-mat-san-pham.jpg"
+ },
+ {
+  "id": "dn-saas-ngang",
+  "name": "Giới thiệu phần mềm (ngang)",
+  "category": "doanhnghiep",
+  "aspect": "16:9",
+  "pack": "hf_tin",
+  "desc": "Video ngang: giao diện lật 3D, khung trình duyệt, bật tắt cài đặt, con trỏ bấm và thẻ 5 sao cuối video.",
+  "tags": [
+   "phần mềm",
+   "SaaS",
+   "demo",
+   "ngang"
+  ],
+  "needs": [
+   "tên phần mềm",
+   "tính năng",
+   "số khách hàng"
+  ],
+  "preview": "previews/dn-saas-ngang.mp4",
+  "thumb": "previews/dn-saas-ngang.jpg"
+ },
+ {
+  "id": "dn-su-kien-hoi-thao",
+  "name": "Sự kiện / hội thảo",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Bảng lật chữ báo sự kiện, tên diễn giả, lưới ảnh hội trường, đồng hồ đếm số người tham dự và nút đăng ký.",
+  "tags": [
+   "sự kiện",
+   "hội thảo",
+   "workshop",
+   "đăng ký"
+  ],
+  "needs": [
+   "tên sự kiện",
+   "diễn giả",
+   "thời gian / địa điểm"
+  ],
+  "preview": "previews/dn-su-kien-hoi-thao.mp4",
+  "thumb": "previews/dn-su-kien-hoi-thao.jpg"
+ },
+ {
+  "id": "dn-tuyen-dung",
+  "name": "Tuyển dụng",
+  "category": "doanhnghiep",
+  "aspect": "9:16",
+  "pack": "hf_tin",
+  "desc": "Tiêu đề đập mạnh \"Chúng tôi đang tuyển\", tên + vị trí người tuyển, thẻ checklist quyền lợi, bảng lật chữ và nút ứng tuyển.",
+  "tags": [
+   "tuyển dụng",
+   "việc làm",
+   "HR",
+   "tuyển người"
+  ],
+  "needs": [
+   "vị trí tuyển",
+   "quyền lợi",
+   "cách ứng tuyển"
+  ],
+  "preview": "previews/dn-tuyen-dung.mp4",
+  "thumb": "previews/dn-tuyen-dung.jpg"
  },
  {
   "id": "kh-bai-giang-xanh",
