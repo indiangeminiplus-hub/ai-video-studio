@@ -319,9 +319,9 @@ export async function buildRow(job, i, { preview = false, dirOverride, log = () 
         tl = { ...base, duration: dur, aroll: { frames: 'work/frames/%05d.jpg' }, audio: { ...base.audio, voice: 'work/aroll.mp4' } };
       } else if (mode === 'tts') {
         if (!script) throw new Error('chế độ giọng AI cần cột lời đọc');
-        log('đọc lời bằng giọng Linh (say)');
-        const aiff = path.join(dir, 'work/voice.aiff'), wav = path.join(dir, 'work/voice.wav');
-        await sh('say', ['-v', job.tts_voice || 'Linh', '-r', String(job.tts_rate || 175), '-o', aiff, script]);
+        const aiff = path.join(dir, process.platform === 'darwin' ? 'work/voice.aiff' : 'work/voice.mp3'), wav = path.join(dir, 'work/voice.wav');
+        if (process.platform === 'darwin') { log('đọc lời bằng giọng Linh (say)'); await sh('say', ['-v', job.tts_voice || 'Linh', '-r', String(job.tts_rate || 175), '-o', aiff, script]); }
+        else { log('đọc lời bằng giọng HoaiMy (edge-tts, cần mạng)'); await sh(PY, ['-m', 'edge_tts', '--voice', /Neural$/.test(job.tts_voice || '') ? job.tts_voice : 'vi-VN-HoaiMyNeural', '--text', script, '--write-media', aiff]); }
         await sh('ffmpeg', ['-v', 'error', '-y', '-i', aiff, '-af', 'apad=pad_dur=0.2', '-ar', '48000', '-ac', '2', wav]); fs.rmSync(aiff, { force: true });
         const vd = probeDur(wav); caps = ttsCaptions(script, vd);
         dur = +Math.max(vd + 2.4, +get("f:dur") || +job.dur || 0).toFixed(2);

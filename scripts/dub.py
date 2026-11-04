@@ -155,6 +155,8 @@ def main():
     ap.add_argument("--max-tempo", type=float, default=1.35)
     ap.add_argument("--voices")
     a = ap.parse_args()
+    if a.tts == "say" and not shutil.which("say"):  # Windows/Linux: no macOS voices → Microsoft online voices
+        a.tts = "edge"
     if a.voices:
         print(json.dumps({"say": say_voices(a.voices), "edge": EDGE.get(a.voices)}, ensure_ascii=False))
         return

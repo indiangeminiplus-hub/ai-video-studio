@@ -1,10 +1,12 @@
 # 🎬 AI Video Studio
 
-**Phần mềm edit video chạy ngay trên máy của bạn, có AI hỗ trợ.** Làm Reels, TikTok, YouTube Shorts và video ngang YouTube cho khoá học, bất động sản, review, chia sẻ, tin tức, bán hàng, podcast.
+**Phần mềm edit video chạy ngay trên máy của bạn (macOS và Windows 10/11), có AI hỗ trợ.** Làm Reels, TikTok, YouTube Shorts và video ngang YouTube cho khoá học, bất động sản, review, chia sẻ, tin tức, bán hàng, podcast.
 
 Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói style**, **64 template có video xem trước**, **khoảng 200 khối hoạt ảnh HyperFrames**, AI dựng giúp bằng Claude, b-roll và âm thanh tự động, làm hàng loạt từ Excel. Bạn còn có thể **clone style từ bất kỳ video nào** bạn thích.
 
 **Tự lái:** thả video thô vào, khoảng 2 phút sau có video hoàn chỉnh, gồm phụ đề, graphic, b-roll, nhạc, SFX, ảnh bìa và caption đăng. Thả video vào **thư mục tự động** (hoặc AirDrop từ điện thoại) là app tự dựng. Video dài được tự cắt thành nhiều clip ngắn. Gõ chủ đề là ra video mà không cần quay. Có lịch đăng và tự đăng lên YouTube.
+
+**Agent qua Telegram:** gửi video vào chat là nhận lại video đã dựng. Chấm điểm từng video để app **tự cải tiến** theo gu của bạn, và mỗi sáng app **tự đề xuất** việc nên làm.
 
 ![Giao diện AI Video Studio](docs/images/01-giao-dien.jpg)
 
@@ -15,17 +17,18 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 ## Mục lục
 1. [Tính năng](#1-tính-năng)
 2. [Yêu cầu](#2-yêu-cầu)
-3. [Cài đặt](#3-cài-đặt)
+3. [Cài đặt](#3-cài-đặt) · [macOS](#31-cài-trên-macos) · [Windows](#32-cài-trên-windows-1011) · [Cập nhật](#33-cập-nhật-bản-mới) · [Gỡ cài đặt](#34-gỡ-cài-đặt)
 4. [Bắt đầu trong 5 phút](#4-bắt-đầu-trong-5-phút)
 5. [Hướng dẫn giao diện](#5-hướng-dẫn-giao-diện)
 6. [Các tính năng AI](#6-các-tính-năng-ai-cần-claude-code-cli)
 7. [Làm hàng loạt, thương hiệu, đăng mạng xã hội](#7-làm-hàng-loạt-thương-hiệu-đăng-mạng-xã-hội)
-8. [Dùng với Claude Code (chat để edit)](#8-dùng-với-claude-code-chat-để-edit)
-9. [Dòng lệnh](#9-dòng-lệnh-cho-người-dùng-nâng-cao)
-10. [Phím tắt](#10-phím-tắt)
-11. [Câu hỏi thường gặp và sửa lỗi](#11-câu-hỏi-thường-gặp-và-sửa-lỗi)
-12. [Cấu trúc thư mục](#12-cấu-trúc-thư-mục)
-13. [Bản quyền](#13-bản-quyền)
+8. [Agent Telegram, tự cải tiến, tự đề xuất](#8-agent-telegram-tự-cải-tiến-tự-đề-xuất)
+9. [Dùng với Claude Code (chat để edit)](#9-dùng-với-claude-code-chat-để-edit)
+10. [Dòng lệnh](#10-dòng-lệnh-cho-người-dùng-nâng-cao)
+11. [Phím tắt](#11-phím-tắt)
+12. [Câu hỏi thường gặp và sửa lỗi](#12-câu-hỏi-thường-gặp-và-sửa-lỗi)
+13. [Cấu trúc thư mục](#13-cấu-trúc-thư-mục)
+14. [Bản quyền](#14-bản-quyền)
 
 ---
 
@@ -42,81 +45,157 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 | **Khung hình & ngôn ngữ** | Bám mặt tự động khi đổi khổ. Một lần xuất ra 9:16, 1:1 và 16:9. Dịch, lồng tiếng, phụ đề song ngữ |
 | **Tạo style** | **Clone style từ video bất kỳ**, hoặc **tạo style từ mô tả bằng chữ**. Claude viết gói style mới, template và skill riêng |
 | **Kinh doanh** | Làm hàng loạt từ Excel/CSV (mỗi dòng một video). Nhiều brand kit. Gói đăng TikTok/YouTube/Facebook/Instagram/Zalo với tiêu đề, caption, hashtag do AI viết |
-| **Tự động hoá** | **Tự lái** (một nút từ video thô đến thành phẩm), **thư mục tự động**, hàng đợi chạy nền, **hồ sơ kênh** học từ những gì bạn sửa tay. **AI tự kiểm tra** (chữ tràn, che mặt, sai chính tả, đoạn trống) và tự sửa. **Nhiều phiên bản A/B**. **Video dài thành clip ngắn**. **Chủ đề thành video**. **Lịch đăng** và tự đăng YouTube. Báo về máy Mac khi xong |
-| **Nhanh** | Render song song nhiều luồng, nhanh khoảng 5 lần (video 22 giây xuất trong khoảng 8 giây). App Mac: bấm là mở, kéo video vào icon là tạo dự án |
+| **Tự động hoá** | **Tự lái** (một nút từ video thô đến thành phẩm), **thư mục tự động**, hàng đợi chạy nền, **hồ sơ kênh** học từ những gì bạn sửa tay. **AI tự kiểm tra** (chữ tràn, che mặt, sai chính tả, đoạn trống) và tự sửa. **Nhiều phiên bản A/B**. **Video dài thành clip ngắn**. **Chủ đề thành video**. **Lịch đăng** và tự đăng YouTube. Báo về máy (Mac: Notification Center, Windows: khay hệ thống) khi xong |
+| **Agent & tự cải tiến** | Điều khiển qua **Telegram**: gửi video → nhận lại video đã dựng, `/chude` ra video không cần quay, nhắn tự nhiên để agent làm việc. Chấm ★ + góp ý → app **tự chỉnh hồ sơ kênh**. **Tự đề xuất** mỗi sáng (chạy lại việc lỗi, lên lịch đăng, ý tưởng video mới) kèm nút Áp dụng |
+| **Nhanh** | Render song song nhiều luồng, nhanh khoảng 5 lần (video 22 giây xuất trong khoảng 8 giây) |
+| **Mac & Windows** | macOS: app trong `~/Applications`, kéo video vào icon là tạo dự án. Windows 10/11: bấm đúp `install.cmd` để cài, lối tắt Desktop để mở |
 
 ---
 
 ## 2. Yêu cầu
 
-| Cần | Ghi chú |
-|---|---|
-| **macOS** (Apple Silicon hoặc Intel) hoặc **Windows 10/11** | Linux chạy được phần lõi; app Mac chỉ có trên macOS, Windows có lối tắt Desktop |
-| **Google Chrome** (hoặc Microsoft Edge trên Windows) | Dùng để render từng khung hình |
-| **ffmpeg ≥ 6** | `brew install ffmpeg` |
-| **Node.js ≥ 18** | `brew install node` |
-| **Python ≥ 3.10** | `brew install python` |
-| **Claude Code CLI** *(nên có)* | Bật các tính năng AI (dựng giúp, cắt lỗi nói, tạo style, dịch, gợi ý b-roll, viết caption). Cài theo hướng dẫn tại <https://docs.claude.com/claude-code>, rồi chạy `claude` một lần để đăng nhập |
-| Mạng | Cần khi cài, và khi render lần đầu để tải font, emoji, logo |
-| Ổ đĩa | Khoảng 1,5 GB (gồm thư viện Python) |
+| Cần | macOS | Windows 10/11 |
+|---|---|---|
+| Hệ điều hành | macOS (Apple Silicon hoặc Intel) | Windows 10 (bản 1809 trở lên) hoặc Windows 11, 64-bit |
+| Trình duyệt render | **Google Chrome** | **Google Chrome** hoặc **Microsoft Edge** (có sẵn) |
+| **ffmpeg ≥ 6** | `brew install ffmpeg` | trình cài tự cài bằng `winget` |
+| **Node.js ≥ 18** | `brew install node` | trình cài tự cài bằng `winget` |
+| **Python ≥ 3.10** | `brew install python` | trình cài tự cài bằng `winget` |
+| **Claude Code CLI** *(nên có)* | cài theo <https://docs.claude.com/claude-code> | như macOS |
+| Mạng | lúc cài và lúc render lần đầu (tải font, emoji, logo) | như macOS |
+| Ổ đĩa | khoảng 1,5 GB (gồm thư viện Python) | khoảng 1,5 GB |
+| RAM | 8 GB trở lên (render nhiều luồng: 16 GB) | như macOS |
 
-Chưa có Homebrew? Cài tại <https://brew.sh>, rồi chạy:
-```bash
-brew install ffmpeg node python git
-```
+**Claude Code CLI** bật các tính năng AI: dựng giúp, cắt lỗi nói, tạo style, dịch, gợi ý b-roll, viết caption, agent Telegram. Cài xong thì chạy `claude` một lần để đăng nhập; app dùng tài khoản Claude của bạn, không cần API key riêng. Không có Claude thì app vẫn edit, dùng mẫu, render được bình thường.
+
+Linux chạy được phần lõi (dùng `install.sh`), nhưng không có app hay lối tắt.
 
 ---
 
 ## 3. Cài đặt
 
+Repo này **riêng tư**. Có hai cách lấy mã nguồn:
+- **File zip** (`ai-video-studio-full.zip`) do chủ repo gửi. Cách này không cần tài khoản GitHub.
+- **`git clone`**: tài khoản GitHub của bạn phải được mời vào repo. Đăng nhập một lần bằng `gh auth login` (GitHub CLI), hoặc dùng Personal Access Token khi git hỏi mật khẩu.
+
+### 3.1. Cài trên macOS
+
+**Bước 1: Cài công cụ** (bỏ qua nếu đã có). Chưa có Homebrew thì cài tại <https://brew.sh>, rồi mở **Terminal** chạy:
 ```bash
-git clone https://github.com/nguyentatkiem/ai-video-studio.git
-cd ai-video-studio
-bash install.sh
+brew install ffmpeg node python git
+brew install --cask google-chrome
 ```
 
-`install.sh` sẽ tự làm các bước sau:
-1. Kiểm tra ffmpeg, Node, Python, Chrome, Claude CLI.
-2. Cài thư viện Python (faster-whisper, rembg, numpy, scipy…) vào `scripts/.venv`, và cài `puppeteer-core`.
+**Bước 2: Lấy mã nguồn**, chọn một trong hai cách:
+```bash
+# cách 1: từ file zip (giả sử zip nằm trong Downloads)
+cd ~/Downloads && unzip ai-video-studio-full.zip && cd ai-video-studio
+
+# cách 2: git clone (cần quyền vào repo)
+git clone https://github.com/nguyentatkiem/ai-video-studio.git && cd ai-video-studio
+```
+
+**Bước 3: Chạy trình cài**
+```bash
+bash install.sh
+```
+`install.sh` tự làm lần lượt:
+1. Kiểm tra ffmpeg, Node, Python, Chrome và Claude CLI.
+2. Cài thư viện Python (faster-whisper, rembg, numpy, scipy…) vào `scripts/.venv`, cài `puppeteer-core`.
 3. Gắn thư mục này thành **skill của Claude Code** tại `~/.claude/skills/ai-video-studio` (dạng symlink, nên `git pull` là cập nhật luôn).
 4. Dựng **dự án clip mẫu** từ `sample/` vào `~/.ai-video-studio/footage/clip-mau`.
 5. Tạo app **AI Video Studio** trong `~/Applications`.
 
-Tuỳ chọn: `bash install.sh --no-app` (không tạo app), `bash install.sh --no-skill` (không gắn vào Claude Code).
+Lần đầu mất khoảng 5–10 phút (tải thư viện Python). Tuỳ chọn:
+- `bash install.sh --no-app`: không tạo app;
+- `bash install.sh --no-skill`: không gắn vào Claude Code.
 
-**Cập nhật bản mới:**
-```bash
-cd ai-video-studio && git pull && bash install.sh
+**Bước 4: Mở Studio.** Bấm app **AI Video Studio** trong Launchpad hoặc `~/Applications`, hoặc chạy `bash studio.sh`. Trình duyệt mở <http://localhost:5186> với clip mẫu.
+- Lần đầu macOS có thể báo *"không xác định nhà phát triển"*. Chuột phải vào app → **Open** → **Open**. Chỉ cần làm một lần.
+- Kéo video thả vào icon app là tạo dự án mới.
+
+### 3.2. Cài trên Windows 10/11
+
+**Bước 1: Lấy mã nguồn**
+- **Từ file zip:** chuột phải `ai-video-studio-full.zip` → **Extract All…** → chọn thư mục ngắn, không dấu, ví dụ `C:\AI`. Kết quả là thư mục `C:\AI\ai-video-studio`.
+- **Hoặc git clone** (cần quyền vào repo), trong PowerShell:
+  ```powershell
+  winget install --id Git.Git -e
+  git clone https://github.com/nguyentatkiem/ai-video-studio.git C:\AI\ai-video-studio
+  ```
+
+**Bước 2: Bấm đúp `install.cmd`** trong thư mục `ai-video-studio`.
+- Thiếu ffmpeg, Node.js hay Python thì trình cài hỏi *"Cài tự động bằng winget? (Y/n)"*. Bấm **Y** rồi Enter.
+- Nếu cài xong công cụ mà vẫn báo thiếu, đóng cửa sổ rồi bấm đúp `install.cmd` lần nữa, để Windows nhận PATH mới.
+- Windows SmartScreen có thể hỏi; bấm **More info → Run anyway**.
+
+`install.cmd` gọi `install.ps1`, làm lần lượt:
+1. Kiểm tra và tự cài ffmpeg (`Gyan.FFmpeg`), Node.js LTS, Python 3.12; tìm Chrome hoặc Edge để render.
+2. Tạo `scripts\.venv`, cài thư viện Python và `puppeteer-core`.
+3. Gắn thư mục thành skill của Claude Code tại `%USERPROFILE%\.claude\skills\ai-video-studio`. Dùng *junction* nên không cần quyền admin.
+4. Dựng dự án clip mẫu vào `%USERPROFILE%\.ai-video-studio\footage\clip-mau`.
+5. Tạo lối tắt **AI Video Studio** ngoài Desktop và trong Start Menu.
+
+Tuỳ chọn khi chạy từ PowerShell:
+- `.\install.cmd -Yes`: tự cài mọi thứ, không hỏi;
+- `-NoSkill`: không gắn vào Claude Code;
+- `-NoShortcut`: không tạo lối tắt.
+
+Muốn cài công cụ bằng tay trước, chạy trong PowerShell:
+```powershell
+winget install --id Gyan.FFmpeg -e
+winget install --id OpenJS.NodeJS.LTS -e
+winget install --id Python.Python.3.12 -e
+winget install --id Google.Chrome -e
 ```
 
-### Cài trên Windows 10/11
+**Bước 3: Mở Studio.** Bấm đúp lối tắt **AI Video Studio** ngoài Desktop, hoặc `studio.cmd`.
+- Trình duyệt mở <http://localhost:5186>.
+- Cửa sổ đen thu nhỏ dưới thanh tác vụ là server. **Giữ nó mở** trong lúc dùng; đóng cửa sổ đó là tắt Studio.
+- Bấm lối tắt lần nữa khi Studio đang chạy thì chỉ mở lại trình duyệt.
 
-1. Giải nén file zip (hoặc `git clone`) vào một thư mục, ví dụ `C:\AI\ai-video-studio`.
-2. Bấm đúp **`install.cmd`**.
-   - Nếu thiếu ffmpeg, Node.js hay Python, trình cài hỏi để tự cài bằng `winget` (có sẵn trên Windows 10/11). Bấm **Y** để đồng ý.
-   - Nếu cài xong mà vẫn báo thiếu, đóng cửa sổ rồi bấm đúp `install.cmd` lần nữa, để Windows nhận PATH mới.
-3. Cài xong, bấm đúp lối tắt **AI Video Studio** ngoài Desktop (hoặc `studio.cmd`).
-   - Trình duyệt mở <http://localhost:5186>.
-   - Cửa sổ đen thu nhỏ dưới thanh tác vụ chính là server. Đóng cửa sổ đó là tắt Studio.
-4. Tạo dự án: bấm **Video mới** → **Chọn video từ máy…**. Không cần gõ đường dẫn. Nếu dán đường dẫn bằng "Copy as path", app tự bỏ dấu ngoặc kép.
+**Bước 4: Tạo dự án.** Bấm **Video mới** → **Chọn video từ máy…** rồi chọn file. Không cần gõ đường dẫn. Nếu dán đường dẫn bằng *Copy as path* của Explorer, app tự bỏ dấu ngoặc kép.
 
-Trên Windows mọi thứ chạy như trên Mac, trừ:
-- không có app `.app`;
-- thông báo hiện dạng bong bóng ở khay hệ thống;
-- chế độ "Chạy cả khi tắt app" của thư mục tự động dùng Task Scheduler thay cho LaunchAgent.
+**Khác biệt so với macOS:**
+- Không có app `.app`, thay bằng lối tắt Desktop và `studio.cmd`.
+- Thông báo hiện dạng bong bóng ở khay hệ thống.
+- "Chạy cả khi tắt app" của thư mục tự động dùng **Task Scheduler** (tác vụ `AIVideoStudio-watch`), thay cho LaunchAgent.
+- Giọng đọc máy (Chủ đề → video, Lồng tiếng, Hàng loạt giọng AI) dùng **edge-tts**, giọng HoaiMy, cần mạng. Lý do: giọng đọc offline `say` (Linh) chỉ có trên macOS.
+- Phím tắt dùng **Ctrl** ở chỗ macOS dùng **⌘**.
 
-Lỗi hay gặp:
-- **"running scripts is disabled"**: hãy chạy `install.cmd`, đừng chạy `install.ps1` trực tiếp.
-- **Không render được**: cài Google Chrome, hoặc đặt biến `CHROME_PATH` trỏ tới `chrome.exe` / `msedge.exe`.
-- **AI báo không thấy `claude`**: cài Claude Code, mở cửa sổ mới, gõ `claude` một lần để đăng nhập.
+### 3.3. Cập nhật bản mới
+
+| | Dùng git | Dùng file zip |
+|---|---|---|
+| macOS | `cd ai-video-studio && git pull && bash install.sh` | Giải nén zip mới đè lên thư mục cũ, rồi `bash install.sh` |
+| Windows | `cd C:\AI\ai-video-studio; git pull` rồi bấm đúp `install.cmd` | Giải nén zip mới đè lên thư mục cũ, rồi bấm đúp `install.cmd` |
+
+Dữ liệu của bạn nằm ngoài repo (`~/.ai-video-studio`), nên cập nhật không làm mất dự án, brand kit, style hay token.
+
+### 3.4. Gỡ cài đặt
+
+**macOS:**
+```bash
+rm -rf ~/.claude/skills/ai-video-studio ~/.ai-video-studio ~/"Applications/AI Video Studio.app" \
+       ~/"Library/Application Support/AIVideoStudio" ~/Library/Logs/AIVideoStudio.log
+launchctl bootout gui/$(id -u)/com.aivideostudio.watch 2>/dev/null; rm -f ~/Library/LaunchAgents/com.aivideostudio.watch.plist
+```
+
+**Windows (PowerShell):**
+```powershell
+schtasks /delete /f /tn AIVideoStudio-watch 2>$null
+Remove-Item -Recurse -Force "$HOME\.claude\skills\ai-video-studio", "$HOME\.ai-video-studio"
+Remove-Item -Force "$([Environment]::GetFolderPath('Desktop'))\AI Video Studio.lnk", "$([Environment]::GetFolderPath('Programs'))\AI Video Studio.lnk"
+```
+Sau đó xoá thư mục repo. Style bạn đã tạo còn là skill riêng trong `~/.claude/skills/video-style-*`; xoá nếu không dùng nữa.
 
 ---
 
 ## 4. Bắt đầu trong 5 phút
 
 ### Bước 1: Mở Studio
-- Bấm app **AI Video Studio** trong Launchpad hoặc `~/Applications`, **hoặc**
-- chạy `bash studio.sh` trong thư mục repo.
+- **macOS:** bấm app **AI Video Studio** trong Launchpad hoặc `~/Applications`, hoặc chạy `bash studio.sh` trong thư mục repo.
+- **Windows:** bấm đúp lối tắt **AI Video Studio** ngoài Desktop, hoặc `studio.cmd`.
 
 Trình duyệt mở **http://localhost:5186** với clip mẫu.
 
@@ -127,7 +206,7 @@ Bấm **Mẫu** ở thanh trái, rồi bấm **Xem lớn** để mở thư việ
 ![Chi tiết mẫu](docs/images/03-chi-tiet-mau.jpg)
 
 ### Bước 3: Dùng video của bạn
-Bấm **Video mới** trên thanh trên (hoặc kéo video thả vào icon app). Chọn gói style, tiêu đề, khổ dọc hoặc ngang. App tự làm phần còn lại:
+Bấm **Video mới** trên thanh trên → **Chọn video từ máy…** (trên Mac còn có thể kéo video thả vào icon app). Chọn gói style, tiêu đề, khổ dọc hoặc ngang. App tự làm phần còn lại:
 - nhận giọng nói,
 - cắt khoảng lặng,
 - tạo phụ đề,
@@ -135,7 +214,10 @@ Bấm **Video mới** trên thanh trên (hoặc kéo video thả vào icon app).
 
 Có thể làm cùng việc đó bằng lệnh:
 ```bash
-bash studio.sh --new ~/Downloads/video-cua-ban.mp4
+bash studio.sh --new ~/Downloads/video-cua-ban.mp4          # macOS
+```
+```bat
+studio.cmd --new C:\Users\ban\Videos\video-cua-ban.mp4      :: Windows
 ```
 
 ### Bước 4: Tinh chỉnh
@@ -267,7 +349,7 @@ Không ưng thì Hoàn tác.
 
 ### Video dài → clip ngắn · Chủ đề → video (không cần quay)
 - Bấm **Video dài** (biểu tượng cây kéo). Tab **Video dài**: thả video dài (livestream, podcast 30–90 phút), chọn số clip, độ dài, khung. Máy nghe cả video một lần, Claude chọn các đoạn tự đứng được (hook mạnh 3 giây đầu, trọn ý, không nhắc “như tôi vừa nói”), mỗi đoạn thành một dự án có phụ đề; video ngang vào khung dọc thì tự bám mặt. Danh sách có tiêu đề, hook, mốc thời gian, điểm, ảnh xem trước + nút **Mở**, **Tự lái tất cả** (đưa vào hàng đợi Tự lái), **Xuất tất cả**.
-- Tab **Chủ đề**: gõ chủ đề (vd “3 mẹo dùng ChatGPT cho người bán hàng online”). Claude viết kịch bản, giọng Linh đọc (offline), phụ đề khớp từng chữ, hình là b-roll động + chữ kinetic + nhạc/SFX. Khoảng 1 phút cho video 45 giây.
+- Tab **Chủ đề**: gõ chủ đề (vd “3 mẹo dùng ChatGPT cho người bán hàng online”). Claude viết kịch bản, giọng Linh đọc (offline trên macOS; Windows dùng giọng HoaiMy của edge-tts, cần mạng), phụ đề khớp từng chữ, hình là b-roll động + chữ kinetic + nhạc/SFX. Khoảng 1 phút cho video 45 giây.
 - Dòng lệnh: `node scripts/highlights.mjs video.mp4 --out dir --n 6`, `node scripts/topic_video.mjs "chủ đề" --out dir --export`. Chi tiết: [references/longform-topic.md](references/longform-topic.md).
 
 ![Video dài và Chủ đề](docs/images/13-video-dai.jpg)
@@ -316,14 +398,18 @@ App kiểm tra lịch mỗi phút khi đang mở. Dòng lệnh: `node scripts/pu
 
 ---
 
-### Agent qua Telegram, tự cải tiến và tự đề xuất
+## 8. Agent Telegram, tự cải tiến, tự đề xuất
 
-**Kết nối Telegram (5 phút):**
+Agent là "trợ lý dựng video" chạy trên máy bạn: điều khiển qua Telegram, học từ điểm bạn chấm, và tự đề xuất việc nên làm. Mở mục **Agent** (biểu tượng robot) ở thanh trái để cài đặt.
+
+![Agent](docs/images/15-agent.jpg)
+
+### Kết nối Telegram (5 phút)
 1. Trong Telegram, nhắn **@BotFather** → `/newbot` → đặt tên. BotFather trả về một **token**.
 2. Trong Studio mở mục **Agent** → dán token → **Kết nối**.
 3. Bấm **Lấy mã ghép nối**, gửi `/start <mã>` cho bot của bạn. Chỉ chat đã ghép nối mới điều khiển được bot.
 
-**Dùng trong Telegram:**
+### Dùng trong Telegram
 - **Gửi video** (tối đa 20 MB, giới hạn của Telegram): Tự lái dựng xong sẽ gửi lại video, kèm điểm AI kiểm tra và caption.
   - Video lớn hơn: chép vào thư mục tự động, hoặc nhắn đường dẫn file trên máy.
 - `/chude <chủ đề>`: làm video không cần quay.
@@ -333,7 +419,7 @@ App kiểm tra lịch mỗi phút khi đang mở. Dòng lệnh: `node scripts/pu
 - `/hoso`: chọn hồ sơ kênh.
 - Nhắn tự nhiên, ví dụ "làm video về cách chọn kem chống nắng": agent (Claude) hiểu ý và tự chạy đúng việc.
 
-**Vòng phản hồi:**
+### Vòng phản hồi và tự cải tiến
 1. Sau mỗi video, bot hỏi chấm **1–5★**, có nút chọn điều cần sửa và ô gõ góp ý:
    - Mở đầu yếu, Phụ đề khó đọc
    - Nhạc to/nhỏ, Tiếng động nhiều
@@ -351,9 +437,17 @@ App kiểm tra lịch mỗi phút khi đang mở. Dòng lệnh: `node scripts/pu
    - chỉnh hồ sơ;
    - ý tưởng video tiếp theo lấy từ lời thoại gần đây.
 
-Bot chạy khi Studio đang mở. Muốn chạy riêng (không mở Studio), dùng lệnh `node scripts/telegram.mjs run`; lệnh này chạy luôn hàng đợi. Token lưu trong `~/.ai-video-studio/telegram.json`, chỉ tài khoản của bạn đọc được.
+### Chạy bot
+- Bot chạy khi Studio đang mở.
+- Muốn bot chạy mà không mở Studio: `node scripts/telegram.mjs run`. Lệnh này chạy luôn hàng đợi Tự lái.
+- Token lưu trong `~/.ai-video-studio/telegram.json`, chỉ tài khoản của bạn đọc được. Người lạ nhắn vào bot sẽ bị từ chối; bỏ ghép nối từng người ở **Agent → Telegram**.
+- Bot dùng long polling: không cần mở cổng mạng hay có địa chỉ công khai, chạy được sau router và trên máy cá nhân.
+- Tin nhắn tự do và phần phân tích cải tiến dùng Claude Code của bạn. Không có Claude thì bot vẫn nhận video và dựng (phần AI dựng giúp bị bỏ qua), chạy `/trangthai`, `/hoso`, chấm điểm và tự chỉnh hồ sơ theo luật; riêng `/chude` cần Claude để viết kịch bản.
+- Chi tiết kỹ thuật: [references/agent-telegram.md](references/agent-telegram.md).
 
-## 8. Dùng với Claude Code (chat để edit)
+---
+
+## 9. Dùng với Claude Code (chat để edit)
 
 Sau khi cài, mở Claude Code và nói chuyện bình thường, ví dụ:
 
@@ -371,7 +465,7 @@ Claude dùng skill `ai-video-studio` để chọn gói, dựng, render và kiể
 
 ---
 
-## 9. Dòng lệnh (cho người dùng nâng cao)
+## 10. Dòng lệnh (cho người dùng nâng cao)
 
 ```bash
 S=~/.claude/skills/ai-video-studio; PY=$S/scripts/.venv/bin/python
@@ -403,13 +497,33 @@ $PY  $S/scripts/face_track.py --help                               # bám mặt
 node $S/scripts/build_templates.mjs ~/.ai-video-studio/footage/clip-mau   # render lại preview mẫu
 node $S/scripts/selftest.mjs $S/engine/index.html ~/.ai-video-studio/footage/clip-mau/timeline.json
 bash $S/scripts/make_app.sh                                        # tạo lại app Mac
+
+# Agent, phản hồi, đề xuất
+node $S/scripts/telegram.mjs token <BOT_TOKEN> | pair | run | status
+node $S/scripts/feedback.mjs add out/video.mp4 4 nhac_to,hook "góp ý"
+node $S/scripts/feedback.mjs improve [--no-claude] [--apply]      # tự cải tiến hồ sơ kênh
+node $S/scripts/feedback.mjs suggest | suggestions | act <id> apply
+
+# Khối HyperFrames + mẫu Doanh nghiệp
+node $S/scripts/hf_import.mjs <thư-mục-clone-hyperframes>         # nhập lại khối (scripts/hf_curate.json)
+node $S/scripts/hf_templates.mjs                                   # tạo lại 17 mẫu Doanh nghiệp / Bán hàng
 ```
 
-Tài liệu kỹ thuật chi tiết nằm trong `references/`. Nên bắt đầu từ `SKILL.md`, `references/studio.md`, `references/packs.md` (cách viết gói style mới) và `references/templates.md`.
+**Trên Windows** (PowerShell), thay `bash studio.sh` bằng `studio.cmd`, và Python nằm ở `scripts\.venv\Scripts\python.exe`:
+```powershell
+$S = "$HOME\.claude\skills\ai-video-studio"; $PY = "$S\scripts\.venv\Scripts\python.exe"
+& "$S\studio.cmd" --new C:\Videos\clip.mp4
+node "$S\scripts\render.mjs" du-an\timeline.json out.mp4 --workers 4
+& $PY "$S\scripts\mix_audio.py" du-an\timeline.json
+```
+
+Tài liệu kỹ thuật chi tiết nằm trong `references/`. Nên bắt đầu từ `SKILL.md`, `references/studio.md`, `references/packs.md` (cách viết gói style mới), `references/templates.md`, `references/hyperframes.md` (khối HyperFrames) và `references/agent-telegram.md` (agent).
 
 ---
 
-## 10. Phím tắt
+## 11. Phím tắt
+
+Trên Windows dùng **Ctrl** thay cho **⌘**, và **Alt** thay cho **⌥**.
 
 | Phím | Việc |
 |---|---|
@@ -428,16 +542,36 @@ Tài liệu kỹ thuật chi tiết nằm trong `references/`. Nên bắt đầu
 
 ---
 
-## 11. Câu hỏi thường gặp và sửa lỗi
+## 12. Câu hỏi thường gặp và sửa lỗi
 
 **Mở http://localhost:5186 không lên?**
-Server chưa chạy. Bấm app, hoặc chạy `bash studio.sh`. Nhật ký của app nằm ở `~/Library/Logs/AIVideoStudio.log`.
+Server chưa chạy.
+- **macOS:** bấm app, hoặc chạy `bash studio.sh`. Nhật ký của app nằm ở `~/Library/Logs/AIVideoStudio.log`.
+- **Windows:** bấm lối tắt **AI Video Studio**. Xem lỗi trong cửa sổ đen (server); nếu cửa sổ tự đóng, mở `studio.cmd` từ PowerShell để đọc lỗi.
 
 **macOS báo "không mở được app vì không xác định nhà phát triển"?**
 App được tạo ngay trên máy bạn và chưa được Apple xác thực. Chuột phải vào app, chọn **Open**, rồi chọn **Open** lần nữa. Chỉ cần làm một lần.
 
+**Windows: cửa sổ cài báo "running scripts is disabled"?**
+Hãy bấm đúp `install.cmd`, đừng chạy `install.ps1` trực tiếp. `install.cmd` tự bỏ qua chính sách chặn script cho riêng lần chạy đó.
+
+**Windows: báo thiếu ffmpeg / node / python dù đã cài?**
+Đóng mọi cửa sổ PowerShell/CMD rồi chạy lại `install.cmd`, để Windows nạp PATH mới. Python từ Microsoft Store có thể không chạy được; hãy cài bằng `winget install Python.Python.3.12`.
+
+**Windows: không render được, báo không thấy Chrome?**
+Cài Google Chrome (`winget install Google.Chrome`). Hoặc đặt biến môi trường `CHROME_PATH` trỏ tới `chrome.exe` hay `msedge.exe`.
+
+**Windows: Defender hay SmartScreen chặn?**
+Chọn **More info → Run anyway** cho `install.cmd` / `studio.cmd`. App chỉ chạy trên máy bạn, mở cổng 5186 cho riêng `localhost`.
+
 **Nút AI báo thiếu Claude?**
-Cài Claude Code CLI và chạy `claude` một lần để đăng nhập. Kiểm tra bằng `claude -p "xin chào"`.
+Cài Claude Code CLI và chạy `claude` một lần để đăng nhập. Kiểm tra bằng `claude -p "xin chào"`. Trên Windows, mở cửa sổ PowerShell **mới** sau khi cài để có lệnh `claude`.
+
+**Bot Telegram không trả lời?**
+- Kiểm tra **Agent → Telegram**: chấm xanh là bot đang chờ tin nhắn.
+- Chưa ghép nối thì bot sẽ từ chối; lấy mã mới rồi gửi `/start <mã>`.
+- Báo lỗi *"Conflict"* nghĩa là bot đang chạy ở chỗ khác (máy khác hoặc một `telegram.mjs run` khác). Tắt bớt, chỉ để một nơi chạy bot.
+- Video gửi lên phải ≤ 20 MB; video kết quả > 50 MB thì bot chỉ báo đường dẫn file.
 
 **Phụ đề nhận giọng sai chữ?**
 Lúc tạo dự án, chọn độ chính xác cao hơn (model whisper lớn hơn). Hoặc bấm **AI dựng giúp** để Claude sửa lỗi chính tả mà vẫn giữ thời gian từng chữ. Cũng có thể sửa tay trong tab phụ đề.
@@ -448,26 +582,23 @@ Giảm số luồng: `--workers 2`. Mỗi luồng tốn khoảng 300 MB RAM.
 **Muốn dời thư mục dữ liệu?**
 Đặt biến môi trường `AVS_HOME` (mặc định `~/.ai-video-studio`) trước khi chạy `install.sh` / `studio.sh`. `AVS_SKILLS_DIR` (mặc định `~/.claude/skills`) là nơi lưu skill `video-style-*` của style bạn tạo; `AVS_SKILL_DIR` là chỗ `install.sh` gắn skill chính.
 
-**Gỡ cài đặt:**
-```bash
-rm -rf ~/.claude/skills/ai-video-studio ~/.ai-video-studio ~/"Applications/AI Video Studio.app" \
-       ~/"Library/Application Support/AIVideoStudio" ~/Library/Logs/AIVideoStudio.log
-```
-Sau đó xoá thư mục repo. Style bạn đã tạo còn là skill riêng `~/.claude/skills/video-style-*`, xoá nếu không dùng nữa.
+**Gỡ cài đặt?** Xem [mục 3.4](#34-gỡ-cài-đặt).
 
 ---
 
-## 12. Cấu trúc thư mục
+## 13. Cấu trúc thư mục
 
 ```
 ai-video-studio/
-├─ install.sh              cài đặt một lệnh
-├─ studio.sh               mở Studio
+├─ install.sh              cài đặt trên macOS / Linux
+├─ install.cmd, install.ps1 cài đặt trên Windows (bấm đúp install.cmd)
+├─ studio.sh, studio.cmd   mở Studio (macOS / Windows)
 ├─ SKILL.md                hướng dẫn cho Claude Code (skill)
 ├─ sample/                 video gốc + dự án clip mẫu (phụ đề đã sửa)
 ├─ engine/                 engine dựng hình HTML → MP4 (engine.js, 24 gói trong packs/, style người dùng trong packs/user/, khối HyperFrames trong hf/)
 ├─ studio/                 giao diện editor + server (features/*.js, routes/*.mjs là các tính năng cắm thêm)
-├─ scripts/                render, trộn âm thanh, nhận giọng, AI, b-roll, hàng loạt, tạo style, app Mac…
+├─ scripts/                render, trộn âm thanh, nhận giọng, AI, b-roll, hàng loạt, tạo style, app Mac,
+│                          telegram.mjs (agent), feedback.mjs (phản hồi + đề xuất), platform.mjs (khác biệt Mac/Windows)…
 ├─ templates/              64 template + previews/ (video xem trước) + user/ (mẫu bạn lưu)
 ├─ assets/                 309 SFX, 30 nhạc, danh mục 4.232 b-roll động, model nhận diện mặt
 ├─ examples/               timeline ví dụ cho từng gói, ảnh mẫu, file hàng loạt ví dụ
@@ -475,11 +606,11 @@ ai-video-studio/
 └─ docs/images/            ảnh chụp màn hình
 ```
 
-Dữ liệu của bạn nằm ngoài repo, ở `~/.ai-video-studio/`: clip mẫu, brand kit, style đã tạo, key API, nên `git pull` không làm mất gì.
+Dữ liệu của bạn nằm ngoài repo, ở `~/.ai-video-studio/` (Windows: `%USERPROFILE%\.ai-video-studio`): clip mẫu, brand kit, hồ sơ kênh, style đã tạo, key API, token Telegram, phản hồi và đề xuất. Vì vậy `git pull` không làm mất gì.
 
 ---
 
-## 13. Bản quyền
+## 14. Bản quyền
 
 - **Mã nguồn:** giấy phép MIT, xem [LICENSE](LICENSE).
 - **Video mẫu** (`sample/`, cùng các ảnh xem trước trong `templates/previews/`, `studio/thumbs/`, `docs/images/` được làm từ video này): thuộc chủ sở hữu repo. Chỉ được dùng để xem thử và học cách dùng phần mềm. **Không** dùng lại, cắt ghép hay đăng lại cho mục đích khác.

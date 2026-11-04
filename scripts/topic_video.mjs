@@ -50,6 +50,7 @@ Chỉ trả về DUY NHẤT JSON (không markdown):
 function hasEdge() { try { execFileSync(process.platform === 'win32' ? 'where' : '/bin/sh', process.platform === 'win32' ? ['edge-tts'] : ['-lc', 'command -v edge-tts'], { stdio: 'pipe' }); return 'edge-tts'; } catch {} const b = path.join(path.dirname(PY), process.platform === 'win32' ? 'edge-tts.exe' : 'edge-tts'); return fs.existsSync(b) ? b : null; }
 async function tts(text, voice, rate, outWav) {
   const tmp = outWav.replace(/\.wav$/, '.src');
+  if (process.platform !== 'darwin' && !voice.startsWith('edge:')) voice = 'edge:vi-VN-HoaiMyNeural'; // `say` voices exist only on macOS
   if (voice.startsWith('edge:')) {
     const exe = hasEdge(); if (!exe) throw new Error('chưa cài edge-tts (pip install edge-tts) — dùng --voice Linh để đọc offline');
     await sh(exe, ['--voice', voice.slice(5), '--text', text, '--write-media', tmp + '.mp3']); fs.renameSync(tmp + '.mp3', tmp);
