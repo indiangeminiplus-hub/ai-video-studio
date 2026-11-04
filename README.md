@@ -161,7 +161,7 @@ Bấm **Xuất** và chọn chất lượng (720p, 1080p hoặc 4K). Muốn có 
 └───────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Các mục ở thanh trái (21 mục)
+### Các mục ở thanh trái (22 mục)
 
 | Mục | Dùng để |
 |---|---|
@@ -177,6 +177,7 @@ Bấm **Xuất** và chọn chất lượng (720p, 1080p hoặc 4K). Muốn có 
 | **Tự lái** | Thả video vào là tự dựng đến thành phẩm; hàng đợi, thư mục tự động, hồ sơ kênh |
 | **Video dài** | Video dài thành nhiều clip ngắn; gõ chủ đề ra video không cần quay |
 | **Lịch đăng** | Lịch tuần kéo thả, tự xếp lịch, tự đăng YouTube, nhắc giờ đăng các nền tảng khác |
+| **Agent** | Cổng Telegram (gửi video qua chat → nhận lại video đã dựng), chấm điểm video, tự cải tiến hồ sơ kênh, đề xuất việc nên làm |
 | **AI** | Dựng giúp, Cắt lỗi nói |
 | **Lời thoại** | Sửa video bằng chữ: bôi đen chữ rồi bấm Xoá là video bị cắt theo |
 | **Âm thanh+** | Lọc ồn giọng, hạ nhạc khi nói, thêm track âm thanh (lời dẫn, nhạc phụ, tiếng nền) |
@@ -314,6 +315,43 @@ App kiểm tra lịch mỗi phút khi đang mở. Dòng lệnh: `node scripts/pu
 ![Lịch đăng](docs/images/14-lich-dang.jpg)
 
 ---
+
+### Agent qua Telegram, tự cải tiến và tự đề xuất
+
+**Kết nối Telegram (5 phút):**
+1. Trong Telegram, nhắn **@BotFather** → `/newbot` → đặt tên. BotFather trả về một **token**.
+2. Trong Studio mở mục **Agent** → dán token → **Kết nối**.
+3. Bấm **Lấy mã ghép nối**, gửi `/start <mã>` cho bot của bạn. Chỉ chat đã ghép nối mới điều khiển được bot.
+
+**Dùng trong Telegram:**
+- **Gửi video** (tối đa 20 MB, giới hạn của Telegram): Tự lái dựng xong sẽ gửi lại video, kèm điểm AI kiểm tra và caption.
+  - Video lớn hơn: chép vào thư mục tự động, hoặc nhắn đường dẫn file trên máy.
+- `/chude <chủ đề>`: làm video không cần quay.
+- `/trangthai`: xem hàng đợi.
+- `/dexuat`: xem đề xuất.
+- `/caitien`: tự cải tiến.
+- `/hoso`: chọn hồ sơ kênh.
+- Nhắn tự nhiên, ví dụ "làm video về cách chọn kem chống nắng": agent (Claude) hiểu ý và tự chạy đúng việc.
+
+**Vòng phản hồi:**
+1. Sau mỗi video, bot hỏi chấm **1–5★**, có nút chọn điều cần sửa và ô gõ góp ý:
+   - Mở đầu yếu, Phụ đề khó đọc
+   - Nhạc to/nhỏ, Tiếng động nhiều
+   - Hiệu ứng rối/ít, Che mặt
+   - Dài quá
+   - Video xuất trong Studio thì chấm ở **Agent → Phản hồi**.
+2. Cứ 3 phản hồi, app **tự cải tiến** hồ sơ kênh:
+   - chỉnh mật độ hiệu ứng, âm lượng nhạc, mức tiếng động, kiểu phụ đề;
+   - đưa góp ý vào hướng dẫn cho AI dựng giúp;
+   - Claude phân tích thêm điểm và lỗi AI kiểm tra.
+   - Mọi thay đổi ghi ở **Agent → Cải tiến & đề xuất**. Tắt được bằng ô "Tự cải tiến sau mỗi 3 phản hồi".
+3. **Tự đề xuất:** mỗi sáng (giờ chỉnh được) bot gửi bản tin kèm đề xuất, mỗi đề xuất có nút **Áp dụng / Bỏ qua**:
+   - chạy lại việc lỗi;
+   - lên lịch đăng 3 ngày tới;
+   - chỉnh hồ sơ;
+   - ý tưởng video tiếp theo lấy từ lời thoại gần đây.
+
+Bot chạy khi Studio đang mở. Muốn chạy riêng (không mở Studio), dùng lệnh `node scripts/telegram.mjs run`; lệnh này chạy luôn hàng đợi. Token lưu trong `~/.ai-video-studio/telegram.json`, chỉ tài khoản của bạn đọc được.
 
 ## 8. Dùng với Claude Code (chat để edit)
 

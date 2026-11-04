@@ -141,25 +141,38 @@ export function deriveRules(learned) {
   if (moved) rules.notes.push(`(Thống kê) ${moved} cảnh tự động đã bị bạn chỉnh vị trí/nội dung — chưa tự áp, chỉ ghi nhận`);
   return rules;
 }
+// Ratings/tags/comments from Telegram & Studio (scripts/feedback.mjs improve() → p.fb) on top of the profile.
+function applyFeedback(p, out) {
+  const f = p.fb; if (!f || p.learn === false) return out;
+  const step = (list, v, d) => list[Math.max(1, Math.min(list.length - 1, list.indexOf(v) + d))] || v;
+  if (f.broll_step && p.broll_density !== 'off') out.broll_density = step(STEPS_DENS, p.broll_density, f.broll_step);
+  if (f.ai_step) out.ai_density = STEPS_AI[Math.max(0, Math.min(STEPS_AI.length - 1, STEPS_AI.indexOf(p.ai_density) + f.ai_step))] || p.ai_density;
+  if (f.sound_step && p.sound !== 'off') out.sound = step(STEPS_SOUND, p.sound, f.sound_step);
+  if (f.music_gain) out.music_gain = (out.music_gain || 0) + f.music_gain;
+  if (f.caption_style && !p.caption_style) out.caption_style = f.caption_style;
+  if (f.extra) out.extra = [out.extra, f.extra].filter(Boolean).join(' ');
+  out.applied = [...(out.applied || []), ...(f.notes || []).map(n => '[phản hồi] ' + n)];
+  return out;
+}
 // Profile with learned adjustments applied (+ list of what changed). Explicit profile fields always win for caption_style/pack.
 export function effectiveProfile(p) {
-  const out = { ...p, applied: [] };
+  const out = applyFeedback(p, { ...p, applied: [] });
   if (!p.learn || !p.learned) return out;
   const r = deriveRules(p.learned), a = r.adjust;
   const step = (list, v, d) => list[Math.max(1, Math.min(list.length - 1, list.indexOf(v) + d))] || v;
   if (a.drop_src) {
     out.broll_src = (p.broll_src || []).filter(x => !a.drop_src.includes(x));
     const no = { emoji: 'emoji_pop/emoji', text: 'chữ nổi to (text pop)', photo: 'ảnh' };
-    out.extra = [p.extra, `Không chèn ${a.drop_src.map(k => no[k]).filter(Boolean).join(', ')} (người dùng hay xoá).`].filter(Boolean).join(' ');
+    out.extra = [out.extra, `Không chèn ${a.drop_src.map(k => no[k]).filter(Boolean).join(', ')} (người dùng hay xoá).`].filter(Boolean).join(' ');
   }
   if (a.broll_step && p.broll_density !== 'off') out.broll_density = step(STEPS_DENS, p.broll_density, a.broll_step);
   if (a.ai_step) out.ai_density = STEPS_AI[Math.max(0, STEPS_AI.indexOf(p.ai_density) + a.ai_step)] || p.ai_density;
   if (a.sound_step && p.sound !== 'off') out.sound = step(STEPS_SOUND, p.sound, a.sound_step);
   if (a.music) out.music = a.music;
-  if (a.music_gain) out.music_gain = a.music_gain;
+  if (a.music_gain) out.music_gain = (out.music_gain || 0) + a.music_gain;
   if (a.caption_style && !p.caption_style) out.caption_style = a.caption_style;
   if (a.pack && (p.pack === 'auto' || !p.pack)) out.pack = a.pack;
-  out.applied = r.notes;
+  out.applied = [...out.applied, ...r.notes];
   return out;
 }
 // Learn from one project the autopilot produced (called by the Studio lane after the user saves it, or by CLI).
