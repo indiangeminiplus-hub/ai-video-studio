@@ -1,10 +1,11 @@
 // Self-test: every pack item renders, every recipe runs, every caption style draws, no page errors.
 // usage: node scripts/selftest.mjs engine/index.html <project>/timeline.json   (needs captions + frames)
 import puppeteer from 'puppeteer-core'; import fs from 'node:fs'; import path from 'node:path'; import { pathToFileURL } from 'node:url';
+import { findChrome } from './platform.mjs';
 const [eng, tlp] = process.argv.slice(2);
 const tl = JSON.parse(fs.readFileSync(tlp, 'utf8')); tl.base = pathToFileURL(path.dirname(tlp)).href + '/';
 tl.captions = JSON.parse(fs.readFileSync(path.join(path.dirname(tlp), tl.captions), 'utf8')); tl.aroll.count = 600; tl.width = 720; tl.height = 1280;
-const b = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(f => fs.existsSync(f)), headless: true, args: ['--allow-file-access-from-files'] });
+const b = await puppeteer.launch({ executablePath: findChrome(), headless: true, args: ['--allow-file-access-from-files'] });
 const p = await b.newPage(); const errs = [];
 p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
 await p.goto(pathToFileURL(eng).href, { waitUntil: 'networkidle0' });

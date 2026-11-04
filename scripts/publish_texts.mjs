@@ -7,8 +7,9 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { PLATFORMS, probe } from '../studio/routes/52_publish.mjs';
+import { claudeBin, spawnClaude } from './platform.mjs';
 
-export const claudeBin = () => [process.env.CLAUDE_BIN, path.join(os.homedir(), '.local/bin/claude'), '/opt/homebrew/bin/claude', '/usr/local/bin/claude'].find(f => f && fs.existsSync(f)) || 'claude';
+export { claudeBin };
 const extractJSON = s => { const a = s.indexOf('{'), b = s.lastIndexOf('}'); if (a < 0 || b < a) throw new Error('AI không trả về JSON'); return JSON.parse(s.slice(a, b + 1)); };
 export const asText = (P, d) => [
   `# ${P.name}`, d.title ? `\n## Tiêu đề\n${d.title}` : '', `\n## Caption\n${d.caption || ''}`, `\n## Hashtag\n${(d.hashtags || []).join(' ')}`,
@@ -41,7 +42,7 @@ Chỉ trả về JSON đúng dạng, không giải thích:
 // claude -p … --output-format json → the model's text. onProc(child) lets callers kill it.
 export function askClaude(prompt, { model = 'sonnet', onProc } = {}) {
   return new Promise((ok, bad) => {
-    const pr = spawn(claudeBin(), ['-p', prompt, '--output-format', 'json', '--model', model], { cwd: os.tmpdir(), env: process.env });
+    const pr = spawnClaude(['-p', prompt, '--output-format', 'json', '--model', model], { cwd: os.tmpdir(), env: process.env });
     onProc?.(pr); let out = '', err = '';
     pr.stdout.on('data', d => (out += d)); pr.stderr.on('data', d => (err += d));
     pr.on('error', e => bad(new Error(e.code === 'ENOENT' ? 'Không tìm thấy Claude Code CLI (lệnh `claude`). Cài Claude Code rồi chạy `claude` một lần để đăng nhập.' : e.message)));

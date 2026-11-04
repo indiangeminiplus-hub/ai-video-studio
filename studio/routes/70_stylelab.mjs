@@ -30,8 +30,8 @@ export default ctx => {
     if (!p.startsWith('/api/stylelab/')) return false;
     const q = k => u.searchParams.get(k);
     if (p === '/api/stylelab/check') {
-      const { claudeBin } = await L();
-      return await new Promise(ok => execFile(claudeBin(), ['--version'], { timeout: 15000 }, (e, out) => {
+      const { execClaude } = await import('../../scripts/platform.mjs');
+      return await new Promise(ok => execClaude(['--version'], { timeout: 15000 }, (e, out) => {
         ctx.json(res, e ? { error: e.code === 'ENOENT' ? 'Không tìm thấy Claude Code CLI ("claude"). Cài Claude Code rồi chạy "claude" một lần để đăng nhập.' : 'Không chạy được "claude": ' + e.message } : { ok: true, version: out.trim() }); ok(true);
       }));
     }

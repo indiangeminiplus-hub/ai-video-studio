@@ -15,6 +15,7 @@
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { findChrome, pyBin, claudeBin, spawnClaude } from './platform.mjs';
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HOME = process.env.AVS_HOME || path.join(os.homedir(), '.ai-video-studio');
@@ -23,8 +24,8 @@ const SKILLS = process.env.AVS_SKILLS_DIR || path.join(os.homedir(), '.claude', 
 const UPACK = path.join(SKILL, 'engine/packs/user');
 const TPL = path.join(process.env.AVS_TEMPLATES || path.join(SKILL, 'templates'));
 const UTPL = path.join(TPL, 'user'), UREF = path.join(SKILL, 'references/user');
-const PY = fs.existsSync(path.join(SKILL, 'scripts/.venv/bin/python')) ? path.join(SKILL, 'scripts/.venv/bin/python') : 'python3';
-const CHROME = process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(f => fs.existsSync(f));
+const PY = pyBin(SKILL);
+const CHROME = findChrome();
 const args = process.argv.slice(2);
 const VAL = ['--name', '--model', '--work', '--footage', '--orient', '--industry', '--colors', '--font', '--images', '--id', '--title', '--rounds', '--category', '--whisper', '--lang', '--desc'];
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
@@ -55,11 +56,7 @@ const SAMPLE_CAPS = (() => {
 })();
 
 // ---------- Claude CLI ----------
-export function claudeBin() {
-  if (process.env.CLAUDE_BIN) return process.env.CLAUDE_BIN;
-  try { const p = execFileSync('/bin/sh', ['-lc', 'command -v claude'], { encoding: 'utf8' }).trim(); if (p) return p; } catch {}
-  return [path.join(os.homedir(), '.local/bin/claude'), '/opt/homebrew/bin/claude', '/usr/local/bin/claude'].find(f => fs.existsSync(f)) || 'claude';
-}
+export { claudeBin };
 const LOGIN = /not logged in|please run \/login|invalid api key|authentication|unauthorized|oauth token|credit balance/i;
 // stream-json so we can show live activity (which image Claude opens, thinking, how much it has written) and keep the
 // image reads (`Read` tool) on record: res.reads lists the files Claude actually opened.
@@ -68,7 +65,7 @@ function callClaude(prompt, { cwd, model, resume, onTick, timeout = 20 * 60e3 })
     const a = ['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--allowedTools', 'Read'];
     if (model && model !== 'default') a.push('--model', model);
     if (resume) a.push('--resume', resume);
-    const p = child = spawn(claudeBin(), a, { cwd, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env } });
+    const p = child = spawnClaude(a, { cwd, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env } });
     let buf = '', err = '', r = null, chars = 0, act = 'đang đọc yêu cầu', usedModel = '', timedOut = false; const reads = [], t0 = Date.now();
     const tick = setInterval(() => onTick?.((Date.now() - t0) / 1000, act), 1000);
     const kill = setTimeout(() => { timedOut = true; p.kill('SIGTERM'); }, timeout);

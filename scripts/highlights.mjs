@@ -16,10 +16,11 @@ import crypto from 'node:crypto';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { callClaude, parseJson } from './ai_edit.mjs';
+import { pyBin } from './platform.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SKILL = path.resolve(HERE, '..');
-export const PY = fs.existsSync(path.join(HERE, '.venv/bin/python')) ? path.join(HERE, '.venv/bin/python') : 'python3';
+export const PY = pyBin(HERE);
 export const AVS_HOME = process.env.AVS_HOME || path.join(os.homedir(), '.ai-video-studio');
 const S = f => path.join(HERE, f);
 export const say = (p, s) => console.log(`@@ ${Math.max(0, Math.min(1, p)).toFixed(3)} ${s}`);

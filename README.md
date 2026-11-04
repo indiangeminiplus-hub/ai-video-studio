@@ -51,8 +51,8 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 
 | Cần | Ghi chú |
 |---|---|
-| **macOS** (Apple Silicon hoặc Intel) | Linux chạy được phần lõi; app Mac chỉ có trên macOS |
-| **Google Chrome** | Dùng để render từng khung hình |
+| **macOS** (Apple Silicon hoặc Intel) hoặc **Windows 10/11** | Linux chạy được phần lõi; app Mac chỉ có trên macOS, Windows có lối tắt Desktop |
+| **Google Chrome** (hoặc Microsoft Edge trên Windows) | Dùng để render từng khung hình |
 | **ffmpeg ≥ 6** | `brew install ffmpeg` |
 | **Node.js ≥ 18** | `brew install node` |
 | **Python ≥ 3.10** | `brew install python` |
@@ -88,6 +88,27 @@ Tuỳ chọn: `bash install.sh --no-app` (không tạo app), `bash install.sh --
 ```bash
 cd ai-video-studio && git pull && bash install.sh
 ```
+
+### Cài trên Windows 10/11
+
+1. Giải nén file zip (hoặc `git clone`) vào một thư mục, ví dụ `C:\AI\ai-video-studio`.
+2. Bấm đúp **`install.cmd`**.
+   - Nếu thiếu ffmpeg, Node.js hay Python, trình cài hỏi để tự cài bằng `winget` (có sẵn trên Windows 10/11). Bấm **Y** để đồng ý.
+   - Nếu cài xong mà vẫn báo thiếu, đóng cửa sổ rồi bấm đúp `install.cmd` lần nữa, để Windows nhận PATH mới.
+3. Cài xong, bấm đúp lối tắt **AI Video Studio** ngoài Desktop (hoặc `studio.cmd`).
+   - Trình duyệt mở <http://localhost:5186>.
+   - Cửa sổ đen thu nhỏ dưới thanh tác vụ chính là server. Đóng cửa sổ đó là tắt Studio.
+4. Tạo dự án: bấm **Video mới** → **Chọn video từ máy…**. Không cần gõ đường dẫn. Nếu dán đường dẫn bằng "Copy as path", app tự bỏ dấu ngoặc kép.
+
+Trên Windows mọi thứ chạy như trên Mac, trừ:
+- không có app `.app`;
+- thông báo hiện dạng bong bóng ở khay hệ thống;
+- chế độ "Chạy cả khi tắt app" của thư mục tự động dùng Task Scheduler thay cho LaunchAgent.
+
+Lỗi hay gặp:
+- **"running scripts is disabled"**: hãy chạy `install.cmd`, đừng chạy `install.ps1` trực tiếp.
+- **Không render được**: cài Google Chrome, hoặc đặt biến `CHROME_PATH` trỏ tới `chrome.exe` / `msedge.exe`.
+- **AI báo không thấy `claude`**: cài Claude Code, mở cửa sổ mới, gõ `claude` một lần để đăng nhập.
 
 ---
 
@@ -430,5 +451,6 @@ Dữ liệu của bạn nằm ngoài repo, ở `~/.ai-video-studio/`: clip mẫu
   - Model YuNet (OpenCV Zoo, MIT).
   - Icon thương hiệu Simple Icons (CC0), tải lúc render. Logo vẫn là thương hiệu của từng hãng, chỉ dùng khi nhắc đúng sản phẩm.
   - Font Google Fonts (OFL).
+  - Khối hoạt ảnh HyperFrames (HeyGen, Apache-2.0) trong `engine/hf/`. Toàn văn giấy phép ở `engine/hf/LICENSE-HyperFrames.txt`; thư viện đi kèm (GSAP, three.js, font) theo giấy phép riêng ghi trong thư mục từng khối.
   - Ảnh stock tải về qua tính năng B-roll AI theo giấy phép của từng nguồn; app ghi lại nguồn và tác giả.
 - Số liệu, giá, SĐT trong mẫu và file ví dụ đều là **dữ liệu ví dụ**.

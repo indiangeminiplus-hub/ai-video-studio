@@ -206,7 +206,7 @@
     const v = S.v, isNew = !it, f = it?.file || file || S.videos?.[0]?.file || '';
     const plats = it ? [it.platform] : platforms || ['youtube'];
     const w = it?.when || when || nextSlot(plats);
-    const vids = [...(S.videos || [])]; if (f && !vids.some(x => x.file === f)) vids.unshift({ file: f, name: f.split('/').pop(), src: '' });
+    const vids = [...(S.videos || [])]; if (f && !vids.some(x => x.file === f)) vids.unshift({ file: f, name: f.split(/[\\/]/).pop(), src: '' });
     const P = it || per || {};
     Studio.modal(`<div class="sc-ed sc-form"><h3><i class="ti ${isNew ? 'ti-calendar-plus' : ICON[it.platform]}"></i> ${isNew ? 'Thêm lịch đăng' : 'Sửa lịch đăng'}${it ? ` <span class="sc-st ${it.state}">${ST[it.state][0]}</span>` : ''}</h3>
       ${it?.error ? `<div class="sc-note">${esc(it.error)}</div>` : ''}
@@ -337,10 +337,11 @@
   // openScheduleFor({ platform, video: 'out/x.mp4', all: {tiktok: {title, caption, hashtags}, …} })
   window.openScheduleFor = async ({ platform, video, all, thumb }) => {
     await load();
-    const meta = Studio.META, file = video && !video.startsWith('/') && meta?.dir ? meta.dir + '/' + video : video;
+    const isAbs = r => /^([a-zA-Z]:[\\/]|[\\/])/.test(r); // POSIX or Windows absolute path
+    const meta = Studio.META, file = video && !isAbs(video) && meta?.dir ? meta.dir + '/' + video : video;
     const plats = [platform].filter(Boolean);
     S.videos = await Studio.api('/api/schedule/videos');
-    const abs = r => (r && !r.startsWith('/') && meta?.dir ? meta.dir + '/' + r : r);
+    const abs = r => (r && !isAbs(r) && meta?.dir ? meta.dir + '/' + r : r);
     edit(null, { back: 'publish', file, platforms: plats, per: { ...(all?.[platform] || {}), all, thumb: abs(thumb) } });
   };
   Studio.addPanel('schedule', 'ti-calendar', 'Lịch đăng', () => { render(); load(); });

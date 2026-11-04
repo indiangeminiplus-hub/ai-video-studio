@@ -17,6 +17,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
+import { findChrome, linkPath } from './platform.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const SK = path.resolve(here, '..');
@@ -41,7 +42,7 @@ for (const { f, tpl } of all.filter(x => !x.user || only.includes(x.tpl.id))) {
   for (const k of ['id', 'name', 'category', 'aspect', 'pack', 'desc', 'title', 'base_dur']) if (tpl[k] == null) problems.push(`${f}: thiếu "${k}"`);
   if (tpl.id && f !== tpl.id + '.json') problems.push(`${f}: id "${tpl.id}" khác tên file`);
   if (tpl.name && [...tpl.name].length > 28) problems.push(`${f}: name dài ${[...tpl.name].length} > 28`);
-  if (!['bds', 'khoahoc', 'review', 'chiase', 'tintuc', 'banhang', 'ai', 'khac'].includes(tpl.category)) problems.push(`${f}: category sai`);
+  if (!['bds', 'khoahoc', 'review', 'chiase', 'tintuc', 'banhang', 'doanhnghiep', 'ai', 'khac'].includes(tpl.category)) problems.push(`${f}: category sai`);
   if (!['9:16', '16:9'].includes(tpl.aspect)) problems.push(`${f}: aspect sai`);
 }
 fs.writeFileSync(path.join(TPL, 'index.json'), JSON.stringify(all.filter(x => !x.user).map(({ tpl: t }) => ({
@@ -57,11 +58,11 @@ const tlFile = ['timeline.base.json', 'timeline.json'].map(f => path.join(FOOT, 
 if (!tlFile) { console.error('không có timeline.base.json / timeline.json trong', FOOT); process.exit(1); }
 const base = JSON.parse(fs.readFileSync(tlFile, 'utf8'));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'avs_tpl_'));
-for (const e of fs.readdirSync(FOOT)) if (e !== 'media') fs.symlinkSync(path.join(FOOT, e), path.join(tmp, e));
+for (const e of fs.readdirSync(FOOT)) if (e !== 'media') linkPath(path.join(FOOT, e), path.join(tmp, e));
 fs.mkdirSync(path.join(tmp, 'media'));
 for (const dir of [path.join(SK, 'examples', 'media'), path.join(FOOT, 'media')]) {
   if (!fs.existsSync(dir)) continue;
-  for (const e of fs.readdirSync(dir)) { const d = path.join(tmp, 'media', e); fs.rmSync(d, { force: true, recursive: false }); fs.symlinkSync(path.join(dir, e), d); }
+  for (const e of fs.readdirSync(dir)) { const d = path.join(tmp, 'media', e); fs.rmSync(d, { force: true, recursive: false }); linkPath(path.join(dir, e), d); }
 }
 const captions = typeof base.captions === 'string' ? JSON.parse(fs.readFileSync(path.join(FOOT, base.captions), 'utf8')) : (base.captions || []);
 const frameDir = path.join(FOOT, path.dirname(base.aroll.frames));
@@ -69,8 +70,8 @@ const nFrames = base.aroll.count || fs.readdirSync(frameDir).filter(f => /\.(jpe
 const fps0 = base.fps || 30;
 const footVert = (base.height || 720) > (base.width || 1280);
 
-const CHROME = process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(p => fs.existsSync(p));
-const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files', '--disable-web-security', '--force-color-profile=srgb', '--hide-scrollbars'] });
+const CHROME = findChrome();
+const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files', '--disable-web-security', '--force-color-profile=srgb', '--hide-scrollbars', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 fs.mkdirSync(PREV, { recursive: true });
 
 const ff = (a) => new Promise((res, rej) => { const p = spawn('ffmpeg', a, { stdio: ['pipe', 'ignore', 'inherit'] }); p.on('close', c => (c ? rej(new Error('ffmpeg ' + c)) : res())); p.stdin.end(); });

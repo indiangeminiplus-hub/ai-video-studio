@@ -4,12 +4,14 @@
 // Steps: whisper (transcribe.py) → cut silences (cut.py) → 30 fps frames → face position (find_face.py) → captions (captions.py)
 // → timeline.json (frame_grid + title_card, music bed). Progress lines "@@ <0..1> <step>" on stdout; exit ≠ 0 + Vietnamese error.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pyBin } from './platform.mjs';
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const PY = fs.existsSync(path.join(SKILL, 'scripts/.venv/bin/python')) ? path.join(SKILL, 'scripts/.venv/bin/python') : 'python3';
+export const PY = pyBin(SKILL);
 
 // Plain runner (the server passes its own, which also records job.proc for "Dừng").
 export function runCmd(cmd, argv, onLine, { cwd } = {}) {
@@ -40,7 +42,7 @@ export function videoOrient(src) {
  * env: { run(cmd, argv, onLine) → Promise, onStep(text, progress) }
  */
 export async function newProject({ video, dir, model = 'small', pack = 'slate', title = '', orient = 'vertical', lang }, { run = runCmd, onStep = () => {} } = {}) {
-  const src = path.resolve(video);
+  const src = path.resolve(String(video).trim().replace(/^["']|["']$/g, '').replace(/^~(?=[\\/]|$)/, os.homedir()));
   if (!fs.existsSync(src)) throw new Error(`không thấy video ${src}`);
   if (orient === 'auto') orient = videoOrient(src);
   const d = path.resolve(dir || path.join(path.dirname(src), path.basename(src, path.extname(src)) + '_studio'));

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFile, spawn } from 'node:child_process';
+import { openPath } from '../../scripts/platform.mjs';
 
 // Thông số tham khảo (11/2026) — nền tảng đổi thường xuyên, chỉ dùng để cảnh báo.
 export const PLATFORMS = {
@@ -103,7 +104,7 @@ export default ctx => async (req, res, p, u) => {
   }
   if (p === '/api/publish/open') {
     const P = PLATFORMS[b.platform]; if (!P) return J({ error: 'nền tảng lạ' }, 400);
-    spawn('open', [P.url]); return J({ ok: true, url: P.url });
+    openPath(P.url); return J({ ok: true, url: P.url });
   }
   return false;
 };

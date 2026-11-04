@@ -24,6 +24,7 @@ import https from 'node:https';
 import crypto from 'node:crypto';
 import { spawn, execFile } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { openPath, revealPath, notifyDesktop, copyText } from './platform.mjs';
 
 export const HOME = () => process.env.AVS_HOME || path.join(os.homedir(), '.ai-video-studio');
 const F = name => path.join(HOME(), name);
@@ -168,15 +169,14 @@ export function autoSchedule(videos, platforms, { from } = {}) {
 // ---------- side effects (mở trang, thông báo, clipboard) ----------
 const DRY = () => process.env.AVS_DRY_OPEN === '1';
 function dryLog(kind, v) { const line = `${new Date().toISOString()} ${kind} ${v}`; console.log('[dry] ' + kind + ' ' + v); fs.mkdirSync(HOME(), { recursive: true }); fs.appendFileSync(F('publish_open.log'), line + '\n'); }
-export function openURL(url) { if (DRY()) return dryLog('OPEN', url); spawn('open', [url], { stdio: 'ignore', detached: true }).unref(); }
-function reveal(file) { if (DRY()) return dryLog('REVEAL', file); spawn('open', ['-R', file], { stdio: 'ignore', detached: true }).unref(); }
+export function openURL(url) { if (DRY()) return dryLog('OPEN', url); openPath(url); }
+function reveal(file) { if (DRY()) return dryLog('REVEAL', file); revealPath(file); }
 export function notify(title, msg) {
   if (DRY()) return dryLog('NOTIFY', `${title} — ${msg}`);
-  const q = x => '"' + String(x).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
-  execFile('osascript', ['-e', `display notification ${q(msg)} with title ${q(title)}`], () => {});
+  notifyDesktop(title, msg);
 }
 function pbcopy(text) {
-  return new Promise(ok => { try { const p = spawn('pbcopy', [], { stdio: ['pipe', 'ignore', 'ignore'] }); p.on('error', () => ok(false)); p.on('close', c => ok(c === 0)); p.stdin.end(text); } catch { ok(false); } });
+  return copyText(text);
 }
 export const postText = it => [it.platform === 'youtube' || it.platform === 'facebook' ? it.title : '', it.caption, '', (it.hashtags || []).join(' ')].filter((x, i) => x || i === 2).join('\n').trim();
 

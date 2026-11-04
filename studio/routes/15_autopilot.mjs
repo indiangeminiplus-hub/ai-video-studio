@@ -7,11 +7,13 @@
 //   POST /api/autopilot/clear · /settings {…} · /agent {on} · /profile {action: save|duplicate|delete|default|reset, …} · /learn
 // Env AVS_NO_QUEUE=1 → no runner in this server (UI still edits the queue; `node scripts/queue.mjs run` executes it).
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { Runner, AVS_HOME, KINDS, loadQueue, addItem, cancelItem, retryItem, removeItem, moveItem, clearDone, loadSettings, saveSettings, agentInstall, agentUninstall } from '../../scripts/queue.mjs';
 import { loadStore, upsertProfile, duplicateProfile, deleteProfile, setDefault, resetLearned, deriveRules, effectiveProfile, learnFromProject } from '../../scripts/profile.mjs';
 import { STEPS } from '../../scripts/autopilot.mjs';
+import { openPath, revealPath } from '../../scripts/platform.mjs';
 
 const VIDEO = /\.(mp4|mov|m4v|mkv|webm)$/i;
 const rd = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return null; } };
@@ -42,7 +44,7 @@ export default ctx => {
     const ap = rd(path.join(it.project, '.studio/autopilot.json'));
     return ap ? { ...it, steps: ap.steps, learnedApplied: ap.learnedApplied } : it;
   };
-  const reveal = f => { if (f && fs.existsSync(f)) spawn('open', ['-R', f]); return !!f; };
+  const reveal = f => { if (f && fs.existsSync(f)) revealPath(f); return !!f; };
 
   return async (req, res, p, u) => {
     if (!p.startsWith('/api/autopilot')) return false;
@@ -68,14 +70,14 @@ export default ctx => {
       const b = await ctx.body(req);
       if (p === '/api/autopilot/enqueue') {
         const kind = b.kind || 'autopilot';
-        let input = String(b.input || b.video || '').trim().replace(/^~(?=\/)/, process.env.HOME);
+        let input = String(b.input || b.video || '').trim().replace(/^~(?=[\\/])/, os.homedir()).replace(/^"(.*)"$/, '$1');
         if (kind !== 'topic') {
           if (!input) return J({ error: 'Nhập đường dẫn video' }, 400);
           input = path.resolve(input);
           if (!fs.existsSync(input)) return J({ error: `Không thấy ${input}` }, 404);
           if (kind === 'autopilot' && !(VIDEO.test(input) || fs.existsSync(path.join(input, 'timeline.json')))) return J({ error: 'Chỉ nhận tệp video hoặc thư mục dự án' }, 400);
         }
-        const opts = { ...(b.opts || {}) }; if (b.profile) opts.profile = b.profile; if (b.out) opts.out = path.resolve(String(b.out).replace(/^~(?=\/)/, process.env.HOME));
+        const opts = { ...(b.opts || {}) }; if (b.profile) opts.profile = b.profile; if (b.out) opts.out = path.resolve(String(b.out).replace(/^~(?=[\\/])/, os.homedir()).replace(/^"(.*)"$/, '$1'));
         return J({ ok: true, item: addItem({ kind, input, opts, source: b.source || 'ui' }) });
       }
       if (p === '/api/autopilot/item') {
@@ -101,11 +103,11 @@ export default ctx => {
       }
       if (p === '/api/autopilot/agent') return J(b.on ? await agentInstall() : await agentUninstall());
       if (p === '/api/autopilot/reveal') {
-        const f = path.resolve(String(b.path || '').replace(/^~(?=\/)/, process.env.HOME));
+        const f = path.resolve(String(b.path || '').replace(/^~(?=[\\/])/, os.homedir()).replace(/^"(.*)"$/, '$1'));
         if (b.create) fs.mkdirSync(f, { recursive: true });
         if (!fs.existsSync(f)) return J({ error: 'Thư mục chưa có' }, 404);
         if (!fs.statSync(f).isDirectory() && !/\.(mp4|mov|m4v|mkv|jpe?g|png|txt|srt|json)$/i.test(f)) return J({ error: 'Chỉ mở thư mục hoặc file kết quả' }, 400);
-        spawn('open', [f]); return J({ ok: true });
+        openPath(f); return J({ ok: true });
       }
       if (p === '/api/autopilot/profile') {
         const a = b.action;

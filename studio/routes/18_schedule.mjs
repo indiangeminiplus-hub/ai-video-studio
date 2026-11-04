@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, execFile } from 'node:child_process';
 import * as PUB from '../../scripts/publish.mjs';
+import { revealPath } from '../../scripts/platform.mjs';
 
 const VID = /\.(mp4|mov|m4v|webm)$/i;
 export default ctx => {
@@ -85,7 +86,7 @@ export default ctx => {
       if (p === '/api/schedule/settings') return J({ ok: true, settings: PUB.setSettings(b) });
       if (p === '/api/schedule/auto') return J({ ok: true, items: PUB.autoSchedule((b.files || []).map(resolveFile).filter(Boolean), b.platforms || [], { from: b.from }) });
       if (p === '/api/schedule/run') return J(runDue(true) ? { ok: true } : { error: 'Đang chạy rồi' });
-      if (p === '/api/schedule/reveal') { const it = PUB.loadSchedule().items.find(x => x.id === b.id); if (it && fs.existsSync(it.file)) spawn('open', ['-R', it.file]); return J({ ok: !!it }); }
+      if (p === '/api/schedule/reveal') { const it = PUB.loadSchedule().items.find(x => x.id === b.id); if (it && fs.existsSync(it.file)) revealPath(it.file); return J({ ok: !!it }); }
       if (p === '/api/schedule/copy') { const it = PUB.loadSchedule().items.find(x => x.id === b.id); return J(it ? { text: PUB.postText(it) } : { error: 'không thấy' }); }
       if (p === '/api/youtube/client') return J({ ok: true, ...PUB.saveClient(b.json) });
       if (p === '/api/youtube/connect') {

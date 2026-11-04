@@ -202,8 +202,19 @@ export class Runner {
 // ---------- LaunchAgent (only when the user turns on "Chạy cả khi tắt app") ----------
 const plistPath = () => path.join(LA_DIR, `${LA_LABEL}.plist`);
 const xml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-export function agentStatus() { return { installed: fs.existsSync(plistPath()), plist: plistPath() }; }
+// Windows: a Task Scheduler task at logon running a hidden wscript launcher (no admin rights needed).
+const WIN_TASK = 'AIVideoStudio-watch', winVbs = () => path.join(AVS_HOME, 'agent.vbs');
+export function agentStatus() { return process.platform === 'win32' ? { installed: fs.existsSync(winVbs()), task: WIN_TASK } : { installed: fs.existsSync(plistPath()), plist: plistPath() }; }
 export function agentInstall() {
+  if (process.platform === 'win32') {
+    const q = s => String(s).replace(/"/g, '""'), cmd = `"${process.execPath}" "${path.join(SKILL, 'scripts/queue.mjs')}" run --daemon --role agent`;
+    fs.mkdirSync(AVS_HOME, { recursive: true });
+    fs.writeFileSync(winVbs(), [`Set sh = CreateObject("WScript.Shell")`, `sh.CurrentDirectory = "${q(SKILL)}"`, `sh.Run "${q(cmd)}", 0, False`, ''].join('\r\n'));
+    saveSettings({ agent: true });
+    if (process.env.AVS_NO_LAUNCHCTL) return Promise.resolve({ ok: true, task: WIN_TASK, scheduler: false });
+    return new Promise(ok => execFile('schtasks', ['/create', '/f', '/tn', WIN_TASK, '/sc', 'onlogon', '/rl', 'limited', '/tr', `wscript.exe "${winVbs()}"`], e =>
+      execFile('schtasks', ['/run', '/tn', WIN_TASK], () => ok({ ok: !e, error: e?.message, task: WIN_TASK }))));
+  }
   const node = process.execPath, logf = path.join(os.homedir(), 'Library/Logs/AIVideoStudio-watch.log');
   const PATH = ['/opt/homebrew/bin', '/usr/local/bin', path.join(os.homedir(), '.local/bin'), path.dirname(node), '/usr/bin', '/bin', '/usr/sbin', '/sbin'].join(':');
   const env = { PATH, ...(process.env.AVS_HOME ? { AVS_HOME: process.env.AVS_HOME } : {}) };
@@ -233,6 +244,10 @@ export function agentInstall() {
 }
 export function agentUninstall() {
   saveSettings({ agent: false });
+  if (process.platform === 'win32') {
+    const done = () => { fs.rmSync(winVbs(), { force: true }); return { ok: true }; };
+    return process.env.AVS_NO_LAUNCHCTL ? Promise.resolve(done()) : new Promise(ok => execFile('schtasks', ['/delete', '/f', '/tn', WIN_TASK], () => ok(done())));
+  }
   const done = () => { fs.rmSync(plistPath(), { force: true }); return { ok: true }; };
   if (!process.env.AVS_NO_LAUNCHCTL && process.platform === 'darwin' && fs.existsSync(plistPath()))
     return new Promise(ok => execFile('launchctl', ['bootout', `gui/${process.getuid()}/${LA_LABEL}`], () => ok(done())));

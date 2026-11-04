@@ -47,7 +47,7 @@ Chỉ trả về DUY NHẤT JSON (không markdown):
 }
 
 // ---------- TTS ----------
-function hasEdge() { try { execFileSync('/bin/sh', ['-lc', 'command -v edge-tts'], { stdio: 'pipe' }); return 'edge-tts'; } catch {} const b = path.join(path.dirname(PY), 'edge-tts'); return fs.existsSync(b) ? b : null; }
+function hasEdge() { try { execFileSync(process.platform === 'win32' ? 'where' : '/bin/sh', process.platform === 'win32' ? ['edge-tts'] : ['-lc', 'command -v edge-tts'], { stdio: 'pipe' }); return 'edge-tts'; } catch {} const b = path.join(path.dirname(PY), process.platform === 'win32' ? 'edge-tts.exe' : 'edge-tts'); return fs.existsSync(b) ? b : null; }
 async function tts(text, voice, rate, outWav) {
   const tmp = outWav.replace(/\.wav$/, '.src');
   if (voice.startsWith('edge:')) {

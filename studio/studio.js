@@ -30,13 +30,14 @@ const NODE_SIZE = { person: 64, chip: 22, pill: 30, pill_outline: 32, big: 120, 
 
 // ---------- component model ----------
 const typeName = ty => TYPE_VI[ty] || (win?.PACKS || []).flatMap(p => p.items).find(i => i.type === ty)?.label || ty;
+const sceneName = s => (s.type === 'hf' ? win?.HF_CATALOG?.[s.block]?.label || 'Khối HyperFrames' : typeName(s.type));
 function trackOf(s) { return s.type === 'text' ? 'add' : LAYOUT.has(s.type) ? 'scene' : BROLL.has(s.type) ? 'broll' : 'gfx'; }
 function build() {
   comps = [];
   clipLayout().forEach(k => { k.c.cid = 'k' + k.i; comps.push({ obj: k.c, kind: 'clip', track: 'video', t0: k.t0, t1: k.t1, idx: k.i, label: `Clip ${k.i + 1}`, sub: typeof k.c.src === 'string' ? k.c.src : k.c.src?.seq }); });
   (TL.scenes || []).forEach((s, i) => {
     s.cid = 's' + i;
-    if (s.type !== 'text') comps.push({ obj: s, kind: 'scene', track: trackOf(s), t0: s.t0, t1: s.t1, label: typeName(s.type), sub: s.text || s.question || '', scene: s });
+    if (s.type !== 'text') comps.push({ obj: s, kind: 'scene', track: trackOf(s), t0: s.t0, t1: s.t1, label: sceneName(s), sub: s.text || s.question || '', scene: s });
     (s.lines || []).forEach((L, j) => {
       L.cid = `s${i}l${j}`;
       comps.push({ obj: L, kind: 'line', track: s.type === 'text' ? 'add' : 'gline', t0: L.t ?? s.t0, t1: L.out ?? s.t1, label: L.text, scene: s });
@@ -349,7 +350,7 @@ function renderInspector() {
   const el = $('#insp');
   if (!sel) { el.innerHTML = projectPanel(); return; }
   const c = sel, o = c.obj;
-  const tag = { clip: 'Video', line: c.scene?.type === 'text' ? 'Chữ thêm' : 'Chữ graphic', cap: 'Phụ đề', node: 'Sơ đồ', badge: 'Huy hiệu', sfx: 'Âm thanh', music: 'Nhạc nền', scene: typeName(o.type) }[c.kind] || c.tag || c.kind;
+  const tag = { clip: 'Video', line: c.scene?.type === 'text' ? 'Chữ thêm' : 'Chữ graphic', cap: 'Phụ đề', node: 'Sơ đồ', badge: 'Huy hiệu', sfx: 'Âm thanh', music: 'Nhạc nền', scene: sceneName(o) }[c.kind] || c.tag || c.kind;
   const tabs = inspTabs(c), key = c.kind;
   for (const h of Studio._insp) { const t = h(c); if (t) tabs.push(...(Array.isArray(t[0]) ? t : [t])); }
   if (!tabs.some(t => t[0] === ITAB[key])) ITAB[key] = tabs[0][0];
@@ -375,7 +376,7 @@ function projectPanel() {
       <div class="help">${esc(packs().find(p => p.id === TL.pack)?.desc || 'Gói quyết định kiểu phụ đề, graphic gợi ý và bản dựng tự động.')}</div>
       <div class="acts"><button data-pact="recipe" class="primary"><i class="ti ti-wand"></i> Dựng tự động theo gói</button></div>
       <div class="help">Thêm intro, graphic theo từ khoá trong lời nói, CTA cuối, nhạc. Hoàn tác được.</div>`, 'ti-package') +
-    sect('Kiểu phụ đề', `<select data-pf="caption_style">${opt([...capStyles.map(c => [c, c]), ['', 'Karaoke cơ bản'], ['none', 'Tắt phụ đề']], TL.caption_style ?? '')}</select>
+    sect('Kiểu phụ đề', `<select data-pf="caption_style">${opt([...capStyles.map(c => [c, (win && win.CAPTION_LABELS || {})[c] || c]), ['', 'Karaoke cơ bản'], ['none', 'Tắt phụ đề']], TL.caption_style ?? '')}</select>
       <label class="check"><input type="checkbox" data-pf="caption_reveal" ${TL.caption_reveal === false ? '' : 'checked'}> Hiện từng từ theo lời nói</label>`, 'ti-badge-cc') +
     sect('Vị trí mặt (bubble / PIP / vùng mặt)', `<div class="row"><div><span class="lbl">X</span><input type="number" data-pf="facex" value="${TL.face?.x ?? 360}"></div><div><span class="lbl">Y</span><input type="number" data-pf="facey" value="${TL.face?.y ?? 520}"></div></div>`, 'ti-face-id') +
     sect('Âm thanh', `<div class="acts"><button data-pact="autosfx"><i class="ti ti-wand"></i> Tự đặt SFX theo graphic</button></div>
@@ -1022,7 +1023,8 @@ $('#export').addEventListener('click', () => {
   };
 });
 $('#newproj').addEventListener('click', () => {
-  modal(`<h3><i class="ti ti-video-plus"></i> Tạo dự án từ video thô</h3><label class="lbl">Đường dẫn video trên máy</label><input id="npath" placeholder="/Users/ban/Movies/clip.mp4">
+  modal(`<h3><i class="ti ti-video-plus"></i> Tạo dự án từ video thô</h3><label class="lbl">Video</label><div class="row" style="gap:6px"><button id="npick" class="primary" style="flex:none"><i class="ti ti-folder-open"></i> Chọn video từ máy…</button><input type="file" id="nfile" accept="video/*,.mov,.mkv,.m4v" hidden>
+    <input id="npath" placeholder="${/Win/.test(navigator.platform) ? 'hoặc dán đường dẫn: C:\\Users\\ban\\Videos\\clip.mp4' : 'hoặc dán đường dẫn: /Users/ban/Movies/clip.mp4'}"></div>
     <label class="lbl">Thư mục dự án (để trống = cạnh video)</label><input id="ndir" placeholder="">
     <label class="lbl">Gói style</label><div class="packs">${packs().filter(p => p.recipe).map((p, i) => `<label><input type="radio" name="npack" value="${p.id}" ${i === 0 ? 'checked' : ''}><b>${p.icon} ${esc(p.name)}</b><span class="muted">${esc(p.desc || '')}</span></label>`).join('')}</div>
     <label class="lbl">Tiêu đề / chủ đề (dùng cho intro)</label><input id="ntitle" placeholder="VD: 3 mẹo dùng ChatGPT">
@@ -1030,7 +1032,16 @@ $('#newproj').addEventListener('click', () => {
     <div><label class="lbl">Độ chính xác nhận giọng</label><select id="nmodel"><option value="small">small (nhanh)</option><option value="medium">medium</option><option value="large-v3">large-v3 (chính xác nhất)</option></select></div></div>
     <p class="muted">Tự làm: nhận giọng → cắt khoảng lặng → cắt khung → phụ đề → bản dựng theo gói (intro, graphic theo từ khoá, CTA, nhạc). Sau đó bạn (hoặc Claude) chỉnh tiếp.</p>
     <div class="actions"><button onclick="closeModal()">Huỷ</button><button class="primary" id="ngo">Tạo</button></div>`);
+  $('#npick').onclick = () => $('#nfile').click();
+  $('#nfile').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    const b = $('#npick'); b.disabled = true; b.innerHTML = `<i class="ti ti-loader-2 spin"></i> Đang chép ${esc(f.name)}…`;
+    try { const r = await (await fetch('/api/pick/upload?name=' + encodeURIComponent(f.name), { method: 'POST', body: f })).json(); $('#npath').value = r.path; if (!$('#ntitle').value) $('#ntitle').value = f.name.replace(/\.\w+$/, ''); }
+    catch (err) { toast('Không chép được video: ' + err.message); }
+    b.disabled = false; b.innerHTML = `<i class="ti ti-circle-check"></i> ${esc(f.name)}`;
+  };
   $('#ngo').onclick = async () => {
+    if (!$('#npath').value.trim()) return toast('Chọn video trước');
     const r = await api('/api/new', { video: $('#npath').value.trim(), dir: $('#ndir').value.trim() || undefined, model: $('#nmodel').value,
       pack: document.querySelector('[name=npack]:checked')?.value || 'slate', title: $('#ntitle').value.trim(), orient: $('#norient').value });
     if (!r.ok) return toast(r.error || 'Đang có tác vụ khác chạy');

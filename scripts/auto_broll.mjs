@@ -11,6 +11,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { search as stockSearch, fetchMedia, sentences } from './ai_broll.mjs';
+import { spawnClaude } from './platform.mjs';
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -299,7 +300,7 @@ Trả về DUY NHẤT một mảng JSON, không giải thích: [{"i":0,"id":"...
 
 ${JSON.stringify(req)}`;
     const out = await new Promise((ok, bad) => {
-      const p = spawn(process.env.CLAUDE_BIN || 'claude', ['-p', prompt, '--output-format', 'json', '--model', opt('--model', 'sonnet')], { stdio: ['ignore', 'pipe', 'pipe'] });
+      const p = spawnClaude(['-p', prompt, '--output-format', 'json', '--model', opt('--model', 'sonnet')], { stdio: ['ignore', 'pipe', 'pipe'] });
       let o = '', e = ''; const tm = setTimeout(() => { p.kill(); bad(new Error('Claude quá 150 giây')); }, 150000);
       p.stdout.on('data', d => (o += d)); p.stderr.on('data', d => (e += d));
       p.on('error', () => { clearTimeout(tm); bad(new Error('Không tìm thấy Claude Code CLI (lệnh "claude")')); });

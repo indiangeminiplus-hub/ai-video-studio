@@ -2,9 +2,10 @@
 // usage: node scripts/app/make_icon.mjs icon_1024.png
 import fs from 'node:fs';
 import puppeteer from 'puppeteer-core';
+import { findChrome } from '../platform.mjs';
 
 const out = process.argv[2] || 'icon_1024.png';
-const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME = findChrome();
 // Same geometry as the 24px mark (bars at x 6/10.5/15, w 3), scaled to an 824px macOS icon tile on a 1024 canvas.
 const k = 824 / 24, bar = (x, y, h) => `<i style="left:${x * k}px;top:${y * k}px;width:${3 * k}px;height:${h * k}px"></i>`;
 const html = `<html><body style="margin:0;background:transparent">

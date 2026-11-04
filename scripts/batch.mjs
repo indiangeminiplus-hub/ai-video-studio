@@ -17,10 +17,11 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { spawn, execFileSync } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
+import { findChrome, linkPath, pyBin } from './platform.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SKILL = path.resolve(HERE, '..');
-const PY = fs.existsSync(path.join(HERE, '.venv/bin/python')) ? path.join(HERE, '.venv/bin/python') : 'python3';
+const PY = pyBin(HERE);
 export const AVS_HOME = process.env.AVS_HOME || path.join(os.homedir(), '.ai-video-studio');
 const IMG = /\.(jpe?g|png|webp|gif)$/i, VID = /\.(mp4|mov|m4v|webm|mkv)$/i;
 
@@ -227,8 +228,8 @@ let BROWSER = null;
 async function browser() {
   if (BROWSER) return BROWSER;
   const { default: puppeteer } = await import('puppeteer-core');
-  const CHROME = process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(p => fs.existsSync(p));
-  BROWSER = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files', '--disable-web-security', '--hide-scrollbars'] });
+  const CHROME = findChrome();
+  BROWSER = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files', '--disable-web-security', '--hide-scrollbars', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   return BROWSER;
 }
 // applyTemplate runs inside the engine page (same function Studio uses).
@@ -271,7 +272,7 @@ export async function buildRow(job, i, { preview = false, dirOverride, log = () 
   for (const t of slots) if (!media.has(t.sample)) {
     const base = src.kind === 'project' ? path.join(src.dir, t.sample) : path.join(SKILL, 'examples', t.sample.replace(/%0\dd.*$/, ''));
     const dst = path.join(dir, t.sample.replace(/%0\dd.*$/, ''));
-    if (fs.existsSync(base) && !fs.existsSync(dst)) { fs.mkdirSync(path.dirname(dst), { recursive: true }); src.kind === 'project' ? fs.symlinkSync(base, dst) : fs.cpSync(base, dst, { recursive: true }); }
+    if (fs.existsSync(base) && !fs.existsSync(dst)) { fs.mkdirSync(path.dirname(dst), { recursive: true }); src.kind === 'project' ? linkPath(base, dst) : fs.cpSync(base, dst, { recursive: true }); }
   }
   const sub = (o, m = media) => substitute(o, { row, map, media: m, brand });
   const title = get('f:title');
@@ -280,8 +281,8 @@ export async function buildRow(job, i, { preview = false, dirOverride, log = () 
 
   if (src.kind === 'project') {
     // clone: link everything except the timeline, media/, out/, .studio, batch/; texts/media/brand replaced
-    for (const e of fs.readdirSync(src.dir)) if (!['timeline.json', 'media', 'out', '.studio', 'batch'].includes(e) && !e.startsWith('.') && !fs.existsSync(path.join(dir, e))) fs.symlinkSync(path.join(src.dir, e), path.join(dir, e));
-    if (fs.existsSync(path.join(src.dir, 'media'))) for (const e of fs.readdirSync(path.join(src.dir, 'media'))) { const d = path.join(dir, 'media', e); if (!fs.existsSync(d)) fs.symlinkSync(path.join(src.dir, 'media', e), d); }
+    for (const e of fs.readdirSync(src.dir)) if (!['timeline.json', 'media', 'out', '.studio', 'batch'].includes(e) && !e.startsWith('.') && !fs.existsSync(path.join(dir, e))) linkPath(path.join(src.dir, e), path.join(dir, e));
+    if (fs.existsSync(path.join(src.dir, 'media'))) for (const e of fs.readdirSync(path.join(src.dir, 'media'))) { const d = path.join(dir, 'media', e); if (!fs.existsSync(d)) linkPath(path.join(src.dir, 'media', e), d); }
     tl = sub(JSON.parse(JSON.stringify(src.doc)));
     if (title) tl.title = title;
     tl.brand = { ...(tl.brand || {}), ...brand };

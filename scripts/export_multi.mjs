@@ -9,9 +9,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { pyBin } from './platform.mjs';
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PYBIN = fs.existsSync(path.join(SKILL, 'scripts/.venv/bin/python')) ? path.join(SKILL, 'scripts/.venv/bin/python') : 'python3';
+const PYBIN = pyBin(SKILL);
 const sh = (cmd, argv, onLine) => new Promise((ok, bad) => {
   const p = spawn(cmd, argv); let log = '';
   const feed = d => { const s = d.toString(); log = (log + s).slice(-3000); s.split(/[\r\n]/).forEach(l => l && onLine && onLine(l)); };

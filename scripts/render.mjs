@@ -10,6 +10,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
+import { findChrome } from './platform.mjs';
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
@@ -23,14 +24,11 @@ const W = tl.width || 1280, H = tl.height || 720, fps = tl.fps || 30;
 if (tl.aroll && !tl.aroll.count) tl.aroll.count = fs.readdirSync(path.resolve(tlDir, path.dirname(tl.aroll.frames))).filter(f => f.endsWith('.jpg')).length;
 const PRESET = args.includes('--fast') ? 'veryfast' : 'medium';
 
-const CHROME = process.env.CHROME_PATH || [
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/Applications/Chromium.app/Contents/MacOS/Chromium',
-  '/usr/bin/google-chrome', '/usr/bin/chromium',
-].find(p => fs.existsSync(p));
+const CHROME = findChrome();
 
 const launchArgs = ['--allow-file-access-from-files', '--disable-web-security', '--force-color-profile=srgb', '--hide-scrollbars',
-  '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows'];
+  '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows',
+  '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']; // WebGL for 3D HyperFrames blocks
 const browsers = [];
 const engineUrl = pathToFileURL(path.join(here, '..', 'engine', 'index.html')).href;
 // JPEG frame size from the SOF0/SOF2 marker (sanity check: a background tab can capture a wrong-sized surface).

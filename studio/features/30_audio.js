@@ -41,7 +41,7 @@
       (t.items || []).forEach((it, ii) => {
         it.cid = `x${ti}i${ii}`;
         comps.push({
-          obj: it, kind: 'aitem', track: k, t0: it.t0 || 0, t1: (it.t0 || 0) + itemLen(it), label: it.file?.split('/').pop() || '?', icon: 'ti-wave-square', tag: 'Track âm thanh', trk: t,
+          obj: it, kind: 'aitem', track: k, t0: it.t0 || 0, t1: (it.t0 || 0) + itemLen(it), label: it.file?.split(/[\\/]/).pop() || '?', icon: 'ti-wave-square', tag: 'Track âm thanh', trk: t,
           setTimes(t0, t1, moved) {
             if (moved) { it.t0 = t0; return; }
             if (Math.abs(t0 - (it.t0 || 0)) > 1e-4) { it.in = rr(Math.max(0, (it.in || 0) + t0 - (it.t0 || 0))); it.t0 = t0; }

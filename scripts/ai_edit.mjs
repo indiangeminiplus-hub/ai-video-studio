@@ -4,8 +4,10 @@
 // Output plan (references/ai-edit.md): { pack, caption_style, hook, captions:[{i,t0,words:[{w,hl?,br?}]}], scenes:[…full scenes, _ai:true],
 //   music:{mood,gain}, sfx:[{t,name,gain}], summary, dropped:[…] }. --apply writes it into timeline.json (replaces earlier _ai items only).
 // Progress lines on stdout: "@@ <0..1> <step>" (read by studio/routes/20_ai.mjs).
-import fs from 'node:fs'; import path from 'node:path'; import { spawn, execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os'; import path from 'node:path'; import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { findChrome, spawnClaude } from './platform.mjs';
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -27,7 +29,7 @@ export function loadProject(p) {
 // Pack catalog straight from the engine: every item's make(0) output, caption styles, and each recipe's long background scenes.
 export async function engineCatalog(tl, caps, dir) {
   const { default: puppeteer } = await import('puppeteer-core');
-  const CHROME = process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(f => fs.existsSync(f));
+  const CHROME = findChrome();
   const b = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files'] });
   try {
     const pg = await b.newPage();
@@ -118,10 +120,7 @@ Chỉ trả về DUY NHẤT một object JSON (không markdown, không giải th
 
 export function callClaude(prompt, model = 'sonnet', onTick) {
   return new Promise((ok, bad) => {
-    let exe = 'claude';
-    try { exe = execFileSync('/bin/sh', ['-lc', 'command -v claude'], { encoding: 'utf8' }).trim() || 'claude'; } catch {}
-    if (!fs.existsSync(exe) && exe === 'claude') for (const f of [path.join(process.env.HOME || '', '.local/bin/claude'), '/opt/homebrew/bin/claude', '/usr/local/bin/claude']) if (fs.existsSync(f)) { exe = f; break; }
-    const p = spawn(exe, ['-p', '--output-format', 'json', '--model', model], { stdio: ['pipe', 'pipe', 'pipe'], cwd: process.env.TMPDIR || '/tmp' });
+    const p = spawnClaude(['-p', '--output-format', 'json', '--model', model], { stdio: ['pipe', 'pipe', 'pipe'], cwd: os.tmpdir() });
     let out = '', err = '';
     const tick = setInterval(() => onTick && onTick(), 1000);
     p.stdout.on('data', d => (out += d)); p.stderr.on('data', d => (err += d));

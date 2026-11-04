@@ -94,7 +94,7 @@ function panelTemplates() {
         <div class="tn">${esc(t.name || t.id)}</div><div class="tc2">${esc(catName(t))} · ${esc(pk(t.pack)?.name || t.pack || '')}</div></div>`).join('')}</div>`);
 }
 // ---------- popup mẫu: thư viện lớn + xem chi tiết ----------
-const CAT_ID = { 'BĐS': 'bds', 'Khoá học': 'khoahoc', 'Review': 'review', 'Chia sẻ': 'chiase', 'Tin tức': 'tintuc', 'Bán hàng': 'banhang', 'AI': 'ai', 'Khác': 'khac' };
+const CAT_ID = { 'BĐS': 'bds', 'Khoá học': 'khoahoc', 'Review': 'review', 'Chia sẻ': 'chiase', 'Tin tức': 'tintuc', 'Bán hàng': 'banhang', 'Doanh nghiệp': 'doanhnghiep', 'AI': 'ai', 'Khác': 'khac' };
 const catName = t => Object.keys(CAT_ID).find(k => CAT_ID[k] === t.category || k === t.category) || 'Khác';
 const pk = id => packs().find(p => p.id === id);
 const tplFilter = (cat, q) => (TEMPLATES || []).filter(t => cat === 'Tất cả' || catName(t) === cat)
@@ -341,7 +341,7 @@ function panelText() {
   $('#libbody').innerHTML = `<button class="wide primary" id="addtext"><i class="ti ti-plus"></i> Thêm chữ</button>
     <div class="sect">Mẫu chữ</div><div class="txgrid">${TEXT_PRESETS.map((p, i) => `<button class="tx" data-tp="${i}"><span style="${p.css}">${esc(p.text)}</span><small>${esc(p.name)}</small></button>`).join('')}</div>
     <div class="sect">Kiểu phụ đề <span class="muted">· cả video</span></div>
-    <div class="cslist">${[...capStyles.map(c => [c, (owner(c)?.icon || '💬') + ' ' + c]), ['', '✦ Karaoke cơ bản'], ['none', '⊘ Tắt phụ đề']].map(([v, l]) => `<button class="${(TL.caption_style ?? '') === v ? 'on' : ''}" data-cs="${esc(v)}">${esc(l)}</button>`).join('')}</div>`;
+    <div class="cslist">${[...capStyles.map(c => [c, (owner(c)?.icon || '💬') + ' ' + ((win && win.CAPTION_LABELS || {})[c] || c)]), ['', '✦ Karaoke cơ bản'], ['none', '⊘ Tắt phụ đề']].map(([v, l]) => `<button class="${(TL.caption_style ?? '') === v ? 'on' : ''}" data-cs="${esc(v)}">${esc(l)}</button>`).join('')}</div>`;
 }
 function addText(preset) {
   pushUndo();

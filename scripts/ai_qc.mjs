@@ -13,11 +13,11 @@
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import crypto from 'node:crypto';
 import { spawn, execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { findChrome, pyBin, spawnClaude } from './platform.mjs';
 
 export const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const PY = fs.existsSync(path.join(SKILL, 'scripts/.venv/bin/python')) ? path.join(SKILL, 'scripts/.venv/bin/python') : 'python3';
-const CHROME = process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium',
-  '/usr/bin/google-chrome', '/usr/bin/chromium'].find(f => fs.existsSync(f));
+export const PY = pyBin(SKILL);
+const CHROME = findChrome();
 const r2 = v => Math.round(v * 100) / 100;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const deep = o => JSON.parse(JSON.stringify(o));
@@ -379,18 +379,12 @@ async function audioPass(tl, dir, qcDir) {
 }
 
 // ---------- Claude review ----------
-function claudeExe() {
-  let exe = 'claude';
-  try { exe = execFileSync('/bin/sh', ['-lc', 'command -v claude'], { encoding: 'utf8' }).trim() || 'claude'; } catch {}
-  if (!fs.existsSync(exe)) for (const f of [path.join(os.homedir(), '.local/bin/claude'), '/opt/homebrew/bin/claude', '/usr/local/bin/claude']) if (fs.existsSync(f)) return f;
-  return exe;
-}
 export function askClaude(prompt, { model = 'sonnet', cwd, tools = [], timeout = 360000, onTick } = {}) {
   return new Promise((ok, bad) => {
     const argv = ['-p', '--output-format', 'json', '--model', model];
     if (tools.length) argv.push('--allowedTools', tools.join(','));
     if (cwd) argv.push('--add-dir', cwd);
-    const p = spawn(claudeExe(), argv, { stdio: ['pipe', 'pipe', 'pipe'], cwd: cwd || os.tmpdir() });
+    const p = spawnClaude(argv, { stdio: ['pipe', 'pipe', 'pipe'], cwd: cwd || os.tmpdir() });
     let out = '', err = '', t0 = Date.now();
     const tick = setInterval(() => { onTick && onTick((Date.now() - t0) / 1000); if (Date.now() - t0 > timeout) { p.kill('SIGTERM'); } }, 1000);
     p.stdout.on('data', d => (out += d)); p.stderr.on('data', d => (err += d));

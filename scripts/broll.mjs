@@ -10,6 +10,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
+import { findChrome } from './platform.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const SKILL = path.resolve(here, '..');
@@ -53,8 +54,7 @@ function entryFor(idOrTpl) {
   return base;
 }
 
-const CHROME = process.env.CHROME_PATH || ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/Applications/Chromium.app/Contents/MacOS/Chromium', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(p => fs.existsSync(p));
+const CHROME = findChrome();
 
 async function open(W = 1280, H = 720) {
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: true,

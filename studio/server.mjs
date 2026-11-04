@@ -9,10 +9,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, execFile } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { openPath, pyBin, revealPath } from '../scripts/platform.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SKILL = path.resolve(HERE, '..');
-const PY = fs.existsSync(path.join(SKILL, 'scripts/.venv/bin/python')) ? path.join(SKILL, 'scripts/.venv/bin/python') : 'python3';
+const PY = pyBin(SKILL);
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const PORT = +opt('--port', process.env.PORT || 5186);
@@ -375,7 +376,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/job') return json(res, job ? { ...job, proc: undefined } : null);
     if (p === '/api/job/cancel' && req.method === 'POST') { if (job?.state === 'running') job.cancelled = true; if (job?.proc) job.proc.kill('SIGTERM'); return json(res, { ok: true }); }
     if (p === '/api/open' && req.method === 'POST') { const b = await body(req); openProject(b.path); return json(res, { ok: true }); }
-    if (p === '/api/reveal' && req.method === 'POST') { const b = await body(req); const f = under(project.dir, b.path || ''); if (f) spawn('open', ['-R', f]); return json(res, { ok: !!f }); }
+    if (p === '/api/reveal' && req.method === 'POST') { const b = await body(req); const f = under(project.dir, b.path || ''); if (f) revealPath(f); return json(res, { ok: !!f }); }
     if (p === '/api/features') return json(res, FEATURES());
     for (const r of ROUTES) if (await r(req, res, p, u)) return;
     json(res, { error: 'not found' }, 404);
@@ -389,8 +390,15 @@ if (args[0] === '--new') {
   job = null; // otherwise every later job (export, AI…) is refused as "already running"
 } else if (args[0] && !args[0].startsWith('--')) openProject(args[0]);
 
+// Studio already running on this port (e.g. the shortcut was clicked twice): just show it instead of crashing.
+server.on('error', e => {
+  if (e.code !== 'EADDRINUSE') throw e;
+  console.log(`Cổng ${PORT} đang chạy AI Video Studio → mở trình duyệt`);
+  if (args.includes('--open')) openPath(`http://localhost:${PORT}`);
+  setTimeout(() => process.exit(0), 1500);
+});
 server.listen(PORT, '127.0.0.1', () => {
   const link = `http://localhost:${PORT}`;
   console.log(`AI Video Studio ${VERSION} → ${link}`);
-  if (args.includes('--open')) spawn('open', [link]);
+  if (args.includes('--open')) openPath(link);
 });
