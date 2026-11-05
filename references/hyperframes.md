@@ -63,4 +63,6 @@ node scripts/hf_templates.mjs && node scripts/build_templates.mjs <dự án> <id
 
 Không nhập khối nhái giao diện thương hiệu khác (ChatGPT, Claude, Spotify, Slack, X, Reddit, YouTube, TikTok, Instagram, Figma…).
 
+Thư viện các khối cần (GSAP, d3, three.js bản thường, bản đồ, font) nằm sẵn trong `engine/hf/_lib/`. `scripts/hf_localize.mjs` (được `hf_import.mjs` tự gọi) đổi link CDN sang bản này, nên khối tải ngay và chạy được khi mất mạng. 6 khối 3D dùng module three.js (import map) vẫn tải từ CDN.
+
 Các khối shader WebGPU (`data-no-timeline`) không tua được nên cũng không nhập.

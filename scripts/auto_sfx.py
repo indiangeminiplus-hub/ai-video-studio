@@ -686,7 +686,7 @@ def claude_moods(secs, base, names):
               "Trả về DUY NHẤT một mảng JSON các tên mood, đúng thứ tự, không giải thích.\n\n"
               + json.dumps([{"i": i, "t0": round(s["t0"], 1), "t1": round(s["t1"], 1), "text": s["text"][:400]} for i, s in enumerate(secs)], ensure_ascii=False))
     try:
-        r = subprocess.run([os.environ.get("CLAUDE_BIN", "claude"), "-p", prompt, "--output-format", "json", "--model", "sonnet"],
+        r = subprocess.run([os.environ.get("CLAUDE_BIN", "claude"), "-p", "--output-format", "json", "--model", "sonnet"], input=prompt,
                            capture_output=True, text=True, timeout=120)
         txt = r.stdout
         try:

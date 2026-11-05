@@ -138,7 +138,10 @@ const MODULES = {
   },
 
   stickers(s, t) {
-    return { front: (s.items || []).map((it, i) => `<div class="abs" style="${px(it.x, it.y)}${anim(t, it.t ?? s.t0, out(s), 'pop')}"><div style="transform:${bob(t, i * 2.1, 5)}">${emoji(it.e, 0, 0, it.size ?? 70)}</div></div>`).join('') };
+    // Hype Cam stickers are laid out for 1280x720; in a vertical frame they'd sit off-screen → squeeze x into the frame.
+    const [W] = typeof STAGE_WH !== 'undefined' ? STAGE_WH : [1280], maxX = Math.max(0, ...(s.items || []).map(it => it.x + (it.size ?? 70)));
+    const fx = maxX > W ? (W - 20) / maxX : 1;
+    return { front: (s.items || []).map((it, i) => `<div class="abs" style="${px(it.x * fx, it.y)}${anim(t, it.t ?? s.t0, out(s), 'pop')}"><div style="transform:${bob(t, i * 2.1, 5)}">${emoji(it.e, 0, 0, it.size ?? 70)}</div></div>`).join('') };
   },
 
   // Bottom waveform strip used in the hook

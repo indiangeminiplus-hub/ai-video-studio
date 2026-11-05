@@ -66,7 +66,7 @@ export default ctx => {
         for (const f of fs.readdirSync(dir).filter(f => /^still_.*\.jpg$/.test(f))) fs.rmSync(path.join(dir, f), { force: true });
         execFile('node', [BATCH, '--job', jf, '--preview', String(b.row || 0), '--t', String(b.t ?? 2.5), '--out', out], { maxBuffer: 1 << 24, timeout: 180000 }, (e, so, se) => {
           if (e) return ctx.json(res, { error: ((se || '') + (so || '')).split('\n').filter(l => l && !l.startsWith('@@')).slice(-3).join(' ') || e.message }, 500);
-          const r = JSON.parse(so.trim().split('\n').pop());
+          let r; try { r = JSON.parse(so.trim().split('\n').pop()); } catch { return ctx.json(res, { error: 'Bản xem trước không trả kết quả: ' + so.slice(-200) }, 500); }
           ctx.json(res, { img: '/project/' + rel(out), t: r.t, duration: r.duration });
         });
       } catch (e) { ctx.json(res, { error: e.message }, 400); }

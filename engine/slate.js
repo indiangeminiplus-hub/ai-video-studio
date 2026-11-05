@@ -26,7 +26,7 @@ function keyAt(keys, t, field = 'v', dflt = 0) {
   }
   return keys[keys.length - 1][field] ?? dflt;
 }
-const SI_CDN2 = 'https://cdn.jsdelivr.net/npm/simple-icons@15.0.0/icons/';
+const SI_CDN2 = CDN + 'npm/simple-icons@15.0.0/icons/';
 // Icon as an <img>/emoji at size px. tone: 'black' glyph (default) | 'white'.
 function slIcon(icon, size, tone = 'black') {
   if (!icon) return '';

@@ -51,6 +51,13 @@ export const claudeBin = () => claudeCmd()[0];
 export function spawnClaude(args, opts = {}) { const [exe, pre] = claudeCmd(); return spawn(exe, [...pre, ...args], opts); }
 export function execClaude(args, opts, cb) { const [exe, pre] = claudeCmd(); return execFile(exe, [...pre, ...args], opts, cb); }
 
+// Stop a child and everything it started. On Windows kill() is a hard TerminateProcess that skips the child's own cleanup
+// (render.mjs closing its Chromes/ffmpeg), so the whole tree goes through taskkill instead.
+export function killTree(p) {
+  if (!p || p.exitCode != null) return;
+  if (IS_WIN && p.pid) { try { execFile('taskkill', ['/pid', String(p.pid), '/t', '/f'], () => {}); return; } catch { /* fall through */ } }
+  try { p.kill('SIGTERM'); } catch { /* already gone */ }
+}
 const bg = (cmd, args) => { try { const p = spawn(cmd, args, { stdio: 'ignore', detached: true, windowsHide: true }); p.on('error', () => {}); p.unref(); } catch { /* no opener */ } };
 // Open a file, folder or URL with the system's default app.
 export function openPath(target) {

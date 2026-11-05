@@ -1077,13 +1077,15 @@ const Studio = window.Studio = {
   // reload project from disk (after a server-side job rewrote timeline.json)
   async reload() { const p = await api('/api/project'); TL = p.timeline; CAP = p.captions; META = p.meta; TL.scenes = TL.scenes || []; migrateClips(); needInit = true; build(); renderTimeline(); renderInspector(); renderPanel(); draw(); $('#durtc').textContent = '/ ' + fmt(TL.duration); if (META.audio) voice.src = '/project/' + META.audio + '?' + Date.now(); WAVE = await api('/api/waveform'); renderTimeline(); },
 };
+// All feature scripts download in parallel; async=false keeps them executing in file order.
 async function loadFeatures() {
-  for (const f of await api('/api/features')) await new Promise(ok => { const s = document.createElement('script'); s.src = '/studio/features/' + f; s.onload = s.onerror = ok; document.body.appendChild(s); });
+  await Promise.all((await api('/api/features')).map(f => new Promise(ok => { const s = document.createElement('script'); s.async = false; s.src = '/studio/features/' + f; s.onload = s.onerror = ok; document.body.appendChild(s); })));
 }
 async function boot() {
   renderRail();
+  const proj = fetch('/api/project'), lib = api('/api/library').catch(() => ({ sfx: [], music: [] }));
   await loadFeatures().catch(e => console.error(e));
-  const r = await fetch('/api/project');
+  const r = await proj;
   if (!r.ok) { modal(`<h3>Chưa mở dự án</h3><p>Chạy <code>node studio/server.mjs &lt;thư mục dự án&gt;</code> hoặc bấm “Video mới”.</p><div class="actions"><button onclick="closeModal()">Đóng</button></div>`); return; }
   const p = await r.json();
   TL = p.timeline; CAP = p.captions; META = p.meta;
@@ -1094,7 +1096,9 @@ async function boot() {
   for (const a of ['#aspect', '#aspect2']) $(a).textContent = DW > DH ? '16:9' : '9:16';
   $('#durtc').textContent = '/ ' + fmt(TL.duration);
   if (META.audio) voice.src = '/project/' + META.audio;
-  [LIB, WAVE] = await Promise.all([api('/api/library'), api('/api/waveform')]);
+  // The waveform can take ffmpeg a few seconds on a new project: draw the editor first, add the wave when it arrives.
+  LIB = await lib;
+  api('/api/waveform').then(w => { WAVE = Array.isArray(w) ? w : []; renderTimeline(); }).catch(() => {});
   build(); fit(); renderPanel(); renderTimeline(); renderInspector(); loadHistory();
   requestAnimationFrame(() => zoomFit());
   loadThumbs();

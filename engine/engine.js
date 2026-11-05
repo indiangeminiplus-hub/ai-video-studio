@@ -55,7 +55,7 @@ function media(item, t) {
 }
 
 // Fluent 3D emoji (1,500+, index in fluent_index.js) via jsDelivr; system emoji fallback via onerror.
-const FLUENT_CDN = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/';
+const FLUENT_CDN = CDN + 'gh/microsoft/fluentui-emoji@main/assets/';
 const fluentPath = ch => (typeof FLUENT_INDEX === 'undefined' ? null
   : FLUENT_INDEX[ch] || FLUENT_INDEX[ch.replace(/\uFE0F/g, '')] || FLUENT_INDEX[ch + '\uFE0F']);
 function emoji(ch, x, y, size, style = '') {

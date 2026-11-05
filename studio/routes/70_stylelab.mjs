@@ -44,7 +44,7 @@ export default ctx => {
     }
     if (p === '/api/stylelab/analyze' && req.method === 'POST') {
       const b = await ctx.body(req);
-      const src = path.resolve(String(b.path || '').replace(/^~(?=\/)/, os.homedir()));
+      const src = path.resolve(String(b.path || '').replace(/^~(?=[\\/])/, os.homedir()));
       if (!b.path || !fs.existsSync(src) || !fs.statSync(src).isFile()) return ctx.json(res, { error: 'Không thấy file video: ' + (b.path || '') }), true;
       const w = newW('clone'); fs.mkdirSync(wdir(w), { recursive: true }); fs.writeFileSync(path.join(wdir(w), 'src.txt'), src);
       const ok = runLab(['analyze', src, '--work', wdir(w)], w);

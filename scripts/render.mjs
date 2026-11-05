@@ -11,6 +11,7 @@ import { spawn } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { findChrome } from './platform.mjs';
+import { interceptCdn } from './net_cache.mjs';
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
@@ -40,6 +41,7 @@ async function openPage() {
   const page = (await browser.pages())[0] || await browser.newPage();
   await page.setViewport({ width: W, height: H, deviceScaleFactor: 1 });
   page.on('console', m => { if (m.type() === 'error' || m.type() === 'warn') console.error('[page]', m.text()); });
+  await interceptCdn(page); // emoji/icons/fonts from the shared disk cache, not once per worker
   await page.goto(engineUrl, { waitUntil: 'networkidle0' });
   await page.evaluate(t => window.init(t), tl);
   const cdp = await page.createCDPSession();

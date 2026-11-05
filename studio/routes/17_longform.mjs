@@ -78,7 +78,7 @@ export default ctx => {
       if (req.method !== 'POST') return J({ error: 'not found' }, 404);
       const b = await ctx.body(req);
       if (p === '/api/longform/highlights') {
-        const video = path.resolve(String(b.video || '').trim().replace(/^~(?=\/)/, os.homedir()));
+        const video = path.resolve(String(b.video || '').trim().replace(/^~(?=[\\/])/, os.homedir()));
         if (!b.video || !fs.existsSync(video) || !fs.statSync(video).isFile()) return J({ ok: false, error: `Không thấy video ${b.video || ''}` }, 400);
         const out = path.join(ROOT, 'highlights', `${slug(path.basename(video, path.extname(video)))}_${ctx.stamp()}`);
         const argv = [HL, video, '--out', out, '--n', String(Math.max(1, Math.min(12, +b.n || 6))), '--min', String(+b.min || 20), '--max', String(+b.max || 60),

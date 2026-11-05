@@ -62,7 +62,7 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 | **Node.js ≥ 18** | `brew install node` | trình cài tự cài bằng `winget` |
 | **Python ≥ 3.10** | `brew install python` | trình cài tự cài bằng `winget` |
 | **Claude Code CLI** *(nên có)* | cài theo <https://docs.claude.com/claude-code> | như macOS |
-| Mạng | lúc cài và lúc render lần đầu (tải font, emoji, logo) | như macOS |
+| Mạng | lúc cài và lần đầu dùng một font/emoji/logo; sau đó lấy từ bộ nhớ đệm `~/.ai-video-studio/cache/net` (icon giao diện và thư viện của khối HyperFrames đã có sẵn trong app) | như macOS |
 | Ổ đĩa | khoảng 1,5 GB (gồm thư viện Python) | khoảng 1,5 GB |
 | RAM | 8 GB trở lên (render nhiều luồng: 16 GB) | như macOS |
 

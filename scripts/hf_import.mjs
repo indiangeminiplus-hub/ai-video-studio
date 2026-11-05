@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { findChrome } from './platform.mjs';
+import { localize } from './hf_localize.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const SKILL = path.resolve(here, '..');
@@ -132,6 +133,7 @@ async function importOne([name, group, label], tools) {
   const b = html.search(/<body[\s>]/i), s = html.indexOf('<script', b);
   html = s > 0 ? html.slice(0, s) + '<script>window.__hfApply&&window.__hfApply()</script>' + html.slice(s) : html;
   fs.writeFileSync(path.join(dst, 'index.html'), html);
+  localize(path.join(dst, 'index.html')); // CDN libraries → engine/hf/_lib
   if (htmlName !== 'index.html') fs.rmSync(path.join(dst, htmlName), { force: true });
 
   const W = meta.dimensions?.width || marked.w || 1920, H = meta.dimensions?.height || marked.h || 1080, dur = meta.duration || marked.dur || 5;

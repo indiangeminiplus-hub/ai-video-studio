@@ -213,7 +213,7 @@ function stickerHTML(st, t) {
   return `<div class="abs" style="left:${x - sz / 2}px;top:${y - sz / 2}px;width:${sz}px;height:${sz}px;transform:${tr};filter:${st.outline === 0 ? '' : outline} drop-shadow(0 10px 18px rgba(0,0,0,.35)) blur(${blur.toFixed(1)}px);opacity:${clamp(lt / .08).toFixed(2)}">${inner}</div>`;
 }
 // Brand/logo icons: "si:openai" → Simple Icons SVG (CC0) via jsDelivr; else image path / emoji.
-const SI_CDN = 'https://cdn.jsdelivr.net/npm/simple-icons@13.0.0/icons/';
+const SI_CDN = CDN + 'npm/simple-icons@13.0.0/icons/';
 function iconHTML(icon, size, color = '#fff', stroke = '#111') {
   if (icon.startsWith('si:')) {
     const u = SI_CDN + icon.slice(3) + '.svg';

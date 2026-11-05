@@ -9,7 +9,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, execFile } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { openPath, pyBin, revealPath } from '../scripts/platform.mjs';
+import { killTree, openPath, pyBin, revealPath } from '../scripts/platform.mjs';
+import { cached } from '../scripts/net_cache.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SKILL = path.resolve(HERE, '..');
@@ -31,6 +32,12 @@ function openProject(p) {
   console.log(`project: ${project.dir}`);
 }
 
+// Switching projects from the UI while a job runs would make that job write into the newly opened project.
+function switchProject(p) {
+  if (job?.state === 'running') throw new Error('Đang có tác vụ chạy (' + (job.step || job.kind) + ') — đợi xong hoặc huỷ rồi mới mở dự án khác');
+  openProject(p);
+}
+
 // ---------- helpers ----------
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.gif': 'image/gif',
@@ -40,7 +47,11 @@ function sendFile(req, res, file) {
     if (err || !st.isFile()) { res.writeHead(404); return res.end('not found'); }
     const type = MIME[path.extname(file).toLowerCase()] || 'application/octet-stream';
     const range = req.headers.range && /bytes=(\d*)-(\d*)/.exec(req.headers.range);
-    const head = { 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' };
+    // Revalidate with ETag so a reload answers most of the ~200 editor/engine files with an empty 304.
+    // Version-pinned libraries (folders named pkg@x.y.z) never change → cached outright.
+    const etag = `W/"${st.size.toString(36)}-${Math.floor(st.mtimeMs).toString(36)}"`;
+    const head = { 'Content-Type': type, 'Accept-Ranges': 'bytes', ETag: etag, 'Cache-Control': /[\\/](vendor|_lib)[\\/]/.test(file) ? 'public, max-age=31536000, immutable' : 'no-cache' };
+    if (!range && req.headers['if-none-match'] === etag) { res.writeHead(304, head); return res.end(); }
     if (range) {
       const a = range[1] ? +range[1] : 0, b = range[2] ? +range[2] : st.size - 1;
       res.writeHead(206, { ...head, 'Content-Range': `bytes ${a}-${b}/${st.size}`, 'Content-Length': b - a + 1 });
@@ -229,8 +240,12 @@ function run(cmd, argv, onLine) {
   return new Promise((ok, bad) => {
     const p = spawn(cmd, argv, { cwd: project?.dir || process.cwd() });
     job.proc = p;
-    const feed = d => { const s = d.toString(); job.log = (job.log + s).slice(-6000); s.split(/[\r\n]/).forEach(l => l && onLine && onLine(l)); };
-    p.stdout.on('data', feed); p.stderr.on('data', feed);
+    // Lines are reassembled across chunks so a long progress/JSON line never reaches onLine cut in half.
+    const feeder = () => { let rest = ''; return d => { const s = d.toString(); job.log = (job.log + s).slice(-6000); const ls = (rest + s).split(/[\r\n]/); rest = ls.pop(); ls.forEach(line); }; };
+    const line = l => { if (l && onLine) try { onLine(l); } catch (e) { console.error('onLine', e.message); } };
+    p.stdout.on('data', feeder()); p.stderr.on('data', feeder());
+    // Missing ffmpeg/python: reject the job instead of crashing the server with an unhandled 'error' event.
+    p.on('error', e => bad(new Error(e.code === 'ENOENT' ? `Không tìm thấy ${path.basename(cmd)} — chạy lại bộ cài (install)` : e.message)));
     p.on('close', code => (code === 0 ? ok() : bad(new Error(`${path.basename(cmd)} lỗi (mã ${code})`))));
   });
 }
@@ -244,10 +259,10 @@ async function exportVideo({ quality = '1080', from, to, aspects }) {
   fs.writeFileSync(tmp, JSON.stringify({ ...tl, width: vert ? W : H, height: vert ? H : W }));
   // mix_audio.py writes tl.audio.mix (default work/mix.wav); hand that file to render.mjs explicitly so the MP4 always has sound.
   let mix = null;
-  if (tl.audio && (tl.audio.voice || tl.audio.music?.length || tl.audio.sfx?.length || tl.audio.tracks?.length || tl.clips?.some(c => c.audio))) {
+  if (tl.audio?.voice || tl.audio?.music?.length || tl.audio?.sfx?.length || tl.audio?.tracks?.length || tl.clips?.some(c => c.audio)) {
     job.step = 'Trộn âm thanh (giọng + nhạc + SFX, -14 LUFS)';
-    await run(PY, ['-I', path.join(SKILL, 'scripts/mix_audio.py'), project.tlFile]);
-    mix = P(tl.audio.mix || 'work/mix.wav');
+    await run(PY, ['-I', '-X', 'utf8', path.join(SKILL, 'scripts/mix_audio.py'), project.tlFile]);
+    mix = P(tl.audio?.mix || 'work/mix.wav');
     if (!fs.existsSync(mix)) throw new Error('Trộn âm thanh không tạo ra file ' + path.relative(project.dir, mix));
   }
   fs.mkdirSync(P('out'), { recursive: true });
@@ -287,7 +302,7 @@ function startJob(kind, fn, payload) {
 }
 // Server stopped (app quit, Ctrl+C) while a job runs: stop it (render.mjs then closes its Chromes) and drop this run's temp timelines.
 for (const sig of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(sig, () => {
-  if (job?.state === 'running') job.proc?.kill('SIGTERM');
+  if (job?.state === 'running') killTree(job.proc);
   if (project) for (const f of [`.export_${process.pid}.json`, `.still_${process.pid}.json`, `.cover_${process.pid}.json`]) fs.rmSync(path.join(project.dir, f), { force: true });
   setTimeout(() => process.exit(0), 300);
 });
@@ -295,7 +310,7 @@ for (const sig of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(sig, () => {
 // ---------- plugins: studio/routes/*.mjs ----------
 // Each module: export default (ctx) => async (req, res, p, u) => true if handled. ctx gives access to the project, jobs and helpers.
 const ctx = {
-  HERE, SKILL, PY, json, body, under, sendFile, run, stamp, startJob, readProject, save, openProject,
+  HERE, SKILL, PY, json, body, under, sendFile, run, stamp, startJob, readProject, save, openProject: switchProject,
   get project() { return project; }, get job() { return job; }, P: rel => P(rel),
 };
 const ROUTES = [];
@@ -317,7 +332,14 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith('/engine/')) { const f = under(path.join(SKILL, 'engine'), p.slice(8)); return f ? sendFile(req, res, f) : json(res, {}, 403); }
     if (p.startsWith('/assets/')) { const f = under(path.join(SKILL, 'assets'), p.slice(8)); return f ? sendFile(req, res, f) : json(res, {}, 403); }
     if (p.startsWith('/templates/')) { const f = under(TPL_DIR, p.slice(11)); return f ? sendFile(req, res, f) : json(res, {}, 403); }
+    if (p.startsWith('/cdn/')) { // jsDelivr through the disk cache: emoji/icons download once per machine
+      const hit = await cached('https://cdn.jsdelivr.net/' + p.slice(5));
+      if (!hit) { res.writeHead(404); return res.end(); }
+      res.writeHead(200, { 'Content-Type': hit.type, 'Content-Length': hit.body.length, 'Cache-Control': 'public, max-age=604800' }); return res.end(hit.body);
+    }
     if (p === '/api/templates' && req.method === 'GET') return json(res, templateList());
+    // Everything below that reads or writes project files needs an open project (plugin routes included).
+    if (!project && /^\/api\/(save|history|waveform|export|autosfx|media|upload|still|srt|reveal|templates\/media|transcribe|reframe|dub(?!\/voices)|stock\/fetch|genimage|segment|sticker|audio|broll\/suggest)(\/|$)/.test(p)) return json(res, { error: 'Chưa mở dự án' }, 400);
     if (p === '/api/templates/media' && req.method === 'POST') {
       // Copy every "media/…" file a template references from the skill's examples/media into the project (never overwrites).
       const { id } = await body(req);
@@ -341,7 +363,6 @@ const server = http.createServer(async (req, res) => {
       return f ? sendFile(req, res, f) : json(res, {}, 403);
     }
     if (p === '/api/project' && req.method === 'GET') return project ? json(res, readProject()) : json(res, { error: 'Chưa mở dự án' }, 404);
-    if (!project && /^\/api\/(save|history|waveform|export|autosfx|media|upload|still|srt|reveal)(\/|$)/.test(p)) return json(res, { error: 'Chưa mở dự án' }, 400);
     if (p === '/api/save' && req.method === 'POST') return json(res, save(await body(req)));
     if (p === '/api/history') {
       const d = path.join(project.dir, '.studio/history');
@@ -363,7 +384,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/new' && req.method === 'POST') { const b = await body(req); const ok = startJob('new', newProject, b); return json(res, ok ? { ok } : { ok, error: 'Đang có tác vụ khác chạy' }); }
     if (p === '/api/autosfx' && req.method === 'POST') {
       const b = await body(req);
-      return execFile(PY, ['-I', path.join(SKILL, 'scripts/auto_sfx.py'), project.tlFile, ...(b.keep ? ['--keep-manual'] : [])], (e, out, err) =>
+      return execFile(PY, ['-I', '-X', 'utf8', path.join(SKILL, 'scripts/auto_sfx.py'), project.tlFile, ...(b.keep ? ['--keep-manual'] : [])], (e, out, err) =>
         e ? json(res, { error: (err || e.message).slice(-500) }, 500) : json(res, readProject()));
     }
     if (p === '/api/media') return json(res, mediaList());
@@ -374,8 +395,8 @@ const server = http.createServer(async (req, res) => {
       const out = `out/${path.basename(project.dir)}.srt`; fs.writeFileSync(P(out), srt(captions)); return json(res, { out });
     }
     if (p === '/api/job') return json(res, job ? { ...job, proc: undefined } : null);
-    if (p === '/api/job/cancel' && req.method === 'POST') { if (job?.state === 'running') job.cancelled = true; if (job?.proc) job.proc.kill('SIGTERM'); return json(res, { ok: true }); }
-    if (p === '/api/open' && req.method === 'POST') { const b = await body(req); openProject(b.path); return json(res, { ok: true }); }
+    if (p === '/api/job/cancel' && req.method === 'POST') { if (job?.state === 'running') job.cancelled = true; killTree(job?.proc); return json(res, { ok: true }); }
+    if (p === '/api/open' && req.method === 'POST') { const b = await body(req); switchProject(b.path); return json(res, { ok: true }); }
     if (p === '/api/reveal' && req.method === 'POST') { const b = await body(req); const f = under(project.dir, b.path || ''); if (f) revealPath(f); return json(res, { ok: !!f }); }
     if (p === '/api/features') return json(res, FEATURES());
     for (const r of ROUTES) if (await r(req, res, p, u)) return;

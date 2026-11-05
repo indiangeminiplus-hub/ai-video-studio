@@ -4,7 +4,7 @@
 // coupon ticket, sub-score bars, pointer callout. Caption style "review". Doc: references/pack-review.md.
 (() => {
   const P = 'review';
-  const SI = 'https://cdn.jsdelivr.net/npm/simple-icons@15.0.0/icons/';
+  const SI = CDN + 'npm/simple-icons@15.0.0/icons/';
 
   // ---------- palette (TL.brand overrides: dark, good|primary, bad, accent, light, muted, font, disp) ----------
   const C = (s = {}) => {

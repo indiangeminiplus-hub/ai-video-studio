@@ -176,7 +176,7 @@ for f in sys.argv[2:]:
 print(json.dumps(out))`;
 function detectFaces(files) {
   if (!files.length || !fs.existsSync(path.join(SKILL, 'assets/models/face_detection_yunet_2023mar.onnx'))) return Promise.resolve({});
-  return new Promise(ok => execFile(PY, ['-c', FACE_PY, SKILL, ...files], { maxBuffer: 1 << 24, cwd: SKILL }, (e, out) => {
+  return new Promise(ok => execFile(PY, ['-X', 'utf8', '-c', FACE_PY, SKILL, ...files], { maxBuffer: 1 << 24, cwd: SKILL }, (e, out) => {
     if (e) { console.error('[qc] không dò được mặt:', String(e.message).slice(0, 200)); return ok({}); }
     try { ok(JSON.parse(out.trim().split('\n').pop())); } catch { ok({}); }
   }));
@@ -348,7 +348,7 @@ async function audioPass(tl, dir, qcDir) {
   const tmp = path.join(dir, `.qc_mix_${process.pid}.json`), mix = path.join(qcDir, 'mix.wav');
   const t = deep(tl); t.audio.mix = path.relative(dir, mix);
   fs.writeFileSync(tmp, JSON.stringify(t));
-  try { await runP(PY, ['-I', path.join(SKILL, 'scripts/mix_audio.py'), tmp, '--stems'], { cwd: dir }); } finally { fs.rmSync(tmp, { force: true }); }
+  try { await runP(PY, ['-I', '-X', 'utf8', path.join(SKILL, 'scripts/mix_audio.py'), tmp, '--stems'], { cwd: dir }); } finally { fs.rmSync(tmp, { force: true }); }
   const issues = [], stats = {};
   const { err } = await runP('ffmpeg', ['-nostats', '-i', mix, '-af', 'ebur128=peak=true', '-f', 'null', '-']);
   const I = /I:\s+(-?[\d.]+) LUFS/.exec(err.split('Summary:').pop()), TP = /Peak:\s+(-?[\d.]+|-inf) dBFS/.exec(err.split('Summary:').pop());

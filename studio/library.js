@@ -6,7 +6,7 @@ const RAIL = [['tpl', 'ti-layout-grid', 'Mẫu'], ['media', 'ti-photo-video', 'M
   ['comp', 'ti-stack-2', 'Thành phần']];
 let panel = 'media', mediaTab = 'mine', audioTab = 'music', tplCat = 'Tất cả', TEMPLATES = null, THUMBS = null, transDur = .4;
 const qOf = {};
-const TPL_CATS = ['Tất cả', 'BĐS', 'Khoá học', 'Review', 'Chia sẻ', 'Tin tức', 'Bán hàng', 'AI', 'Khác'];
+const TPL_CATS = ['Tất cả', 'Doanh nghiệp', 'BĐS', 'Khoá học', 'Review', 'Chia sẻ', 'Tin tức', 'Bán hàng', 'AI', 'Khác'];
 const STICKERS = '🔥 💯 🚀 ✨ ⭐ 🌟 💡 ❤️ 🧡 💙 💚 💜 😂 🤣 😍 🥰 🤩 🤯 😱 😎 🤔 🫣 😅 🥳 😭 😡 😴 🤑 👏 👍 👎 🙏 💪 🤝 👉 👀 🫶 👑 💎 🎉 🎯 🏆 🥇 📈 📉 💰 💸 🪙 🏠 🏡 🏢 🔑 📍 🗺️ 🛒 🛍️ 🎁 📦 🏷️ 📱 💻 🖥️ 🤖 🧠 ⚡ ✅ ❌ ⚠️ ❓ ❗ 💬 🗣️ 📣 🔔 🎬 🎵 🎤 📸 ⏰ 📅 📝 📚 🎓 ✍️ 📌 🔍 🔒 🧩 🎮 ☀️ 🌙 🌈 ☕ 🍀 🌸 🍕 🍔 🧋 ✈️ 🚗 🏖️ 💄 👗 🏋️ 🧘 🐶 🐱'.split(' ');
 // Text presets: line props + a CSS approximation of engine TEXT_STYLE for the tile.
 const SH = c => `2px 2px 0 ${c},-2px 2px 0 ${c},2px -2px 0 ${c},-2px -2px 0 ${c}`;
@@ -355,7 +355,7 @@ let FLU = null;
 function fluentUrl(ch) {
   if (FLU == null) { try { FLU = win?.eval('typeof FLUENT_INDEX !== "undefined" ? FLUENT_INDEX : 0') || 0; } catch { FLU = 0; } }
   const p = FLU && (FLU[ch] || FLU[ch.replace(/️/g, '')] || FLU[ch + '️']);
-  return p ? 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/' + encodeURI(p) : '';
+  return p ? '/cdn/gh/microsoft/fluentui-emoji@main/assets/' + encodeURI(p) : ''; // server disk cache (net_cache.mjs)
 }
 function panelSticker() {
   $('#libbody').innerHTML = `<div class="help">Emoji 3D bật lên tại playhead. Kéo trên preview để đặt vị trí.</div>

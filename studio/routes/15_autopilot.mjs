@@ -20,7 +20,7 @@ const rd = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch {
 
 export default ctx => {
   const runner = process.env.AVS_NO_QUEUE ? null : new Runner({ role: 'server', daemon: true, log: m => console.log(m) }).start();
-  if (runner) for (const s of ['SIGINT', 'SIGTERM']) process.once(s, () => { runner.stop(); process.exit(s === 'SIGINT' ? 130 : 143); });
+  if (runner) for (const s of ['SIGINT', 'SIGTERM']) process.once(s, () => runner.stop()); // server.mjs exits after every route has cleaned up (Telegram bot, jobs)
   // "Học từ chỉnh sửa": when the open project was made by Tự lái and the user saved it, compare with what Tự lái delivered.
   let learn = null; const seen = new Map();
   const tryLearn = (force) => {

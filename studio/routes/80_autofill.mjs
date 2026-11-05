@@ -24,7 +24,7 @@ export default ctx => {
       if (mode === 'clear') {
         ctx.job.step = 'Xoá phần tự động';
         await ctx.run('node', [S('auto_broll.mjs'), tlf, '--clear'], l => { const o = parse(l); if (o) sum.broll = o; });
-        await ctx.run(ctx.PY, [S('auto_sfx.py'), tlf, '--level', 'vua', '--clear'], l => { if (/xoá/.test(l)) sum.sfx = l; });
+        await ctx.run(ctx.PY, ['-I', '-X', 'utf8', S('auto_sfx.py'), tlf, '--level', 'vua', '--clear'], l => { if (/xoá/.test(l)) sum.sfx = l; });
       }
       if (mode === 'all' || mode === 'broll') {
         if (!src.length) throw new Error('Chọn ít nhất một nguồn b-roll');
@@ -37,7 +37,7 @@ export default ctx => {
       }
       if (mode === 'all' || mode === 'sfx') {
         ctx.job.step = b.music ? 'Đặt SFX + chọn nhạc theo đoạn' : 'Đặt SFX'; ctx.job.progress = mode === 'all' ? .75 : .2;
-        await ctx.run(ctx.PY, [S('auto_sfx.py'), tlf, '--level', level, ...(b.music ? ['--music', 'auto'] : []), ...(b.claude && b.music ? ['--claude'] : [])], l => {
+        await ctx.run(ctx.PY, ['-I', '-X', 'utf8', S('auto_sfx.py'), tlf, '--level', level, ...(b.music ? ['--music', 'auto'] : []), ...(b.claude && b.music ? ['--claude'] : [])], l => {
           if (/^level \d/.test(l)) sum.sfx = l;
         });
       }

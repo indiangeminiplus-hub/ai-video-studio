@@ -31,3 +31,9 @@ Bên thứ ba: engine/hf/ chứa các khối hoạt ảnh lấy từ HyperFrames
 engine/hf/LICENSE-HyperFrames.txt. Đã sửa: gắn khối con vào trang, thêm shim biến/chữ,
 thay ảnh mẫu bằng ảnh của repo này. Một số khối kèm thư viện có giấy phép riêng
 (GSAP, three.js, font), xem các file *LICENSE* / *NOTICE* trong thư mục của khối.
+
+Thư viện đóng gói sẵn để chạy offline, giữ nguyên giấy phép gốc:
+- engine/hf/_lib/: GSAP (giấy phép Standard "No Charge" của GreenSock/Webflow), three.js (MIT),
+  d3 / d3-delaunay / topojson-client / world-atlas (ISC), clipper-lib (Boost), font Inter và
+  Roboto Flex (SIL OFL 1.1).
+- studio/vendor/tabler-icons/: Tabler Icons (MIT, xem LICENSE trong thư mục).
