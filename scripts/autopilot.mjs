@@ -243,7 +243,17 @@ export async function autopilot(input, { profile: profId, out: outDir, project: 
       return `cắt ${r.n} đoạn (${Object.entries(kinds).map(([k, n]) => `${n} ${k}`).join(', ')}), ngắn đi ${r.removed.toFixed(1)}s`;
     },
     async ai() {
-      if (prof.template) { sayS(.3, 'Áp template ' + prof.template); const m = await applyTemplate(dir, prof.template); return 'template ' + m; }
+      if (prof.template) {
+        sayS(.3, 'Áp template ' + prof.template); const m = await applyTemplate(dir, prof.template);
+        // then fit the template's text / photos / timing to this clip's speech (scripts/tpl_fit.mjs)
+        let fit = '';
+        try {
+          const { fitProject } = await import('./tpl_fit.mjs');
+          const f = await fitProject(dir, { claude: prof.ai !== false, say: (p, s) => sayS(.3 + .65 * p, s) });
+          fit = ` · bám lời thoại: ${f.texts} chữ, ${f.images} ảnh`;
+        } catch (e) { fit = ` · chưa bám lời thoại (${e.message})`; }
+        return 'template ' + m + fit;
+      }
       if (!prof.ai) return { skip: 'tắt trong hồ sơ' };
       const extra = [prof.extra, prof.cta && `Kết video bằng lời kêu gọi: "${prof.cta}".`].filter(Boolean).join(' ');
       const optF = P('.studio/autopilot/ai_opts.json');

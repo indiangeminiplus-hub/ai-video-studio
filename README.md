@@ -202,6 +202,15 @@ Trình duyệt mở **http://localhost:5186** với clip mẫu.
 ### Bước 2: Chọn mẫu
 Bấm **Mẫu** ở thanh trái, rồi bấm **Xem lớn** để mở thư viện. Rê chuột lên mẫu để xem video, bấm vào mẫu để xem chi tiết, sau đó bấm **Dùng mẫu này**. Không ưng thì bấm ⌘Z.
 
+Chọn mẫu xong, phần mềm tự **bám lời thoại** của clip:
+- Video chưa có phụ đề thì nó tự nhận dạng giọng nói trước.
+- Mỗi graphic của mẫu được canh xuất hiện đúng lúc bạn nói tới nội dung đó.
+- Chữ mẫu (tên sản phẩm, ưu/nhược điểm, lời kêu gọi…) và emoji được Claude viết lại theo đúng lời bạn nói.
+- Ảnh mẫu được thay bằng ảnh tìm theo câu đang nói.
+- Từ khoá trong phụ đề được tô nổi bật.
+
+Video 1 phút mất khoảng 20–60 giây. Muốn chạy lại thì bấm **Bám lời thoại** ở tab **Dự án**. Không có Claude thì chữ được lấy thẳng từ lời nói, nên đọc lại. Không có mạng thì giữ ảnh mẫu.
+
 ![Thư viện mẫu](docs/images/02-thu-vien-mau.jpg)
 ![Chi tiết mẫu](docs/images/03-chi-tiet-mau.jpg)
 

@@ -206,6 +206,8 @@ async function applyTemplate(tpl) {
     try {
       win.applyTemplate(TL, JSON.parse(JSON.stringify(tpl)), CAP, TL.title || '');
       fixDuration(); needInit = true; changed(true);
+      // the template's text, photos and timing come from its sample video: fit them to this clip's speech (27_tplfit)
+      if (window.Studio?.fitTemplate && tpl.fit !== false) return Studio.fitTemplate(tpl);
       return toast(`Đã áp dụng mẫu “${tpl.name || tpl.id}”` + (tpl.needs?.length ? ` · cần thay: ${tpl.needs.join(', ')}` : ''));
     } catch (e) { console.error(e); toast('Mẫu lỗi: ' + e.message); }
   }
@@ -227,6 +229,7 @@ async function applyTemplate(tpl) {
   if (mood) { TL.audio = TL.audio || {}; TL.audio.music = [{ t0: 0, t1: TL.duration, mood, gain: -20 }]; }
   fixDuration();
   needInit = true; changed(true);
+  if (window.Studio?.fitTemplate && tpl.fit !== false) return Studio.fitTemplate(tpl);
   toast(`Đã áp dụng mẫu “${tpl.name || tpl.id}”`);
 }
 async function saveAsTemplate() {

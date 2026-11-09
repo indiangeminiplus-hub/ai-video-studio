@@ -374,8 +374,8 @@ function projectPanel() {
       ${bf('logo', 'Logo (media/logo.png, si:slug, emoji)', 'text', 'media/logo.png')}`, 'ti-palette')
     : sect('Gói style', `<select data-pf="pack">${opt([['', '— chọn —'], ...packs().map(p => [p.id, p.icon + ' ' + p.name])], TL.pack || '')}</select>
       <div class="help">${esc(packs().find(p => p.id === TL.pack)?.desc || 'Gói quyết định kiểu phụ đề, graphic gợi ý và bản dựng tự động.')}</div>
-      <div class="acts"><button data-pact="recipe" class="primary"><i class="ti ti-wand"></i> Dựng tự động theo gói</button></div>
-      <div class="help">Thêm intro, graphic theo từ khoá trong lời nói, CTA cuối, nhạc. Hoàn tác được.</div>`, 'ti-package') +
+      <div class="acts"><button data-pact="recipe" class="primary"><i class="ti ti-wand"></i> Dựng tự động theo gói</button><button data-pact="tplfit"><i class="ti ti-text-recognition"></i> Bám lời thoại</button></div>
+      <div class="help">“Dựng tự động”: thêm intro, graphic theo từ khoá trong lời nói, CTA cuối, nhạc. “Bám lời thoại”: canh các graphic của mẫu đúng lúc nói, viết lại chữ và thay ảnh mẫu theo nội dung clip (tự chạy khi chọn mẫu). Hoàn tác được.</div>`, 'ti-package') +
     sect('Kiểu phụ đề', `<select data-pf="caption_style">${opt([...capStyles.map(c => [c, (win && win.CAPTION_LABELS || {})[c] || c]), ['', 'Karaoke cơ bản'], ['none', 'Tắt phụ đề']], TL.caption_style ?? '')}</select>
       <label class="check"><input type="checkbox" data-pf="caption_reveal" ${TL.caption_reveal === false ? '' : 'checked'}> Hiện từng từ theo lời nói</label>`, 'ti-badge-cc') +
     sect('Vị trí mặt (bubble / PIP / vùng mặt)', `<div class="row"><div><span class="lbl">X</span><input type="number" data-pf="facex" value="${TL.face?.x ?? 360}"></div><div><span class="lbl">Y</span><input type="number" data-pf="facey" value="${TL.face?.y ?? 520}"></div></div>`, 'ti-face-id') +
@@ -508,7 +508,12 @@ $('#insp').addEventListener('click', async e => {
   const it = t.closest('[data-itab]');
   if (it) { ITAB[sel ? sel.kind : 'project'] = it.dataset.itab; return renderInspector(); }
   const pa = t.closest('[data-pact]')?.dataset.pact;
-  if (pa === 'recipe') { if (!TL.pack) return toast('Chọn gói style trước'); pushUndo(); return applyRecipe(TL.pack); }
+  if (pa === 'recipe') {
+    if (!TL.pack) return toast('Chọn gói style trước');
+    // recipes place their graphics on keywords of the speech — without captions they would only add intro/CTA
+    if (!CAP.length && Studio.needCaptions) return Studio.needCaptions(() => { pushUndo(); applyRecipe(TL.pack); }, 'Dựng tự động theo gói');
+    pushUndo(); return applyRecipe(TL.pack);
+  }
   if (pa === 'autosfx') return autoSfx();
   if (!sel) return;
   const c = sel, o = c.obj;
