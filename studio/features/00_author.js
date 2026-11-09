@@ -4,7 +4,7 @@
 // outside, or by itself after 9 s (paused while the pointer is over it).
 'use strict';
 (() => {
-  const AUTHOR = 'Nguyễn Tất Kiểm', COURSE = 'https://nguyentatkiem.com.vn/aiplusntk/', SITE = 'https://nguyentatkiem.com.vn';
+  const AUTHOR = 'Nguyễn Tất Kiểm', COURSE = 'https://nguyentatkiem.com.vn/aiplusntk/', SITE = 'https://taki.vn';
   const css = document.createElement('style');
   css.textContent = `
   #author { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(5,6,9,.62); backdrop-filter: blur(4px); animation: au-in .25s ease; }
@@ -44,7 +44,7 @@
       <p class="by">Phần mềm của tác giả <b>${AUTHOR}</b></p>
       <p class="tag">Edit video bằng AI chạy ngay trên máy bạn: template tự bám lời thoại, tạo style từ video bất kỳ, tự lái, agent Telegram.</p>
       <a class="gift" href="${COURSE}" target="_blank" rel="noopener"><i class="ti ti-gift"></i> Tặng khoá học AI miễn phí</a>
-      <div class="row"><a href="${SITE}" target="_blank" rel="noopener"><i class="ti ti-world"></i> nguyentatkiem.com.vn</a><button data-close><i class="ti ti-player-play"></i> Bắt đầu dùng</button></div>
+      <div class="row"><a href="${SITE}" target="_blank" rel="noopener"><i class="ti ti-world"></i> taki.vn</a><button data-close><i class="ti ti-player-play"></i> Bắt đầu dùng</button></div>
       ${auto ? '<div class="bar"><i></i></div>' : ''}</div>`;
     const close = () => { if (!el.isConnected) return; el.classList.add('out'); setTimeout(() => el.remove(), 250); document.removeEventListener('keydown', esc, true); };
     const esc = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
