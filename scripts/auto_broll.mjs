@@ -1,9 +1,14 @@
-// One-shot automatic b-roll for a project (spec: references/autofill.md). No npm deps; Claude/stock optional.
-//   node auto_broll.mjs <timeline.json> [--density thua|vua|day|ratday] [--src preset,text,emoji,media,stock] [--claude] [--seed 1]
-//                       [--dry] [--clear] [--out other.json]
-// Mixes procedural catalog presets (matched per sentence, no template repeated within 3, palette from pack/brand), keyword hero
-// text pops, emoji pops on highlighted/emotional words, the project's own media/ and (with "stock") Commons/Openverse photos.
-// Layouts rotate (card / right / left / pip / full / person-behind) and never cover TL.face; full layouts last 1–1.5 s.
+// One-shot automatic b-roll for a project (spec: references/autofill.md). No npm deps; Claude/stock/AI images optional.
+//   node auto_broll.mjs <timeline.json> [--goal auto|banhang|bds|khoahoc|review|tintuc|kechuyen|doanhnghiep|amthuc|giaitri]
+//        [--density thua|vua|day|ratday] [--variety 0..1] [--src preset,hf,text,emoji,logo,aroll,media,lib,stock,stockvid,aiimg]
+//        [--claude] [--seed 1] [--dry] [--clear] [--out other.json]
+// Each insert point gets a role from the sentence (number, money, list, compare, proof, tool, place, time, emotion, hook, cta…);
+// the goal (assets/broll/goals.json) says which sources suit which role; candidates from 11 sources are scored by goal × role ×
+// variety (no source twice in a row, no template within 3–5), the best wins and up to 3 cheap runners-up are kept on the scene
+// as _alts (Studio: "Phương án khác"). Sources: catalog presets (9 000+, 55 templates), HyperFrames blocks with vars from the
+// speech, keyword text, 3D emoji, brand logos of tools named, effects on the speaker (push / punch / mono, in TL.fx), the
+// project's media/, the personal library (scripts/broll_lib.mjs), stock video / photos, AI images (own OpenAI/Gemini key).
+// Layouts rotate (card / right / left / pip / full / person-behind) and never cover TL.face; full 9:16 presets use fit:"portrait".
 // Skips 0–1.5 s, the outro/title card and existing non-auto big scenes. Every inserted scene has _auto:true -> a re-run replaces
 // only those (scenes you edited — _orig — are kept). Writes the timeline in place (timeline.json.bak first). Progress: "@@ p step".
 import fs from 'node:fs';
@@ -48,13 +53,14 @@ if (!args[0] || !fs.existsSync(tlPath)) { console.error('usage: node auto_broll.
 const DIR = path.dirname(tlPath);
 const TL = JSON.parse(fs.readFileSync(tlPath, 'utf8'));
 const density = DENS[fold(opt('--density', 'vua')).replace(/\s+/g, ' ')] ?? DENS[opt('--density', 'vua')] ?? 5;
-const SRC = new Set(String(opt('--src', 'preset,text,emoji,media')).split(',').map(s => s.trim()).filter(Boolean));
+const SRC = new Set(String(opt('--src', 'preset,hf,text,emoji,logo,aroll,media,lib')).split(',').map(s => s.trim()).filter(Boolean));
 const SEED = +opt('--seed', 1);
 let rs = SEED * 9301 + 49297; const rnd = () => ((rs = (rs * 9301 + 49297) % 233280) / 233280);
 
 const before = (TL.scenes || []).length;
 const keepScene = s => !s._auto || s._orig;
 TL.scenes = (TL.scenes || []).filter(keepScene);
+if (TL.fx) TL.fx = TL.fx.filter(f => !f._auto);
 const removed = before - TL.scenes.length;
 function write(note) {
   const out = path.resolve(opt('--out', tlPath));
@@ -71,7 +77,7 @@ if (typeof caps === 'string') caps = JSON.parse(fs.readFileSync(path.resolve(DIR
 if (!Array.isArray(caps) || !caps.length) { const f = path.join(DIR, 'work/captions.json'); caps = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : []; }
 caps = caps.filter(c => !c.hidden && c.words?.length);
 if (!caps.length) { console.error('LỖI: chưa có phụ đề — cần lời thoại để chọn b-roll'); process.exit(2); }
-const WORDS = caps.flatMap(c => c.words.filter(w => w.w).map(w => ({ w: w.w, s: +w.s, e: +w.e, hl: !!w.hl, f: fold(w.w).replace(/[^a-z0-9%$]/g, '') })));
+const WORDS = caps.flatMap((c, ci) => c.words.filter(w => w.w).map(w => ({ w: w.w, s: +w.s, e: +w.e, hl: !!w.hl, ci, f: fold(w.w).replace(/[^a-z0-9%$]/g, '') })));
 const DUR = TL.duration || caps.at(-1).t1;
 const VERT = (TL.height || 720) > (TL.width || 1280);
 const [DW, DH] = VERT ? [720, 1280] : [1280, 720];
@@ -94,7 +100,6 @@ function hueOf(hex) {
 let PAL = PACK_PAL[TL.pack] || 'ember';
 const bh = hueOf(TL.brand?.accent) ?? hueOf(TL.brand?.primary);
 if (bh != null) PAL = Object.entries(PAL_HUE).sort((a, b) => Math.min(Math.abs(a[1] - bh), 360 - Math.abs(a[1] - bh)) - Math.min(Math.abs(b[1] - bh), 360 - Math.abs(b[1] - bh)))[0][0];
-const PAL2 = SECOND[PAL] || 'violet';
 
 // ---------- blocked windows ----------
 const BASE_RX = /(frame|grade|scrim|progress|dip|letterbox|backdrop|wave|cursor|facecam|grid_bg|waveform|^mood$|lowerthird|ticker|names)/;
@@ -177,7 +182,7 @@ const emojiFor = ws => { const f = ' ' + ws.map(w => w.f).join(' ') + ' '; const
 const emotional = ws => ws.some(w => w.hl) || (() => { const f = ' ' + ws.map(w => w.f).join(' ') + ' '; return [...EMOTION].some(k => f.includes(' ' + k + ' ')); })();
 function numberIn(ws) {
   for (let i = 0; i < ws.length; i++) {
-    const m = /^(\d+(?:[.,]\d+)?)(%|k)?$/.exec(ws[i].w.replace(/[^\d.,%k]/gi, ''));
+    const m = /^(\d+(?:[.,]\d+)?)(%|k)?$/.exec(ws[i].w.replace(/[^\d.,%k]/gi, '').replace(/[.,]+$/, ''));
     if (m && /\d/.test(ws[i].w)) {
       const unit = m[2] === '%' ? '%' : ws[i + 1] && !/\d/.test(ws[i + 1].w) && !STOP.has(ws[i + 1].f) ? ws[i + 1].w.toUpperCase() : '';
       return { num: parseFloat(m[1].replace(',', '.')), unit, at: ws[i].s, word: ws[i] };
@@ -185,14 +190,15 @@ function numberIn(ws) {
   }
   return null;
 }
+const KW_EDGE = /^(thu|nhat|tiep|theo|cuoi|cung|dau|tien|buoc|sao|tren|duoi|qua|roi)$/; // ordinals / connectives never start or end a keyword
 function keyword(ws, max = 3) {
   // longest run of content words (≤ max syllables), preferring a run that hits the b-roll catalog tags
   let best = null;
   for (let i = 0; i < ws.length; i++) for (let n = Math.min(max, ws.length - i); n >= 1; n--) {
     const run = ws.slice(i, i + n);
-    if (run.some(w => STOP.has(w.f) || !w.f)) continue;
+    if (run.some(w => STOP.has(w.f) || !w.f || /\d/.test(w.w)) || run.slice(0, -1).some(w => /[.,!?…;:]$/.test(w.w)) || KW_EDGE.test(run[0].f) || KW_EDGE.test(run.at(-1).f) || run.some(w => w.f === "thu")) continue;
     const f = run.map(w => w.f).join(' '), score = n * 2 + (tsv[f] ? 3 : 0) + (run.some(w => w.hl) ? 4 : 0) + (catalog.some(e => e.pal === PAL && e.tags?.some(t => fold(t) === f)) ? 3 : 0);
-    if (!best || score > best.score) best = { score, text: run.map(w => w.w).join(' ').toUpperCase(), f, at: run[0].s };
+    if (!best || score > best.score) best = { score, text: run.map(w => w.w.replace(/[.,!?…;:"“”]/g, '')).join(' ').toUpperCase(), f, at: run[0].s };
   }
   return best;
 }
@@ -230,13 +236,112 @@ if (SRC.has('media') && fs.existsSync(mdir)) {
   for (let i = MEDIA.length - 1; i >= 0; i--) if (used.has(MEDIA[i].path) || used.has(MEDIA[i].seq?.seq)) MEDIA.splice(i, 1);
 }
 
-// ---------- plan slots ----------
-say(.05, 'Đọc lời thoại');
+const TEXT_STY = TL.pack === 'slate' ? ['grad_teal', 'hl', 'grad_blue', 'yellow'] : ['yellow', 'fire', 'white', 'glow', 'ink'];
+
+// ---------- goal (assets/broll/goals.json): which sources and templates suit this kind of video ----------
+const GJ = JSON.parse(fs.readFileSync(path.join(SKILL, 'assets/broll/goals.json'), 'utf8'));
+const capText = ' ' + fold(caps.map(c => c.words.map(w => w.w).join(' ')).join(' ')).replace(/[^a-z0-9%]+/g, ' ') + ' ';
+function detectGoal() {
+  if (GJ.auto_from_pack[TL.pack]) return { id: GJ.auto_from_pack[TL.pack], why: `gói ${TL.pack}` };
+  // vote: how often each goal's topic tags are spoken
+  const votes = {};
+  for (const g of GJ.goals.filter(g => g.topics)) {
+    let v = 0;
+    for (const tp of g.topics) for (const e of catalog.filter(e => e.topic === tp && e.pal === 'ember').slice(0, 1)) for (const t of e.tags) { const k = fold(t).replace(/[^a-z0-9%]+/g, ' ').trim(); if (k.length > 2 && capText.includes(' ' + k + ' ')) v += k.includes(' ') ? 2 : 1; }
+    votes[g.id] = v;
+  }
+  const best = Object.entries(votes).sort((a, b) => b[1] - a[1])[0];
+  return best && best[1] >= 2 ? { id: best[0], why: 'lời thoại' } : { id: 'kechuyen', why: 'mặc định' };
+}
+const gArg = opt('--goal', 'auto');
+const goalPick = gArg === 'auto' || !GJ.goals.some(g => g.id === gArg && g.mix) ? detectGoal() : { id: gArg, why: 'chọn tay' };
+const G = GJ.goals.find(g => g.id === goalPick.id);
+const VARIETY = Math.max(0, Math.min(1, +opt('--variety', .6)));
+if (!PACK_PAL[TL.pack] && bh == null && G.pal) PAL = G.pal;
+const PAL2b = SECOND[PAL] || 'violet';
+const goalTopics = new Set(G.topics || []), goalTpl = new Set(G.templates || []);
+
+// ---------- what each sentence is doing ----------
+const RW = Object.fromEntries(Object.entries(GJ.role_words).map(([k, v]) => [k, v.map(fold)]));
+const hasAny = (f, list) => list.some(k => f.includes(' ' + k + ' '));
+const LOGOS = JSON.parse(fs.readFileSync(path.join(SKILL, 'assets/broll/logos.json'), 'utf8')).logos;
+const logoIn = ws => { const f = ' ' + ws.map(w => w.f).join(' ') + ' '; for (const l of LOGOS) for (const n of l.names) if (f.includes(' ' + fold(n).replace(/[^a-z0-9]+/g, ' ').trim() + ' ')) return l; return null; };
+function roleOf(ws, wsSent, t0, num) {
+  const norm = x => (' ' + x.map(w => w.f).join(' ') + ' ').replace(/ danh gia /g, ' danhgia ').replace(/ gia dinh /g, ' giadinh ');
+  const f = norm(wsSent || ws), fw = norm(ws);
+  if (num && num.num <= 5 && / (sao|diem|danhgia) /.test(f)) return 'proof';
+  if (num) return /tỷ|triệu|nghìn|đ|k$/i.test(num.unit) || hasAny(fw, RW.money) ? 'money' : 'number';
+  if (logoIn(ws)) return 'tool';
+  if (t0 > DUR * .72 && hasAny(f, RW.cta)) return 'cta';
+  if (t0 < 4.5 || hasAny(fw, RW.hook) || /\?$/.test((wsSent || ws).at(-1)?.w || '')) return 'hook';
+  if (hasAny(f, RW.list)) return 'list';
+  if (hasAny(f, RW.compare)) return 'compare';
+  if (hasAny(f, RW.proof)) return 'proof';
+  if (hasAny(fw, RW.money)) return 'money';
+  if (concrete(wsSent || ws)) return 'place';
+  if (hasAny(fw, RW.time)) return 'time';
+  if (emotional(ws)) return 'emotion';
+  if (hasAny(f, RW.cta)) return 'cta';
+  return 'general';
+}
+// Short phrases said in the sentence (list items / compare sides). Captions carry no punctuation, but each caption line is
+// about one clause: one phrase per line, starting at the first list marker ("thứ nhất", "đầu tiên", "bước 1"…) if any.
+const LIST_START = /\b(thu nhat|dau tien|buoc (1|mot)|mot la|meo (1|so 1)|cach (1|thu nhat)|truoc het)\b/;
+const ORD = /^(thu|nhat|hai|ba|tu|nam|sau|bay|dau|tien|tiep|theo|cuoi|cung|mot|la|buoc|meo|cach|so|truoc|het|\d+)$/;
+function phrasesIn(ws, n = 5, max = 3) {
+  const groups = [];
+  for (const w of ws) { if (!groups.length || groups.at(-1).ci !== w.ci) groups.push({ ci: w.ci, ws: [] }); groups.at(-1).ws.push(w); }
+  const k = groups.findIndex(g => LIST_START.test(g.ws.map(w => w.f).join(' ')));
+  const out = [];
+  for (const g of k > 0 ? groups.slice(k) : groups) {
+    let run = g.ws.filter(w => !STOP.has(w.f) && !/\d/.test(w.w));
+    while (run.length > 1 && ORD.test(run[0].f)) run = run.slice(1);
+    if (run.length && !(run.length === 1 && ORD.test(run[0].f))) out.push(run.slice(0, max).map(w => w.w.replace(/[.,!?…]/g, '')).join(' '));
+  }
+  return [...new Set(out.filter(x => x.length >= 2).map(x => x[0].toUpperCase() + x.slice(1)))].slice(0, n);
+}
+
+// ---------- HyperFrames blocks as b-roll: vars written from the speech ----------
+let HF = {}; try { const w = {}; new Function('window', fs.readFileSync(path.join(SKILL, 'engine/hf/catalog.js'), 'utf8'))(w); HF = w.HF_CATALOG || {}; } catch {}
+const cap1 = s => (s ? s[0].toUpperCase() + s.slice(1) : s);
+const sentShort = (s, n = 60) => { const t = String(s || '').trim(); return t.length <= n ? t : t.slice(0, n).replace(/\s+\S*$/, '') + '…'; };
+const HF_SPEC = {
+  'count-up': { roles: ['number', 'money'], need: x => x.num && x.num.num < 1e7, vars: x => ({ start: 0, end: x.num.num, prefix: '\u200b', suffix: x.num.unit === '%' ? '%' : x.num.unit ? ' ' + x.num.unit.toLowerCase() : '' }) },
+  'number-pop-in': { roles: ['number', 'money'], need: x => x.num, vars: x => ({ value: String(x.num.num).replace('.', ','), unit: x.num.unit === '%' ? '%' : (x.num.unit || '').toLowerCase().slice(0, 8) }) },
+  'conic-progress-ring': { roles: ['number'], need: x => x.num && x.num.unit === '%' && x.num.num <= 100, vars: x => ({ progress: x.num.num, label: `${x.num.num}%` }) },
+  'decline-chart': { roles: ['number', 'compare'], need: x => x.nums?.length >= 2 && x.nums[0] > x.nums[1], vars: x => ({ label: x.kw || 'Giảm', start_value: x.nums[0], end_value: x.nums[1] }) },
+  'star-rating-fill': { roles: ['proof'], need: () => true, vars: x => ({ rating: x.num && x.num.num <= 5 ? x.num.num : 4.9 }) },
+  'testimonial-card': { roles: ['proof'], need: x => x.sent.length > 20, vars: x => ({ quote: sentShort(cap1(x.sent), 70), author: 'Khách hàng', handle: '', rating: 5 }) },
+  'native-notification-pop': { roles: ['money', 'proof', 'number', 'cta'], need: () => G.id === 'banhang', vars: x => ({ title: x.kw ? cap1(x.kw.toLowerCase()) : 'Có đơn hàng mới', body: sentShort(cap1(x.sent), 46), app_label: TL.brand?.name || 'Cửa hàng' }) },
+  'notification-stack': { roles: ['proof', 'list'], need: x => x.items.length >= 2, vars: x => ({ titles: x.items.slice(0, 3).join(','), bodies: x.items.slice(0, 3).map(() => TL.brand?.name || 'Vừa xong').join(',') }) },
+  'grid-card-assemble': { roles: ['list'], need: x => x.items.length >= 3, vars: x => ({ items: x.items.slice(0, 4).join(',') }) },
+  'radial-surround': { roles: ['list', 'tool'], need: x => x.items.length >= 3, vars: x => ({ center_label: x.kw ? cap1(x.kw.toLowerCase()) : 'Bạn', chips: x.items.slice(0, 6).join(',') }) },
+  'cta-close': { roles: ['cta'], need: () => true, vars: x => ({ action_line: sentShort(cap1(x.sent), 32), button_label: x.kw ? cap1(x.kw.toLowerCase()).slice(0, 18) : 'Xem ngay' }) },
+  'success-check': { roles: ['emotion', 'proof'], need: () => true, vars: () => ({}) },
+  confetti: { roles: ['emotion'], need: () => true, vars: () => ({}), texts: { 0: '', 1: '' } },
+  'badge-pop': { roles: ['emotion', 'number'], need: x => x.num && x.num.num < 100, vars: x => ({ count: String(x.num.num) }) },
+  'press-ripple': { roles: ['tool', 'cta'], need: x => !!x.kw, vars: x => ({ label: cap1(x.kw.toLowerCase()).slice(0, 18), done_label: 'Xong!' }) },
+  'split-flap-board': { roles: ['hook', 'time'], need: x => !!x.kw && x.kw.length <= 14, vars: x => ({ boardText: fold(x.kw).toUpperCase().replace(/[^A-Z0-9 .,']/g, ''), cellCount: Math.max(8, x.kw.length + 2) }) },
+  'spring-pop': { roles: ['hook', 'emotion'], need: x => !!x.kw && x.kw.length <= 14, vars: x => ({ text: x.kw }) },
+  'ticker-takeover': { roles: ['hook'], need: x => x.items.length >= 3, vars: x => ({ options: x.items.slice(0, 4).join(','), final_word: x.items[0] }), texts: { 0: '' } },
+};
+
+// ---------- personal library + AI image availability ----------
+let LIB = null;
+if (SRC.has('lib')) { try { LIB = await import('./broll_lib.mjs'); if (!LIB.load().length) LIB = null; } catch { LIB = null; } }
+let KEYS = {}; try { KEYS = (await import('./ai_broll.mjs')).readKeys(); } catch {}
+const AIKEY = !!(KEYS.openai || KEYS.gemini);
+const STOCK_SRC = ['pexels', 'pixabay'].filter(k => KEYS[k]).concat(['openverse', 'commons']).join(',');
+// Stock video only from Pexels / Pixabay (free keys): Commons video search returns scans and documents far too often.
+const VIDKEY = !!(KEYS.pexels || KEYS.pixabay);
+// Free photo libraries index by title/tags: keep a hit only if its title shares a word with the query.
+const relevant = (it, q) => !['commons', 'openverse'].includes(it.provider) || String(q).toLowerCase().split(/\s+/).filter(w => w.length > 2).some(w => String(it.title || '').toLowerCase().includes(w));
+
+// ---------- plan slots (timing) ----------
+say(.05, `Đọc lời thoại · mục tiêu: ${G.name}`);
 const sents = sentences(caps);
 const slots = [];
 let t = 1.5 + Math.min(.6, density * .1);
-const TEXT_STY = TL.pack === 'slate' ? ['grad_teal', 'hl', 'grad_blue', 'yellow'] : ['yellow', 'fire', 'white', 'glow', 'ink'];
-let kindI = 0, lastEmoji = -9, lastText = -9, stockN = 0;
 const usedNum = new Set();
 while (t < END - .8) {
   const snap = WORDS.filter(w => w.s >= t - .5 && w.s <= t + .8).sort((a, b) => Math.abs(a.s - t) - Math.abs(b.s - t))[0];
@@ -245,156 +350,268 @@ while (t < END - .8) {
   const ws = wordsIn(t0, Math.min(END, t0 + Math.max(2.2, density * .8)));
   const wsSent = sent ? wordsIn(sent.t0, sent.t1 + .05) : ws;
   let num = numberIn(ws); if (num && usedNum.has(num.at)) num = null;
-  const emo = emojiFor(ws), conc = concrete(wsSent);
-  let kind;
-  if (num && SRC.has('preset')) kind = 'preset_num';
-  else if (SRC.has('emoji') && emo && emotional(ws) && slots.length - lastEmoji >= (density <= 2 ? 3 : 2)) kind = 'emoji';
-  else if (SRC.has('stock') && conc && stockN < 3 && slots.length % 3 === 2) kind = 'stock';
-  else if (MEDIA.length && slots.length % 3 === 1) kind = 'media';
-  else {
-    const rot = ['preset', 'text', 'preset', 'preset', 'text'].filter(k => SRC.has(k));
-    kind = rot.length ? rot[kindI++ % rot.length] : SRC.has('emoji') && emo ? 'emoji' : MEDIA.length ? 'media' : null;
-    if (kind === 'text' && slots.length - lastText < 2 && SRC.has('preset')) kind = 'preset';
-  }
-  if (!kind) break;
-  const cardDur = Math.min(3.4, Math.max(1.6, density * .7));
-  let dur = { emoji: Math.min(1.4, density * .6), text: Math.min(1.8, Math.max(1.1, density * .45)) }[kind] ?? cardDur;
-  let t1 = Math.min(END, t0 + dur);
-  const b = blockedAt(t0, t1, kind.startsWith('preset') || kind === 'media' || kind === 'stock' ? 'card' : kind);
+  const dur0 = Math.min(3.4, Math.max(1.6, density * .7));
+  const t1 = Math.min(END, t0 + dur0);
+  const b = blockedAt(t0, t1, 'card');
   if (b) { t = Math.max(t + .5, b[1] + .1); continue; }
   if (t1 - t0 < .9) break;
-  if (kind === 'preset_num') usedNum.add(num.at);
-  slots.push({ i: slots.length, kind, t0: r2(t0), t1: r2(t1), ws, wsSent, sent, num: kind === 'preset_num' ? num : null, emo, conc });
-  if (kind === 'emoji') lastEmoji = slots.length - 1;
-  if (kind === 'text') lastText = slots.length - 1;
-  if (kind === 'stock') stockN++;
+  if (num) usedNum.add(num.at);
+  const nums = (wsSent || ws).map(w => parseFloat(w.w.replace(/[^\d.,]/g, '').replace(',', '.'))).filter(v => !isNaN(v));
+  const role = roleOf(ws, wsSent, t0, num), kw = (keyword(ws) || keyword(wsSent || []))?.text;
+  slots.push({ i: slots.length, t0: r2(t0), t1: r2(t1), ws, wsSent, sent, num, nums, role, kw, emo: emojiFor(ws), conc: concrete(wsSent), logo: logoIn(ws),
+    items: phrasesIn(wsSent || ws), text: (sent?.text || ws.map(w => w.w).join(' ')) });
   t = t0 + density * (.85 + rnd() * .3);
   if (t < t1 + .15) t = t1 + .15;
 }
-say(.2, `${slots.length} chỗ chèn (mỗi ~${density} s)`);
+say(.15, `${slots.length} chỗ chèn (mỗi ~${density} s) · ${Object.entries(slots.reduce((m, s) => ((m[s.role] = (m[s.role] || 0) + 1), m), {})).map(([k, v]) => `${GJ.roles[k] || k} ${v}`).join(', ')}`);
 
-// ---------- presets (offline match, or Claude) ----------
-const recent = [];
-const avoidSet = () => new Set(recent.slice(-3));
-for (const s of slots.filter(s => s.kind.startsWith('preset'))) {
-  const pal = s.i % 4 === 3 ? PAL2 : PAL;
-  s.pal = pal;
-  s.cands = presets((s.wsSent || s.ws).map(w => w.w).join(' '), pal, avoidSet(), s.kind === 'preset_num' && (s.num?.unit === '%' ? '%' : 'n'));
-  if (!s.cands.length) s.cands = presets('', pal, avoidSet(), true).slice(0, 0);
-  const pick = s.cands[0] || (() => { const tp = GENERIC.find(g => !avoidSet().has(g)) || 'sunburst'; return { template: tp, pal, id: null, text: '' }; })();
-  s.preset = pick; recent.push(pick.template);
-  const kw = keyword(s.ws) || keyword(s.wsSent || []);
-  s.text = kw?.text;
+// ---------- candidates per slot, scored by goal × role × variety ----------
+const ROLE_TPL = {
+  number: NUM_TPL.concat(['gauge', 'kpi']), money: ['price_tag', 'counter_big', 'money_rain', 'shopping_cart', 'bar_chart'], list: ['checklist', 'timeline_steps', 'progress'],
+  compare: ['versus', 'bar_chart'], proof: ['star_rating', 'trophy', 'quote_card', 'likes'], time: ['clock', 'calendar', 'countdown', 'timeline_steps'],
+  hook: ['glitch_text', 'typewriter', 'sunburst', 'spotlight', 'search'], emotion: ['emoji_burst', 'sunburst', 'rings', 'trophy', 'icon_hero'], cta: ['likes', 'icon_hero', 'rocket'],
+};
+function presetFor(s, pal, avoid) {
+  const numeric = s.num && ['number', 'money'].includes(s.role) ? (s.num.unit === '%' ? '%' : 'n') : null;
+  let c = presets(s.text, pal, avoid, numeric);
+  if (s.num && s.role === 'money' && !numeric) c = c.filter(e => ROLE_TPL.money.includes(e.template));
+  const roleT = ROLE_TPL[s.role];
+  // goal topics/templates and the role's natural templates float up
+  const sc = e => (goalTopics.has(e.topic) ? 2 : 0) + (goalTpl.has(e.template) ? 1.5 : 0) + (roleT?.includes(e.template) ? 1.5 : 0);
+  c = c.map((e, i) => [sc(e) - i * .4, e]).sort((a, b) => b[0] - a[0]).map(x => x[1]);
+  if (!c.length && roleT) { const tp = roleT.find(x => !avoid.has(x)); const e = catalog.find(e => e.template === tp && e.pal === pal); if (e) c = [e]; }
+  const own = [];
+  if (s.role === 'list' && s.items.length >= 2) own.push({ template: s.items.length >= 3 ? 'checklist' : 'timeline_steps', items: s.items.slice(0, 5) });
+  if (s.role === 'compare' && s.items.length === 2) own.push({ template: 'versus', items: s.items.map(x => x.toUpperCase().slice(0, 12)) });
+  if (s.role === 'proof' && s.num && s.num.num <= 5) own.push({ template: 'star_rating', num: s.num.num });
+  if (s.role === 'money' && s.num && (s.num.num >= 1000 || /nghin|trieu|k/.test(fold(s.num.unit)))) own.push({ template: 'price_tag', num: s.num.num * (/nghin|k/.test(fold(s.num.unit)) ? 1000 : /trieu/.test(fold(s.num.unit)) ? 1e6 : 1), unit: 'đ' });
+  if (s.role === 'number' && s.num?.unit === '%' && s.num.num <= 100) own.push({ template: 'gauge', num: s.num.num, unit: '%' });
+  const mine = own.filter(o => !avoid.has(o.template)).map(o => ({ ...o, pal, topic: 'speech', seed: s.i + 3, own: true }));
+  return [...mine, ...c];
 }
+const lastKinds = [], recentTpl = [], usedLib = new Set(), usedHF = [];
+const quota = { stock: 3, stockvid: 4, aiimg: 2, aroll: Math.max(1, Math.round(DUR / 9)), logo: 4, lib: 99, media: 99 };
+const used = { stock: 0, stockvid: 0, aiimg: 0, aroll: 0, logo: 0 };
+let lastAroll = -99, lastEmojiI = -9, lastTextI = -9, fullN = 0, mediaI = 0;
+function candidates(s) {
+  const C = [], mix = G.mix || {}, pref = G.roles?.[s.role] || G.roles?.general || [];
+  const base = k => (mix[k] ?? 1) + (pref.indexOf(k) >= 0 ? 3 - pref.indexOf(k) : 0)
+    - (lastKinds.at(-1) === k ? 3 * VARIETY : 0) - (lastKinds.at(-2) === k ? 1.5 * VARIETY : 0) - lastKinds.slice(-5).filter(x => x === k).length * .4 * VARIETY + rnd() * VARIETY;
+  const add = (kind, extra, data) => { if (!SRC.has(kind) || (mix[kind] ?? 1) <= 0) return; C.push({ kind, score: base(kind) + extra, ...data }); };
+  if (s.logo && used.logo < quota.logo) add('logo', s.role === 'tool' ? 3 : 1.5, { logo: s.logo });
+  { const avoid = new Set(recentTpl.slice(-Math.round(2 + VARIETY * 3))); const pal = s.i % 4 === 3 ? PAL2b : PAL; const c = presetFor(s, pal, avoid);
+    if (c.length) add('preset', s.num ? 1 : 0, { preset: c[0], cands: c, pal }); }
+  for (const blk of G.hf || []) {
+    const sp = HF_SPEC[blk]; if (!sp || !HF[blk] || !sp.roles.includes(s.role)) continue;
+    const x = { num: s.num, nums: s.nums, kw: s.kw, items: s.items, sent: s.text };
+    if (!sp.need(x) || usedHF.slice(-3).includes(blk)) continue;
+    add('hf', .5, { block: blk, vars: sp.vars(x), texts: sp.texts });
+  }
+  if (s.kw && s.i - lastTextI >= 2) add('text', s.role === 'hook' || s.role === 'cta' ? 1 : 0, { text: s.kw });
+  if (s.emo && s.i - lastEmojiI >= (density <= 2 ? 3 : 2)) add('emoji', emotional(s.ws) ? 1 : -1, { emoji: s.emo.emoji });
+  if (used.aroll < quota.aroll && s.t0 - lastAroll > 6) add('aroll', ['emotion', 'hook', 'compare'].includes(s.role) ? 1 : -1, {});
+  if (MEDIA.length) add('media', 0, {});
+  if (LIB) { const hit = LIB.search(s.text, { n: 1, exclude: usedLib })[0]; if (hit) add('lib', Math.min(3, hit.score), { lib: hit }); }
+  if (s.conc) {
+    if (VIDKEY && used.stockvid < quota.stockvid) add('stockvid', 0, { q: s.conc });
+    if (used.stock < quota.stock) add('stock', -.5, { q: s.conc });
+  }
+  if (AIKEY && used.aiimg < quota.aiimg && ['place', 'general', 'emotion', 'hook'].includes(s.role)) add('aiimg', -1, { q: s.conc || { en: (s.kw || '').toLowerCase() } });
+  return C.sort((a, b) => b.score - a.score);
+}
+const CHEAP = new Set(['preset', 'hf', 'text', 'emoji', 'logo']);
+for (const s of slots) {
+  const C = candidates(s);
+  if (!C.length) { s.skip = true; continue; }
+  s.C = C; s.pick = C[0];
+  s.alts = []; for (const c of C.slice(1)) if (CHEAP.has(c.kind) && !s.alts.some(a => a.kind === c.kind) && s.alts.length < 3) s.alts.push(c);
+  lastKinds.push(s.pick.kind);
+  if (s.pick.kind === 'preset') recentTpl.push(s.pick.preset.template);
+  if (s.pick.kind === 'hf') usedHF.push(s.pick.block);
+  if (s.pick.kind === 'aroll') { used.aroll++; lastAroll = s.t0; }
+  if (s.pick.kind === 'emoji') lastEmojiI = s.i;
+  if (s.pick.kind === 'text') lastTextI = s.i;
+  if (s.pick.kind === 'lib') usedLib.add(s.pick.lib.id);
+  if (s.pick.kind in used && s.pick.kind !== 'aroll') used[s.pick.kind]++;
+}
+
+// ---------- Claude (optional): choose among each slot's candidates + write the words ----------
 let claudeNote = '';
-if (has('--claude') && slots.length) {
-  say(.3, 'Hỏi Claude chọn b-roll + chữ (20–60 giây)');
-  try {
-    const req = slots.map(s => ({ i: s.i, kind: s.kind.startsWith('preset') ? 'preset' : s.kind, t0: s.t0, t1: s.t1, sentence: s.sent?.text || s.ws.map(w => w.w).join(' '),
-      ...(s.kind.startsWith('preset') ? { presets: [...new Map([...(s.cands || []), ...presets(s.sent?.text || '', s.pal, new Set(), false)].map(e => [e.id, e])).values()].slice(0, 8).map(e => ({ id: e.id, template: e.template, text: e.text })) } : {}) }));
-    const prompt = `Bạn là editor video ngắn tiếng Việt. Video dọc/ngang có các chỗ chèn b-roll (JSON). Với MỖI chỗ:
-- nếu kind = "preset": chọn "id" đúng một id trong "presets" của chính chỗ đó (minh hoạ đúng ý câu, không lặp template với 3 chỗ trước), và "text" = chữ ngắn IN HOA tiếng Việt có dấu, ≤ 18 ký tự, tóm ý câu;
-- nếu kind = "text": "text" = 1–3 từ khoá IN HOA đắt nhất của câu (≤ 18 ký tự);
-- nếu kind = "emoji": "emoji" = 1 emoji hợp cảm xúc câu.
-Trả về DUY NHẤT một mảng JSON, không giải thích: [{"i":0,"id":"...","text":"..."},{"i":1,"text":"..."},{"i":2,"emoji":"🔥"}]
+const live = slots.filter(s => !s.skip);
+if (has('--claude') && live.length) {
+  say(.25, `Hỏi Claude chọn b-roll cho ${live.length} chỗ (20–90 giây)`);
+  const desc = c => c.kind === 'preset' ? `preset ${c.preset.template} (${c.preset.topic})` : c.kind === 'hf' ? `khối ${c.block} — ${HF[c.block]?.label || ''} vars ${JSON.stringify(c.vars)}` : c.kind === 'logo' ? `logo ${c.logo.title}` : c.kind === 'aroll' ? 'hiệu ứng trên chính người nói (không chèn hình)' : c.kind === 'stockvid' || c.kind === 'stock' || c.kind === 'aiimg' ? `${GJ.sources[c.kind]} (cần "query")` : GJ.sources[c.kind];
+  const req = live.map(s => ({ i: s.i, role: GJ.roles[s.role], sentence: s.text, options: s.C.slice(0, 6).map((c, j) => ({ o: j, kind: c.kind, what: desc(c) })) }));
+  const prompt = `Bạn là editor video ngắn tiếng Việt. Mục tiêu video: ${G.name} — ${G.desc}. Mỗi chỗ chèn b-roll dưới đây có câu đang nói, vai trò của câu và vài phương án (options). Với MỖI chỗ:
+- chọn "o" = phương án minh hoạ đúng ý câu nhất; ưu tiên đa dạng: không để 2 chỗ liền nhau cùng kind, xen kẽ hình thật / graphic / hiệu ứng trên người nói;
+- "text" = chữ ngắn IN HOA tiếng Việt có dấu ≤ 18 ký tự tóm ý câu (dùng cho preset/text/logo);
+- nếu chọn khối (kind hf): "vars" = sửa lại giá trị vars cho đúng nội dung câu, tiếng Việt, giữ độ dài tương tự;
+- nếu chọn stockvid/stock/aiimg: "query" = 2–4 từ khoá TIẾNG ANH mô tả cảnh thật cần tìm;
+- nếu chọn emoji: "emoji" = 1 emoji.
+Trả về DUY NHẤT mảng JSON: [{"i":0,"o":1,"text":"…","vars":{},"query":"…","emoji":"…"}]
 
 ${JSON.stringify(req)}`;
+  try {
     const out = await new Promise((ok, bad) => {
       const p = spawnClaude(['-p', '--output-format', 'json', '--model', opt('--model', 'sonnet')], { stdio: ['pipe', 'pipe', 'pipe'] });
       p.stdin.on('error', () => {}); p.stdin.end(prompt); // stdin: long prompts exceed Windows' command-line limit
-      let o = '', e = ''; const tm = setTimeout(() => { p.kill(); bad(new Error('Claude quá 150 giây')); }, 150000);
+      let o = '', e = ''; const t0c = Date.now(), tick = setInterval(() => say(Math.min(.5, .25 + (Date.now() - t0c) / 400000), `Claude đang chọn b-roll… ${Math.round((Date.now() - t0c) / 1000)}s`), 2000);
+      const tm = setTimeout(() => { p.kill(); bad(new Error('Claude quá 180 giây')); }, 180000);
       p.stdout.on('data', d => (o += d)); p.stderr.on('data', d => (e += d));
-      p.on('error', () => { clearTimeout(tm); bad(new Error('Không tìm thấy Claude Code CLI (lệnh "claude")')); });
-      p.on('close', c => { clearTimeout(tm); c ? bad(new Error(`claude -p lỗi (mã ${c}): ${(e || o).slice(-200)}`)) : ok(o); });
+      p.on('error', () => { clearInterval(tick); clearTimeout(tm); bad(new Error('Không tìm thấy Claude Code CLI (lệnh "claude")')); });
+      p.on('close', c => { clearInterval(tick); clearTimeout(tm); c ? bad(new Error(`claude -p lỗi (mã ${c}): ${(e || o).slice(-200)}`)) : ok(o); });
     });
     let txt = out; try { txt = JSON.parse(out).result ?? out; } catch {}
     const m = String(txt).match(/\[[\s\S]*\]/); if (!m) throw new Error('Claude không trả về JSON');
     let n = 0;
     for (const x of JSON.parse(m[0])) {
-      const s = slots[x.i]; if (!s) continue;
-      if (s.kind.startsWith('preset') && x.id) { const e = catalog.find(c => c.id === x.id); if (e && e.pal === s.pal) { s.preset = e; n++; } }
-      if (x.text && typeof x.text === 'string') s.text = x.text.slice(0, 22).toUpperCase();
-      if (s.kind === 'emoji' && x.emoji && [...x.emoji].length <= 3) s.emo = { emoji: x.emoji };
+      const s = slots[x.i]; if (!s || s.skip) continue;
+      const c = s.C[+x.o];
+      if (c && (c.kind !== 'aroll' || used.aroll <= quota.aroll)) { if (c !== s.pick) { s.alts = [s.pick, ...s.alts.filter(a => a !== c && a.kind !== s.pick.kind)].filter(a => CHEAP.has(a.kind)).slice(0, 3); s.pick = c; } n++; }
+      if (typeof x.text === 'string' && x.text.trim()) { s.kw = x.text.trim().slice(0, 22).toUpperCase(); s.kwAI = true; }
+      if (s.pick.kind === 'hf' && x.vars && typeof x.vars === 'object') for (const [k, v] of Object.entries(x.vars)) if (k in s.pick.vars && typeof v === typeof s.pick.vars[k]) s.pick.vars[k] = v === '' ? '\u200b' : v; // '' would bring back the block's demo value
+      if (typeof x.query === 'string' && /^[\x00-\x7F]+$/.test(x.query)) s.pick.q = { ...(s.pick.q || {}), en: x.query.slice(0, 60), vi: s.pick.q?.vi || x.query };
+      if (s.pick.kind === 'emoji' && x.emoji && [...x.emoji].length <= 3) s.pick.emoji = x.emoji;
     }
-    // keep the "no template within 3" rule even if Claude repeated one
-    for (let i = 0, rec = []; i < slots.length; i++) {
-      const s = slots[i]; if (!s.kind.startsWith('preset')) continue;
-      if (rec.slice(-3).includes(s.preset.template)) s.preset = (s.cands || []).find(e => !rec.slice(-3).includes(e.template)) || s.preset;
-      rec.push(s.preset.template);
+    // keep the variety rules even when Claude ignored them: the same kind / template / block never twice in a row
+    for (let i = 1; i < live.length; i++) {
+      const a = live[i - 1].pick, s = live[i], b = s.pick;
+      const same = a.kind === b.kind && (b.kind !== 'preset' || a.preset?.template === b.preset?.template) && (b.kind !== 'hf' || a.block === b.block) && !['stock', 'stockvid', 'media', 'lib'].includes(b.kind);
+      if (!same) continue;
+      const alt = s.C.find(c => c.kind !== a.kind && (c.kind !== 'aroll' || used.aroll < quota.aroll));
+      if (alt) { s.alts = [b, ...s.alts.filter(x => x !== alt && x.kind !== b.kind)].filter(x => CHEAP.has(x.kind)).slice(0, 3); s.pick = alt; if (alt.kind === 'aroll') used.aroll++; }
     }
-    claudeNote = `Claude chọn ${n} preset`;
+    claudeNote = `Claude chọn ${n}/${live.length} chỗ`;
   } catch (e) { claudeNote = `Claude lỗi → dùng luật offline (${e.message})`; console.log(claudeNote); }
 }
 
-// ---------- stock photos (Commons/Openverse, no key) ----------
-for (const s of slots.filter(s => s.kind === 'stock')) {
+// ---------- fetch real footage (stock video / photo, AI image) ----------
+const vidDur = s => Math.min(4, Math.max(2, s.t1 - s.t0 + .5));
+const fallback = s => { const a = s.alts.shift() || (SRC.has('text') && s.kw ? { kind: 'text', text: s.kw } : null); if (a) s.pick = a; else s.skip = true; };
+const fetchable = live.filter(s => ['stockvid', 'stock', 'aiimg'].includes(s.pick.kind));
+let fi = 0;
+for (const s of fetchable) {
+  const p = s.pick, q = p.q || {}, en = q.en || '';
+  say(.55 + .2 * (fi++ / Math.max(1, fetchable.length)), `${p.kind === 'aiimg' ? 'Tạo ảnh AI' : p.kind === 'stockvid' ? 'Tìm video stock' : 'Tìm ảnh stock'}: ${en || q.vi}`);
   try {
-    say(.5, `Tìm ảnh stock: ${s.conc.en}`);
-    const r = await stockSearch(s.conc.vi, { kind: 'photo', src: 'commons,openverse', n: 4, en: s.conc.en });
-    const it = r.items.find(x => (x.w || 1000) >= 640) || r.items[0];
+    if (p.kind === 'aiimg') {
+      const { genImage } = await import('./ai_broll.mjs');
+      const out = path.join(DIR, 'media', `ai_${String(s.i).padStart(2, '0')}_${Date.now() % 1e5}.png`);
+      await genImage(`${en || q.vi}, cinematic photo, natural light, no text, no logo`, out, { vertical: VERT });
+      p.media = { path: path.relative(DIR, out).split(path.sep).join('/'), credit: 'Ảnh AI' };
+      continue;
+    }
+    const ws = String(en).split(/\s+/).filter(Boolean), tries = [...new Set([en, ws.slice(0, 2).join(' '), ws[0]].filter(Boolean))];
+    let it = null, kind = p.kind === 'stockvid' ? 'video' : 'photo';
+    for (const qq of tries) {
+      const r = await stockSearch(q.vi || qq, { kind, src: kind === 'video' ? ['pexels', 'pixabay'].filter(k => KEYS[k]).join(',') : STOCK_SRC, n: 8, en: qq });
+      it = r.items.find(x => relevant(x, qq) && (kind === 'video' ? (x.dur || 3) >= 2 : (x.w || 1000) >= 640));
+      if (it) break;
+    }
+    if (!it && kind === 'video') { // no clip for this → a photo of it, with motion
+      kind = 'photo';
+      const r = await stockSearch(q.vi || en, { kind, src: STOCK_SRC, n: 8, en }); it = r.items.find(x => relevant(x, en) && (x.w || 1000) >= 640);
+    }
     if (!it) throw new Error('không có kết quả');
-    const m = await fetchMedia(it.url, DIR, { kind: 'photo', name: s.conc.en.split(' ')[0], vertical: VERT, meta: { author: it.author, license: it.license, provider: it.provider, page: it.page, title: it.title } });
-    s.media = { path: m.path, credit: `${it.author || ''} · ${it.license || ''} · ${it.provider}` };
-  } catch (e) { console.log(`stock "${s.conc.en}" bỏ qua: ${e.message}`); s.kind = SRC.has('preset') ? 'preset' : 'text'; if (s.kind === 'preset') { s.pal = PAL; s.preset = presets(s.sent?.text || '', PAL, avoidSet(), false)[0] || { template: 'sunburst', pal: PAL }; s.text = keyword(s.ws)?.text; } }
+    const m = await fetchMedia(it.url, DIR, { kind, dur: vidDur(s), name: (en || 'broll').split(' ')[0], vertical: VERT, meta: { author: it.author, license: it.license, provider: it.provider, page: it.page, title: it.title } });
+    p.media = { path: m.path, seq: m.seq, credit: `${it.author || ''} · ${it.license || ''} · ${it.provider}` };
+    if (kind === 'photo' && p.kind === 'stockvid') p.kind = 'stock';
+  } catch (e) { console.log(`${p.kind} "${en || q.vi}" bỏ qua: ${e.message}`); fallback(s); }
 }
 
 // ---------- build scenes ----------
-say(.75, 'Đặt b-roll lên timeline');
-const added = [];
-let styI = 0, mediaI = 0;
+say(.78, 'Đặt b-roll lên timeline');
+const added = [], fxAdded = [];
+let styI = 0;
 const fitSize = (txt, size, w = DW - 80) => Math.max(34, Math.min(size, Math.floor(w / (Math.max(1, [...String(txt)].length) * .62))));
-for (const s of slots) {
+const wantFull = () => fullN / Math.max(1, added.length + 1) < (G.full ?? .3);
+// one scene for candidate c at slot s with layout lay (shared by the pick and its alternatives so a swap keeps the place)
+function sceneFor(s, c, lay) {
   const base = { t0: s.t0, t1: s.t1, _auto: true, note: 'tự động' };
-  if (s.kind === 'text') {
-    const kw = s.text ? { text: s.text } : keyword(s.ws) || keyword(s.wsSent || []);
-    if (!kw) continue;
-    const size = fitSize(kw.text, VERT ? 84 : 92);
-    added.push({ ...base, type: 'text', hideCaptions: false,
-      lines: [{ text: kw.text, t: s.t0, style: TEXT_STY[styI++ % TEXT_STY.length], size, x: DW / 2, y: textY(), anim: ['pop', 'blur_zoom', 'slide_l', 'drop', 'tumble'][styI % 5] }] });
-    continue;
+  const box = lay === 'full' || lay === 'person' ? null : boxFor(lay);
+  const full = lay === 'full' || !box;
+  if (c.kind === 'text') {
+    const txt = c.text || s.kw; if (!txt) return null;
+    return { ...base, t1: r2(Math.min(s.t1, s.t0 + Math.min(1.8, Math.max(1.1, density * .45)))), type: 'text', hideCaptions: false,
+      lines: [{ text: txt, t: s.t0, style: TEXT_STY[styI++ % TEXT_STY.length], size: fitSize(txt, VERT ? 84 : 92), x: DW / 2, y: textY(), anim: ['pop', 'blur_zoom', 'slide_l', 'drop', 'tumble'][styI % 5] }] };
   }
-  if (s.kind === 'emoji') {
-    const size = VERT ? 150 : 130, [x, y] = emojiXY(size);
-    added.push({ ...base, type: 'emoji_pop', src: s.emo.emoji, x, y, size });
-    continue;
+  if (c.kind === 'emoji') { const size = VERT ? 150 : 130, [x, y] = emojiXY(size); return { ...base, t1: r2(Math.min(s.t1, s.t0 + Math.min(1.4, density * .6))), type: 'emoji_pop', src: c.emoji, x, y, size }; }
+  if (['media', 'lib', 'stock', 'stockvid', 'aiimg'].includes(c.kind)) {
+    const m = c.media; if (!m) return null;
+    const media = m.seq ? { ...m.seq, t0: s.t0 } : m.path, credit = m.credit ? { credit: m.credit } : {};
+    if (full) return { ...base, t1: r2(Math.min(s.t1, s.t0 + (m.seq ? 2.2 : 1.6))), type: 'photo', mode: 'full', media, kb: m.seq ? .04 : .12, kb_dir: s.i % 2 ? -1 : 1, ...credit };
+    return { ...base, type: 'photo', mode: 'card', media, kb: .08, card: { x: box[0], y: box[1], w: box[2], h: box[3], r: 20 }, ...credit };
   }
-  if (s.kind === 'media' || s.kind === 'stock') {
-    const m = s.kind === 'media' ? MEDIA[mediaI++ % MEDIA.length] : s.media;
-    if (!m) continue;
-    const media = m.seq ? { ...m.seq, t0: s.t0 } : m.path;
-    let lay = nextLayout(true);
-    if (lay === 'person') lay = 'full';
-    const box = lay === 'full' ? null : boxFor(lay);
-    if (lay === 'full' || !box) added.push({ ...base, t1: r2(Math.min(s.t1, s.t0 + 1.4)), type: 'photo', mode: 'full', media, kb: .1, ...(m.credit ? { credit: m.credit } : {}) });
-    else added.push({ ...base, type: 'photo', mode: 'card', media, card: { x: box[0], y: box[1], w: box[2], h: box[3], r: 20 }, ...(m.credit ? { credit: m.credit } : {}) });
-    continue;
+  if (c.kind === 'hf') {
+    const b = HF[c.block]; if (!b) return null;
+    const t1 = r2(Math.min(s.t1 + .6, s.t0 + Math.max(1.8, Math.min(b.dur, 3.6))));
+    const sc = { ...base, t1, type: 'hf', block: c.block, vars: c.vars, ...(c.texts ? { texts: c.texts } : {}), fade: .2 };
+    if (!full) { const nat = b.layer === 'full' ? Math.min(DW / b.w, DH / b.h) : 1; Object.assign(sc, { x: Math.round(box[0] + box[2] / 2), y: Math.round(box[1] + box[3] / 2), size: b.layer === 'full' ? Math.round(box[2] / (b.w * nat) * 100) : 70 }); }
+    else if (VERT && b.layer === 'full') { const bb = boxFor('card'); if (bb) Object.assign(sc, { x: Math.round(DW / 2), y: Math.round(bb[1] + bb[3] / 2), size: 100 }); }
+    return sc;
   }
-  // presets
-  const e = s.preset, num = s.num;
-  const params = Object.fromEntries(Object.entries(e).filter(([k]) => !['id', 'topic', 'tags', 'score'].includes(k)));
-  if (s.text) params.text = String(s.text).slice(0, 22);
-  if (num) {
-    params.num = num.num; if (num.unit) params.unit = num.unit;
-    const near = WORDS.filter(w => Math.abs(w.s - num.at) < 1.6 && !/\d/.test(w.w));
-    params.text = (keyword(near, 2)?.text || params.text || '').slice(0, 22);
+  // preset / logo -> procedural b-roll
+  let params;
+  if (c.kind === 'logo') params = { template: 'logo_hero', pal: PAL, icon: 'si:' + c.logo.slug, hex: c.logo.hex, text: c.logo.title.toUpperCase().slice(0, 18), sub: s.kw && fold(s.kw) !== fold(c.logo.title) ? s.kw.toLowerCase() : '', seed: s.i + 1 };
+  else {
+    const e = c.preset; if (!e) return null;
+    params = Object.fromEntries(Object.entries(e).filter(([k]) => !['id', 'topic', 'tags', 'score', 'own'].includes(k)));
+    if (s.kw) params.text = String(s.kw).slice(0, 22);
+    if (s.num && ['number', 'money', 'proof'].includes(s.role)) {
+      if (!e.own) { params.num = s.num.num; if (s.num.unit) params.unit = s.num.unit === '%' ? '%' : ' ' + s.num.unit.toLowerCase(); }
+      if (!s.kwAI) { // label = words said right after the number, in the same sentence ("45 nghìn MỘT TÔ")
+        const i0 = WORDS.indexOf(s.num.word), after = [], before = [];
+        if (!/[.!?…]$/.test(s.num.word?.w || '')) for (let i = i0 + 1; i < WORDS.length && WORDS[i].s - s.num.at < 1.6; i++) { after.push(WORDS[i]); if (/[.,!?…;]$/.test(WORDS[i].w)) break; }
+        for (let i = i0 - 1; i >= 0 && s.num.at - WORDS[i].s < 1.8 && !/[.!?…]$/.test(WORDS[i].w); i--) before.unshift(WORDS[i]);
+        params.text = (keyword(after.filter(w => !/\d/.test(w.w)), 3)?.text || keyword(before, 3)?.text || params.text || '').slice(0, 22);
+      }
+    }
+    if (['checklist', 'timeline_steps', 'progress'].includes(params.template) && s.items.length >= 2 && !e.own) params.items = s.items;
+    if (params.template === 'versus' && s.items.length === 2) params.items = s.items.map(x => x.toUpperCase().slice(0, 12));
+    params.pal = c.pal || PAL;
+    const em = emojiFor(s.wsSent || s.ws); if (em) params.icon = em.emoji;
   }
-  params.pal = s.pal || PAL;
-  const em = emojiFor(s.wsSent || s.ws); if (em) params.icon = em.emoji;
-  let lay = nextLayout(true);
-  if (lay === 'person' && !CUT) lay = 'card';
-  const t1 = lay === 'full' ? r2(Math.min(s.t1, s.t0 + 1.5)) : s.t1;
   if (lay === 'person') {
-    delete params.text; delete params.sub; // the speaker stands in front: a pure animated background reads better
-    added.push({ ...base, t1: r2(Math.min(s.t1, s.t0 + 2.5)), type: 'broll', ...params, template: BG_TPL.has(params.template) ? params.template : ['particles', 'grid_tunnel', 'hex_grid', 'starfield'][s.i % 4], layout: 'full', person: true, ...(VERT ? { fit: 'cover' } : {}) });
-    continue;
+    delete params.text; delete params.sub;
+    return { ...base, t1: r2(Math.min(s.t1, s.t0 + 2.5)), type: 'broll', ...params, template: BG_TPL.has(params.template) ? params.template : ['particles', 'grid_tunnel', 'hex_grid', 'starfield'][s.i % 4], layout: 'full', person: true, ...(VERT ? { fit: 'portrait' } : {}) };
   }
-  const box = lay === 'full' ? [0, 0, DW, DH] : boxFor(lay);
-  if (!box) continue;
-  if (VERT) added.push({ ...base, t1, type: 'media_card', card: { x: box[0], y: box[1], w: box[2], h: box[3], r: lay === 'full' ? 0 : 18 }, screen: { broll: { ...(e.id ? { id: e.id } : {}), ...params } } });
-  else added.push({ ...base, t1, type: 'broll', ...params, layout: lay === 'full' ? 'full' : 'card', ...(lay === 'full' ? {} : { x: box[0], y: box[1], w: box[2], h: box[3] }) });
+  const t1 = full ? r2(Math.min(s.t1, s.t0 + 1.6)) : s.t1;
+  if (full) return { ...base, t1, type: 'broll', ...params, layout: 'full', ...(VERT ? { fit: 'portrait' } : {}) };
+  if (VERT) return { ...base, t1, type: 'media_card', card: { x: box[0], y: box[1], w: box[2], h: box[3], r: 18 }, screen: { broll: { ...(c.preset?.id ? { id: c.preset.id } : {}), ...params } } };
+  return { ...base, t1, type: 'broll', ...params, layout: 'card', x: box[0], y: box[1], w: box[2], h: box[3] };
+}
+const fxPick = s => {
+  const f = ' ' + s.ws.map(w => w.f).join(' ') + ' ', sad = /\s(buon|that bai|kho khan|met|chan|tiec|mat)\s/.test(f);
+  const hl = s.ws.find(w => w.hl) || s.ws.find(w => !STOP.has(w.f) && w.f.length > 3) || s.ws[0];
+  if (sad || (s.role === 'compare' && /\s(truoc day|ngay xua)\s/.test(f))) return { t: s.t0, type: 'mono', dur: r2(Math.min(2.2, s.t1 - s.t0)) };
+  if (s.role === 'emotion' || s.role === 'hook') return { t: r2(hl?.s ?? s.t0), type: 'punch', amp: .1 };
+  return { t: s.t0, type: 'push', dur: r2(Math.max(1.8, Math.min(3, s.t1 - s.t0 + .6))), amp: .09 };
+};
+for (const s of slots) {
+  if (s.skip) continue;
+  const c = s.pick;
+  if (c.kind === 'aroll') { fxAdded.push({ ...fxPick(s), _auto: true }); continue; }
+  if (c.kind === 'media') { const m = MEDIA[mediaI++ % MEDIA.length]; c.media = m.seq ? { seq: m.seq } : { path: m.path }; }
+  if (c.kind === 'lib') c.media = (() => { const r = LIB.useIn(c.lib, DIR); return typeof r === 'string' ? { path: r, credit: 'Thư viện của tôi' } : { seq: r, credit: 'Thư viện của tôi' }; })();
+  const isSmall = c.kind === 'text' || c.kind === 'emoji';
+  let lay = isSmall ? 'card' : nextLayout(wantFull());
+  if (lay === 'person' && (!CUT || c.kind !== 'preset')) lay = 'card';
+  // HyperFrames blocks and logos are designed for a big frame: never squeeze them into the small side / pip boxes
+  if ((c.kind === 'hf' || c.kind === 'logo') && ['right', 'left', 'pip'].includes(lay)) lay = boxFor('card') ? 'card' : 'full';
+  const sc = sceneFor(s, c, lay);
+  if (!sc) continue;
+  if (!isSmall && (sc.layout === 'full' || sc.mode === 'full' || (sc.type === 'hf' && sc.x == null))) fullN++;
+  const altLay = a => (a.kind === 'text' || a.kind === 'emoji' ? 'card' : (a.kind === 'hf' || a.kind === 'logo') && ['right', 'left', 'pip'].includes(lay) ? (boxFor('card') ? 'card' : 'full') : lay);
+  const alts = s.alts.map(a => { const x = sceneFor(s, a, altLay(a)); return x && { label: `${GJ.sources[a.kind]}${a.kind === 'preset' ? ' · ' + a.preset.template : a.kind === 'hf' ? ' · ' + (HF[a.block]?.label || a.block) : ''}`, scene: (() => { const { _auto, note, ...r } = x; return r; })() }; }).filter(Boolean);
+  if (alts.length) sc._alts = alts;
+  sc._src = c.kind; sc._role = s.role;
+  added.push(sc);
 }
 TL.scenes.push(...added);
+if (fxAdded.length) TL.fx = [...(TL.fx || []), ...fxAdded];
 say(.95, 'Lưu');
 const kinds = {}; for (const s of added) kinds[s.type] = (kinds[s.type] || 0) + 1;
-write({ removed, added: added.length, kinds, density, palette: [PAL, PAL2], layouts: added.map(s => s.layout || (s.card ? (s.card.w >= DW * .95 ? 'full' : 'card') : s.mode || s.type)), claude: claudeNote || undefined,
-  templates: added.map(s => s.template || s.screen?.broll?.template).filter(Boolean) });
+const sources = {}; for (const s of added) sources[s._src] = (sources[s._src] || 0) + 1; if (fxAdded.length) sources.aroll = fxAdded.length;
+write({ removed, added: added.length + fxAdded.length, kinds, sources, goal: { id: G.id, name: G.name, why: goalPick.why }, variety: VARIETY, density, palette: [PAL, PAL2b],
+  roles: slots.reduce((m, s) => ((m[s.role] = (m[s.role] || 0) + 1), m), {}), alts: added.filter(s => s._alts).length, claude: claudeNote || undefined,
+  layouts: added.map(s => s.layout || (s.card ? (s.card.w >= DW * .95 ? 'full' : 'card') : s.mode || s.type)), templates: added.map(s => s.template || s.screen?.broll?.template || s.block).filter(Boolean) });

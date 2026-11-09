@@ -1069,7 +1069,7 @@ const Studio = window.Studio = {
   get TL() { return TL; }, set TL(v) { TL = v; }, get CAP() { return CAP; }, set CAP(v) { CAP = v; }, get META() { return META; },
   get T() { return T; }, get win() { return win; }, get sel() { return sel; }, get DW() { return DW; }, get DH() { return DH; },
   $, esc, fmt, api, toast, modal, closeModal, pollJob, setTime, saveNow, pushUndo, changed, renderTimeline, renderInspector, renderPanel, build, draw,
-  select, sect, typeName,
+  select, sect, typeName, compOf: obj => compOf(obj),
   _insp: [], _ready: [], _blk: [], // _blk: fn(comp, PPS) -> extra HTML inside a timeline block (keyframe diamonds…)
   _build: [], _play: [], // build(comps) hooks add timeline components; play('tick'|'stop', T) hooks follow playback
   // left rail panel: Studio.addPanel('ai', 'ti-robot', 'AI', () => { $('#libbody').innerHTML = … })

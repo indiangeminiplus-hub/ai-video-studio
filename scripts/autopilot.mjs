@@ -271,13 +271,18 @@ export async function autopilot(input, { profile: profId, out: outDir, project: 
     async broll() {
       if (!prof.broll_density || prof.broll_density === 'off') return { skip: 'tắt trong hồ sơ' };
       const src = (prof.broll_src || []).join(',') || 'preset';
+      // b-roll goal: the profile's own choice, else read from its free-text "Mục tiêu" (assets/broll/goals.json)
+      const gf = String(prof.goal || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+      const goal = prof.broll_goal && prof.broll_goal !== 'auto' ? prof.broll_goal : [[/ban hang|chot don|san pham/, 'banhang'], [/bds|bat dong san|nha dat|can ho/, 'bds'], [/khoa hoc|huong dan|bai giang|day /, 'khoahoc'],
+        [/review|danh gia/, 'review'], [/tin tuc|ban tin|thoi su/, 'tintuc'], [/doanh nghiep|cong ty|tuyen dung/, 'doanhnghiep'], [/am thuc|du lich|quan an|mon an/, 'amthuc'],
+        [/giai tri|hai huoc|vui/, 'giaitri'], [/chia se|ke chuyen|tam su/, 'kechuyen']].find(([r]) => r.test(gf))?.[1] || 'auto';
       let info = null;
-      await run('node', [S('auto_broll.mjs'), P('timeline.json'), '--density', prof.broll_density, '--src', src, ...(prof.broll_claude ? ['--claude'] : [])], l => {
+      await run('node', [S('auto_broll.mjs'), P('timeline.json'), '--goal', goal, '--density', prof.broll_density, '--src', src, ...(prof.broll_claude ? ['--claude'] : [])], l => {
         const m = /^@@ ([\d.]+) (.*)$/.exec(l); if (m) sayS(+m[1], m[2]);
         if (/^\{.*"added"/.test(l)) try { info = JSON.parse(l); } catch {}
       });
-      res.broll = info ? { added: info.added, kinds: info.kinds } : null;
-      return info ? `${info.added} cảnh (${Object.entries(info.kinds || {}).map(([k, n]) => `${n} ${k}`).join(', ')}) · mật độ ${prof.broll_density} · ${src}` : `mật độ ${prof.broll_density}`;
+      res.broll = info ? { added: info.added, kinds: info.kinds, sources: info.sources, goal: info.goal?.id } : null;
+      return info ? `${info.added} cảnh (${Object.entries(info.sources || info.kinds || {}).map(([k, n]) => `${n} ${k}`).join(', ')}) · mục tiêu ${info.goal?.name || goal} · mật độ ${prof.broll_density}` : `mật độ ${prof.broll_density}`;
     },
     async sfx() {
       const notes = [];

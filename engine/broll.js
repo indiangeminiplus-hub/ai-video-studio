@@ -1,4 +1,4 @@
-// Procedural b-roll: 40 seekable templates × 10 palettes. Each template is (p, lt, d) => HTML for a 1280×720 frame,
+// Procedural b-roll: 55 seekable templates × 10 palettes. Each template is (p, lt, d) => HTML for a 1280×720 frame,
 // where p = params ({c: palette, text, sub, icon, items, num, seed}), lt = seconds since clip start, d = clip length.
 // Catalog of ready-made combinations: assets/broll/catalog.json (scripts/gen_broll_catalog.py). Spec: references/broll-library.md.
 
@@ -44,6 +44,13 @@ function countUp(lt, to, t0 = .2, dur = 1.6) {
   return Math.abs(to) >= 100 ? Math.round(v).toLocaleString('vi-VN') : v.toFixed(Number.isInteger(to) ? 0 : 1);
 }
 const card = (c, extra = '') => `background:${c.light ? '#fff' : 'rgba(255,255,255,.06)'};border:1px solid ${c.light ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.12)'};border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,${c.light ? .12 : .45});${extra}`;
+
+// Logo or emoji: "si:<slug>" = Simple Icons glyph painted in the brand colour (CSS mask), anything else = Fluent emoji.
+const BR_SI = (typeof CDN !== 'undefined' ? CDN : 'https://cdn.jsdelivr.net/') + 'npm/simple-icons@15.0.0/icons/';
+function brIco(icon, size, color = '#111') {
+  if (String(icon).startsWith('si:')) return `<div style="width:${size}px;height:${size}px;background:${color};-webkit-mask:url(${BR_SI}${icon.slice(3)}.svg) center/contain no-repeat;mask:url(${BR_SI}${icon.slice(3)}.svg) center/contain no-repeat"></div>`;
+  return emoji(icon, 0, 0, size, 'position:relative');
+}
 
 const BRL = {
   // ---------------------------------------------------------------- abstract backgrounds
@@ -474,6 +481,133 @@ const BRL = {
       <div style="margin-top:20px;font:800 46px/1.25 var(--sans);color:${c.fg};white-space:normal;${anim(lt, .25)}">${esc(p.text || 'Không phải làm nhiều hơn, mà là làm thông minh hơn.')}</div>
       <div class="sub" style="margin-top:30px;color:${c.a};text-shadow:none;${anim(lt, .5)}">${esc(p.sub || '')}</div></div>`;
   },
+  // ---------------------------------------------------------------- life / commerce (v5)
+  // Brand logo (Simple Icons, p.icon = "si:<slug>", p.hex = brand colour) on a lit tile; emoji works too.
+  logo_hero(p, lt) {
+    const c = p.c, hex = p.hex ? '#' + String(p.hex).replace('#', '') : c.a;
+    return bgBase(c, 50, 45) + `<div class="abs" style="left:640px;top:300px;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;background:radial-gradient(circle, ${hex}55, transparent 68%)"></div>
+      <div class="abs" style="left:520px;top:120px;width:240px;height:240px;${anim(lt, .05, null, 'pop')}"><div style="width:240px;height:240px;border-radius:56px;background:#fff;box-shadow:0 30px 70px rgba(0,0,0,.45),0 0 0 6px ${hex}33;display:flex;align-items:center;justify-content:center;transform:${bob(lt, 0, 5)}">${brIco(p.icon || '✨', 150, hex)}</div></div>
+      <div class="abs" style="left:0;right:0;top:420px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text || '', 80)}px;color:${c.fg};${anim(lt, .3, null, 'hero')}">${esc(p.text || '')}</div>
+      ${p.sub ? `<div class="label" style="color:${hex};margin-top:12px;${anim(lt, .5)}">${esc(p.sub)}</div>` : ''}</div>` + vign(c);
+  },
+  food_steam(p, lt) {
+    const c = p.c; let steam = '';
+    for (let i = 0; i < 5; i++) {
+      const k = loop(lt + i * .45, 2.2), x = 560 + i * 40 + Math.sin(lt * 2 + i) * 18;
+      steam += `<div class="abs" style="left:${fx(x)}px;top:${fx(250 - k * 170)}px;width:40px;height:90px;border-radius:50%;background:${c.fg};opacity:${fx((1 - k) * .35)};filter:blur(14px);transform:scaleX(${fx(1 + k)})"></div>`;
+    }
+    return bgBase(c, 50, 60) + `<div class="abs" style="left:440px;top:330px;width:400px;height:60px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(10px)"></div>` + steam +
+      `<div class="abs" style="left:530px;top:200px;${anim(lt, .05, null, 'pop')}">${emoji(p.icon || '🍜', 0, 0, 220, 'position:relative')}</div>
+      <div class="abs" style="left:0;right:0;top:470px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text || '', 76)}px;color:${c.a};${anim(lt, .3, null, 'hero')}">${esc(p.text || '')}</div>
+      ${p.sub ? `<div class="label" style="color:${c.fg};margin-top:12px;${anim(lt, .5)}">${esc(p.sub)}</div>` : ''}</div>` + vign(c);
+  },
+  plane_route(p, lt) {
+    const c = p.c, [A, B] = p.items?.length >= 2 ? p.items : ['Hà Nội', 'Đà Nẵng'];
+    const k = E.inOutSine(prog(lt, .4, 1.8)), x0 = 220, x1 = 1060, y0 = 470, x = lerp(x0, x1, k), y = y0 - Math.sin(k * Math.PI) * 260;
+    const ang = Math.atan2(-Math.cos(k * Math.PI) * 260 * Math.PI, x1 - x0) * 180 / Math.PI;
+    const pin = (px, lab, d) => `<div class="abs" style="left:${px - 22}px;top:${y0 - 22}px;${anim(lt, d, null, 'pop')}"><div style="width:44px;height:44px;border-radius:50%;background:${c.a};box-shadow:0 0 0 10px ${c.a}33,0 0 30px ${c.a}"></div>
+      <div class="label" style="position:absolute;left:50%;top:60px;transform:translateX(-50%);white-space:nowrap;color:${c.fg};font-size:34px">${esc(lab)}</div></div>`;
+    return bgBase(c, 50, 30) + `<svg class="abs" style="left:0;top:0" width="1280" height="720"><path d="M${x0} ${y0} Q 640 ${y0 - 520} ${x1} ${y0}" fill="none" stroke="${c.mu}" stroke-width="4" stroke-dasharray="4 14" stroke-linecap="round"/>
+      <path d="M${x0} ${y0} Q 640 ${y0 - 520} ${x1} ${y0}" fill="none" stroke="${c.a}" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${fx(1 - k)}"/></svg>` +
+      pin(x0, A, .05) + pin(x1, B, .2) + `<div class="abs" style="left:${fx(x - 45)}px;top:${fx(y - 45)}px;transform:rotate(${fx(ang + 45)}deg)">${emoji(p.icon || '✈️', 0, 0, 90, 'position:relative')}</div>` +
+      (p.text ? `<div class="abs" style="left:0;right:0;top:70px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text, 64)}px;color:${c.fg};${anim(lt, .2, null, 'hero')}">${esc(p.text)}</div></div>` : '') + vign(c);
+  },
+  heartbeat(p, lt) {
+    const c = p.c; let d = '';
+    for (let x = 0; x <= 1280; x += 8) {
+      const ph = ((x / 1280) * 3 + 0) % 1, beat = ph > .42 && ph < .58 ? Math.sin((ph - .42) / .16 * Math.PI * 2) * (ph < .5 ? -150 : 70) : Math.sin(x * .05) * 4;
+      d += `${x ? 'L' : 'M'}${x} ${fx(330 + beat)} `;
+    }
+    const k = loop(lt, 1.5), pulse = 1 + Math.max(0, Math.sin(k * Math.PI * 2)) * .14;
+    return bgBase(c, 50, 50) + `<svg class="abs" style="left:0;top:0" width="1280" height="720"><path d="${d}" fill="none" stroke="${c.a}" stroke-width="6" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${fx(1 - E.outCubic(prog(lt, 0, 1.6)))}" style="filter:drop-shadow(0 0 10px ${c.a})"/></svg>
+      <div class="abs" style="left:560px;top:120px;transform:scale(${fx(pulse)})">${emoji(p.icon || '❤️', 0, 0, 160, 'position:relative')}</div>
+      <div class="abs" style="left:0;right:0;top:470px;text-align:center"><div class="mega" style="font-size:${fit(p.text || '', 82)}px;color:${c.fg};${anim(lt, .3, null, 'hero')}">${esc(p.text || '')}</div>
+      ${p.num != null ? `<div class="label" style="color:${c.a};font-size:44px;margin-top:10px;${anim(lt, .5)}">${countUp(lt, p.num, .5)}${esc(p.unit ?? ' BPM')}</div>` : p.sub ? `<div class="label" style="color:${c.a};margin-top:10px;${anim(lt, .5)}">${esc(p.sub)}</div>` : ''}</div>` + vign(c);
+  },
+  house_build(p, lt) {
+    const c = p.c, k = E.outCubic(prog(lt, .1, 1.6)), lit = lt > 1.7;
+    const path = 'M420 520 L420 330 L640 170 L860 330 L860 520 Z M560 520 L560 420 L720 420 L720 520 M470 340 L560 340 L560 400 L470 400 Z';
+    return bgBase(c, 50, 40) + `<div class="abs" style="left:380px;top:540px;width:520px;height:6px;border-radius:3px;background:${c.mu}"></div>
+      <svg class="abs" style="left:0;top:0" width="1280" height="720"><path d="${path}" fill="${lit ? c.a + '22' : 'none'}" stroke="${c.a}" stroke-width="8" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${fx(1 - k)}" style="filter:drop-shadow(0 0 12px ${c.a}88)"/>
+      ${lit ? `<rect x="470" y="340" width="90" height="60" fill="${c.b}" opacity="${fx(.6 + .3 * Math.sin(lt * 4))}"/>` : ''}</svg>
+      ${p.icon ? `<div class="abs" style="left:760px;top:120px;${anim(lt, 1.6, null, 'pop')}">${emoji(p.icon, 0, 0, 110, 'position:relative')}</div>` : ''}
+      <div class="abs" style="left:0;right:0;top:590px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text || '', 64)}px;color:${c.fg};${anim(lt, .6, null, 'hero')}">${esc(p.text || '')}</div></div>` + vign(c);
+  },
+  shopping_cart(p, lt) {
+    const c = p.c, its = p.items?.length ? p.items : ['👕', '👟', '🎧', '📱'];
+    let h = bgBase(c, 50, 60) + `<div class="abs" style="left:450px;top:250px">${emoji(p.icon || '🛒', 0, 0, 320, 'position:relative')}</div>`;
+    its.slice(0, 5).forEach((e, i) => {
+      // items drop in and pile up on top of the basket, so they stay visible
+      const t0 = .2 + i * .35, k = E.inQuad(prog(lt, t0, .45)), land = lt > t0 + .45;
+      const x = 500 + (i % 3) * 80 + (i > 2 ? 40 : 0), yEnd = 240 - (i > 2 ? 60 : 0), y = land ? yEnd + Math.sin(prog(lt, t0 + .45, .25) * Math.PI) * -14 : lerp(-140, yEnd, k);
+      h += `<div class="abs" style="left:${x}px;top:${fx(y)}px;transform:rotate(${(i % 2 ? 1 : -1) * 12}deg)">${emoji(e, 0, 0, 110, 'position:relative')}</div>`;
+    });
+    return h + `<div class="abs" style="left:0;right:0;top:590px;text-align:center"><span class="hero" style="font-size:${fit(p.text || '', 60)}px;color:${c.fg};${anim(lt, .3, null, 'hero')}">${esc(p.text || '')}</span>
+      ${p.num != null ? `<span class="mega" style="margin-left:24px;font-size:60px;color:${c.a};${glowTxt(c, .6)}">${countUp(lt, p.num, .4)}${esc(p.unit ?? 'đ')}</span>` : ''}</div>` + vign(c);
+  },
+  price_tag(p, lt) {
+    const c = p.c, sw = Math.sin(lt * 3) * Math.exp(-lt * 1.2) * 14, cut = lt > .9;
+    const old = p.sub || '', now = p.num != null ? countUp(lt, p.num, .9, .8) + esc(p.unit ?? 'đ') : esc(p.text || 'SALE');
+    return bgBase(c, 40, 40) + `<div class="abs" style="left:640px;top:60px;width:4px;height:120px;background:${c.mu}"></div>
+      <div class="abs" style="left:420px;top:170px;width:440px;height:300px;transform-origin:50% -100px;transform:rotate(${fx(sw)}deg);${anim(lt, 0, null, 'hero')}">
+        <div style="width:440px;height:300px;border-radius:28px;background:${c.a};box-shadow:0 30px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+          <div style="width:30px;height:30px;border-radius:50%;background:${c.bg};margin-bottom:10px"></div>
+          ${old ? `<div style="font:700 40px var(--sans);color:${c.bg};opacity:.7;text-decoration:${cut ? 'line-through' : 'none'}">${esc(old)}</div>` : ''}
+          <div class="mega" style="font-size:${fit(String(now), 84, 400)}px;color:#fff">${now}</div></div></div>
+      ${p.num != null && p.text ? `<div class="abs" style="left:0;right:0;top:530px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text, 64)}px;color:${c.fg};${anim(lt, .4, null, 'hero')}">${esc(p.text)}</div></div>` : ''}` + vign(c);
+  },
+  star_rating(p, lt) {
+    const c = p.c, r = Math.min(5, Math.max(0, p.num ?? 4.9));
+    let stars = '';
+    for (let i = 0; i < 5; i++) {
+      const f = clamp(r - i) * E.outCubic(prog(lt, .2 + i * .18, .3));
+      stars += `<div style="position:relative;width:150px;height:150px;${anim(lt, .1 + i * .12, null, 'pop')}"><svg viewBox="0 0 24 24" width="150" height="150"><defs><linearGradient id="sg${i}"><stop offset="${fx(f)}" stop-color="${c.b}"/><stop offset="${fx(f)}" stop-color="${c.mu}55"/></linearGradient></defs>
+        <path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z" fill="url(#sg${i})"/></svg></div>`;
+    }
+    return bgBase(c, 50, 40) + `<div class="abs" style="left:0;right:0;top:150px;display:flex;justify-content:center;gap:14px">${stars}</div>
+      <div class="abs" style="left:0;right:0;top:340px;text-align:center"><div class="mega" style="font-size:110px;color:${c.fg}">${countUp(lt, r, .3, 1.2)}<span style="font-size:50px;color:${c.mu}">/5</span></div>
+      <div class="label" style="color:${c.a};font-size:44px;margin-top:6px;${anim(lt, .6)}">${esc(p.text || '')}</div></div>` + vign(c);
+  },
+  gift_box(p, lt) {
+    const c = p.c, open = E.outBack(prog(lt, .7, .4), 2), burst = prog(lt, .75, .9);
+    let rays = '';
+    for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2, r = 80 + burst * 260; rays += `<div class="abs" style="left:${fx(640 + Math.cos(a) * r - 12)}px;top:${fx(300 + Math.sin(a) * r * .7 - 12)}px;width:24px;height:24px;border-radius:6px;background:${i % 2 ? c.a : c.b};opacity:${fx(1 - burst)};transform:rotate(${fx(a * 60)}deg)"></div>`; }
+    return bgBase(c, 50, 50) + rays + `<div class="abs" style="left:480px;top:${fx(260 - open * 60)}px;transform:rotate(${fx(-open * 18)}deg);transform-origin:0 100%;width:320px;height:70px;border-radius:14px;background:${c.a};box-shadow:0 10px 30px rgba(0,0,0,.4)"></div>
+      <div class="abs" style="left:500px;top:330px;width:280px;height:220px;border-radius:16px;background:${c.a};box-shadow:0 30px 60px rgba(0,0,0,.4)"><div style="position:absolute;left:120px;top:0;width:40px;height:220px;background:${c.b}"></div></div>
+      ${lt > .9 ? `<div class="abs" style="left:560px;top:${fx(250 - E.outCubic(prog(lt, .9, .5)) * 140)}px">${emoji(p.icon || '🎁', 0, 0, 160, 'position:relative')}</div>` : ''}
+      <div class="abs" style="left:0;right:0;top:590px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text || '', 64)}px;color:${c.fg};${anim(lt, 1, null, 'hero')}">${esc(p.text || '')}</div></div>` + vign(c);
+  },
+  book_open(p, lt) {
+    const c = p.c, flip = loop(lt, 1.1), page = Math.cos(flip * Math.PI);
+    return bgBase(c, 50, 50) + `<div class="abs" style="left:340px;top:160px;width:600px;height:360px;perspective:1600px;${anim(lt, 0, null, 'hero')}">
+      <div style="position:absolute;left:0;top:0;width:300px;height:360px;border-radius:14px 0 0 14px;background:${c.light ? '#fff' : '#F3EEE6'};box-shadow:0 20px 50px rgba(0,0,0,.45)"></div>
+      <div style="position:absolute;left:300px;top:0;width:300px;height:360px;border-radius:0 14px 14px 0;background:${c.light ? '#fff' : '#F7F2EA'};box-shadow:0 20px 50px rgba(0,0,0,.45)"></div>
+      ${[0, 1, 2, 3, 4].map(i => `<div style="position:absolute;left:${i % 2 ? 340 : 40}px;top:${60 + Math.floor(i / 2) * 50}px;width:220px;height:14px;border-radius:7px;background:#00000018"></div>`).join('')}
+      <div style="position:absolute;left:300px;top:0;width:300px;height:360px;transform-origin:0 50%;transform:scaleX(${fx(page)});background:${page > 0 ? '#FFFFFF' : '#E6E0D6'};border-radius:0 14px 14px 0"></div></div>
+      <div class="abs" style="left:560px;top:40px;${anim(lt, .2, null, 'pop')}">${emoji(p.icon || '📚', 0, 0, 130, 'position:relative')}</div>
+      <div class="abs" style="left:0;right:0;top:570px;text-align:center"><div class="hero" style="display:inline-block;font-size:${fit(p.text || '', 64)}px;color:${c.fg};${anim(lt, .4, null, 'hero')}">${esc(p.text || '')}</div></div>` + vign(c);
+  },
+  gauge(p, lt) {
+    const c = p.c, v = clamp((p.num ?? 85) / 100), k = E.outCubic(prog(lt, .2, 1.4)) * v, a = -90 + k * 180;
+    return bgBase(c, 50, 55) + `<svg class="abs" style="left:0;top:0" width="1280" height="720">
+      <path d="M 410 470 A 230 230 0 1 1 870 470" fill="none" stroke="${c.mu}44" stroke-width="40" stroke-linecap="round"/>
+      <path d="M 410 470 A 230 230 0 1 1 870 470" fill="none" stroke="${c.a}" stroke-width="40" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${fx(1 - k)}" style="filter:drop-shadow(0 0 14px ${c.a})"/></svg>
+      <div class="abs" style="left:634px;top:270px;width:12px;height:200px;border-radius:6px;background:${c.fg};transform-origin:50% 100%;transform:rotate(${fx(a)}deg)"></div>
+      <div class="abs" style="left:610px;top:440px;width:60px;height:60px;border-radius:50%;background:${c.fg}"></div>
+      <div class="abs" style="left:0;right:0;top:520px;text-align:center"><div class="mega" style="font-size:96px;color:${c.a}">${countUp(lt, p.num ?? 85, .2, 1.4)}${esc(p.unit ?? '%')}</div>
+      <div class="label" style="color:${c.fg};font-size:40px;${anim(lt, .5)}">${esc(p.text || '')}</div></div>` + vign(c);
+  },
+  trophy(p, lt) {
+    const c = p.c; let conf = '';
+    for (let i = 0; i < 40; i++) {
+      const x = R(p.seed, i) * 1280, y = ((lt * (120 + R(p.seed, i + 3) * 160) + R(p.seed, i + 5) * 720) % 820) - 60;
+      conf += `<div class="abs" style="left:${fx(x)}px;top:${fx(y)}px;width:14px;height:22px;background:${[c.a, c.b, c.fg][i % 3]};transform:rotate(${fx(lt * 200 + i * 40)}deg);opacity:.85"></div>`;
+    }
+    return bgBase(c, 50, 40) + `<div class="abs" style="left:640px;top:260px;width:600px;height:600px;margin:-300px;background:repeating-conic-gradient(${c.a}33 0 10deg, transparent 10deg 20deg);border-radius:50%;transform:rotate(${fx(lt * 20)}deg);-webkit-mask-image:radial-gradient(circle,#000,transparent 70%)"></div>` + conf +
+      `<div class="abs" style="left:530px;top:110px;${anim(lt, .05, null, 'pop')}"><div style="transform:${bob(lt, 0, 6)}">${emoji(p.icon || '🏆', 0, 0, 220, 'position:relative')}</div></div>
+      <div class="abs" style="left:0;right:0;top:450px;text-align:center"><div class="mega" style="font-size:${fit(p.text || '', 92)}px;color:${c.b};${glowTxt(c, .7)};${anim(lt, .3, null, 'mega')}">${esc(p.text || '')}</div>
+      ${p.sub ? `<div class="label" style="color:${c.fg};margin-top:12px;${anim(lt, .55)}">${esc(p.sub)}</div>` : ''}</div>` + vign(c);
+  },
 };
 const BR_TEMPLATES = Object.keys(BRL);
 
@@ -489,8 +623,19 @@ MODULES.broll = function (s, t, lt) {
     // Full-frame b-roll stacks in timeline order (covers earlier modules); with person:true it becomes the background behind the cutout.
     // Fades out over the 0.25 s linger after t1 (see compose) -> crossfade into the next shot instead of a black dip.
     // fit:"cover" (auto b-roll in vertical): scale the 1280×720 preset to cover the whole frame, centred.
-    const [FW, FH] = s.fit === 'cover' && typeof DIMS === 'function' ? DIMS() : [W, H], k = Math.max(FW / W, FH / H);
-    const body = k === 1 ? inner : `<div style="position:absolute;left:${((FW - W * k) / 2).toFixed(1)}px;top:${((FH - H * k) / 2).toFixed(1)}px;width:${W}px;height:${H}px;transform:scale(${k.toFixed(4)});transform-origin:0 0">${inner}</div>`;
+    const [FW, FH] = (s.fit === 'cover' || s.fit === 'portrait') && typeof DIMS === 'function' ? DIMS() : [W, H], k = Math.max(FW / W, FH / H);
+    const at = (kk, y, extra = '') => `<div style="position:absolute;left:${((FW - W * kk) / 2).toFixed(1)}px;top:${y.toFixed(1)}px;width:${W}px;height:${H}px;transform:scale(${kk.toFixed(4)});transform-origin:0 0;${extra}">${inner}</div>`;
+    // fit:"portrait" (9:16 without letterbox or cropped text): the preset is laid out on a 1280-wide canvas as tall as the
+    // frame; its full-bleed layers (.full: background, vignette) stretch over the whole canvas while the content stays in a
+    // 720-px band in the middle (s.zoom, default 1), so nothing is cropped and there is no band edge.
+    let body;
+    if (k === 1) body = inner;
+    else if (s.fit === 'portrait' && FH > FW) {
+      const z = s.zoom || 1, kw = FW / W * z, CH = FH / kw, off = (CH - H) / 2;
+      body = `<div style="position:absolute;left:${((FW - W * kw) / 2).toFixed(1)}px;top:0;width:${W}px;height:${CH.toFixed(1)}px;transform:scale(${kw.toFixed(4)});transform-origin:0 0">
+        <style>.brp>.full{top:${(-off).toFixed(1)}px!important;bottom:${(-off).toFixed(1)}px!important}</style>
+        <div class="abs brp" style="left:0;top:${off.toFixed(1)}px;width:${W}px;height:${H}px">${fn(p, lt, d)}</div></div>`;
+    } else body = at(k, (FH - H * k) / 2);
     const html = `<div class="full" style="${anim(t, s.t0, s.keep ? null : s.t1 + .25, 'fade')}">${body}</div>`;
     const cover = lt > .25 && t < s.t1;
     return s.person ? { back: html, person: true, cover } : { front: html, cover };

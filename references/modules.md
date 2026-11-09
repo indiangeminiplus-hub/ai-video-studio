@@ -50,7 +50,7 @@ Media (`image`, `tiles`, `cards`, `columns[]`): `"broll/a.jpg"` hoặc `{ "seq":
 | `step_cards` | chuỗi nhân quả 2–4 bước | `cards[{title,images[]\|emoji,t}]`, `highlight_t`, `hero`, `pip_fx` |
 | `end_card` | chốt | `label`, `text`, `fade_out` |
 | `black` | fade đen | `fade_in` |
-| `broll` | b-roll procedural (43 template) | `template`, `pal`, `text`, `sub`, `icon`, `num`, `unit`, `items`, `seed`, `layout` full\|card\|right\|left\|pip (+`x,y,w,h`,`rot`), `person` — xem `references/broll-library.md` |
+| `broll` | b-roll procedural (55 template) | `template`, `pal`, `text`, `sub`, `icon`, `num`, `unit`, `items`, `seed`, `layout` full\|card\|right\|left\|pip (+`x,y,w,h`,`rot`), `person` — xem `references/broll-library.md` |
 
 Mặc định ẩn phụ đề trong: slam_bg, mega, orbit, mosaic, mosaic_wall, end_card, flash_ring, iris, black. Ghi đè bằng `"hideCaptions": false|true` trên từng scene.
 

@@ -58,7 +58,7 @@ Nền lưới trơn, dùng cho cảnh chỉ có chữ.
 ## Nội dung thẻ — `screen`
 - `{ "media": "rec.mp4 frames" | {"seq":"rec/%05d.jpg","fps":30,"count":900,"t0":5.2}, "fit":"cover", "pos":"50% 0%" }`: bản quay màn hình thật. Trích frame bằng `ffmpeg -i rec.mp4 -vf scale=704:-1 rec/%05d.jpg`.
 - `{ "chat": { font, placeholder, input:{text,t0,t1}, messages:[{role:"user"|"ai", t, text, cps, note}] } }`: **giao diện chat dựng sẵn** (giao diện chung, không sao chép sản phẩm nào). Phần input gõ từng chữ, tin nhắn AI hiện dần theo `cps` ký tự/giây và khung tự cuộn xuống. Hỗ trợ `**đậm**` và dòng bắt đầu bằng `- ` để làm gạch đầu dòng.
-- `{ "broll": { template|id, pal, text, num, unit, items } }`: dùng bất kỳ preset nào trong **4.232 b-roll** (`node scripts/broll.mjs search "câu"`), hiển thị co vừa thẻ.
+- `{ "broll": { template|id, pal, text, num, unit, items } }`: dùng bất kỳ preset nào trong **9.080 b-roll** (`node scripts/broll.mjs search "câu"`), hiển thị co vừa thẻ.
 - `pan`: `[{t, s, x, y, ease?}]` phóng to vào vùng đang nói (x/y tính theo % điểm hội tụ). Ví dụ: `{t:10.4, s:1.18, x:20, y:60}`.
 
 ## Chi tiết
@@ -70,4 +70,4 @@ Nền lưới trơn, dùng cho cảnh chỉ có chữ.
 
 ## Tài sản
 - `scripts/make_sticker.py frame.jpg out.png --disc "#FFD84A" --emojis "📈,🎵,💰"` tạo sticker die-cut từ chính người nói (tách nền, thêm viền trắng, đĩa màu phía sau, emoji 3D xung quanh). Thay cho sticker hoạt hình AI trong video mẫu.
-- Emoji 3D (1.524), b-roll (4.232), SFX (191), nhạc (20) dùng chung với engine ngang. Xem `broll-library.md` và `sound-library.md`.
+- Emoji 3D (1.524), b-roll (9.080), SFX (191), nhạc (20) dùng chung với engine ngang. Xem `broll-library.md` và `sound-library.md`.

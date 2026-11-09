@@ -184,7 +184,7 @@
   let BRANDS = null, TPLS = null;
   async function editProfile(p) {
     [BRANDS, TPLS] = await Promise.all([BRANDS || api('/api/brands').catch(() => []), TPLS || api('/api/templates').catch(() => [])]);
-    const d = p || { name: 'Kênh mới', pack: 'auto', template: '', caption_style: '', goal: 'Chia sẻ', tone: 'Tự nhiên, gần gũi', ai: true, ai_density: 'vua', broll_density: 'vua', broll_src: ['preset', 'text', 'emoji'], sound: 'vua', music: 'auto', clean: 'vua', fillers: true, fillers_claude: false, whisper: 'small', lang: 'vi', orient: 'auto', aspects: ['9:16'], quality: '1080', qc: true, cta: '', platforms: ['tiktok', 'youtube', 'facebook'], slot: '19:00', learn: true, extra: '', brand: '' };
+    const d = p || { name: 'Kênh mới', pack: 'auto', template: '', caption_style: '', goal: 'Chia sẻ', tone: 'Tự nhiên, gần gũi', ai: true, ai_density: 'vua', broll_density: 'vua', broll_goal: 'auto', broll_src: ['preset', 'hf', 'text', 'emoji', 'logo', 'aroll', 'lib'], sound: 'vua', music: 'auto', clean: 'vua', fillers: true, fillers_claude: false, whisper: 'small', lang: 'vi', orient: 'auto', aspects: ['9:16'], quality: '1080', qc: true, cta: '', platforms: ['tiktok', 'youtube', 'facebook'], slot: '19:00', learn: true, extra: '', brand: '' };
     const packs = (Studio.win?.PACKS || []).filter(x => x.recipe || x.items);
     const sel = (id, opts, v) => `<select id="${id}">${opts.map(([k, l]) => `<option value="${esc(k)}" ${String(v) === String(k) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
     const chk = (name, opts, vals) => `<div class="chk">${opts.map(([k, l]) => `<label><input type="checkbox" name="${name}" value="${esc(k)}" ${(vals || []).includes(k) ? 'checked' : ''}> ${esc(l)}</label>`).join('')}</div>`;
@@ -199,7 +199,8 @@
       <div><label>Mật độ graphic AI</label>${sel('pf-aid', [['thua', 'Thưa'], ['vua', 'Vừa'], ['day', 'Dày']], d.ai_density)}</div>
       <div><label>Mật độ b-roll</label>${sel('pf-bd', [['off', 'Tắt'], ['thua', 'Thưa (~8 s)'], ['vua', 'Vừa (~5 s)'], ['day', 'Dày (~3 s)'], ['ratday', 'Rất dày (~2 s)']], d.broll_density)}</div>
       <div><label>Âm thanh (SFX)</label>${sel('pf-snd', [['off', 'Tắt'], ['nhe', 'Nhẹ'], ['vua', 'Vừa'], ['phongphu', 'Phong phú']], d.sound)}</div>
-      <div class="full"><label>Nguồn b-roll</label>${chk('pf-bs', [['preset', 'B-roll động'], ['text', 'Chữ nổi'], ['emoji', 'Emoji'], ['media', 'Media của dự án'], ['stock', 'Ảnh stock (mạng)']], d.broll_src)}</div>
+      <div class="full"><label>Mục tiêu b-roll</label><select id="pf-bg">${[['auto', 'Tự nhận (theo gói + lời thoại)'], ['banhang', 'Bán hàng'], ['bds', 'BĐS'], ['khoahoc', 'Khoá học / Hướng dẫn'], ['review', 'Review'], ['tintuc', 'Tin tức'], ['kechuyen', 'Kể chuyện / Chia sẻ'], ['doanhnghiep', 'Doanh nghiệp'], ['amthuc', 'Ẩm thực / Du lịch'], ['giaitri', 'Giải trí']].map(([k, l]) => `<option value="${k}" ${(d.broll_goal || 'auto') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="full"><label>Nguồn b-roll</label>${chk('pf-bs', [['preset', 'B-roll động'], ['hf', 'Khối HyperFrames'], ['text', 'Chữ nổi'], ['emoji', 'Emoji'], ['logo', 'Logo công cụ'], ['aroll', 'Hiệu ứng trên người nói'], ['media', 'Media của dự án'], ['lib', 'Thư viện của tôi'], ['stock', 'Ảnh stock (mạng)'], ['stockvid', 'Video stock (key Pexels/Pixabay)'], ['aiimg', 'Ảnh AI (key OpenAI/Gemini)']], d.broll_src)}</div>
       <div><label>Nhạc nền</label>${sel('pf-mus', [['auto', 'Tự chọn (AI / theo đoạn)'], ['off', 'Không nhạc'], ['tech', 'tech'], ['chill', 'chill'], ['upbeat', 'upbeat'], ['corporate', 'corporate'], ['emotional', 'emotional'], ['suspense', 'suspense'], ...(['auto', 'off', 'tech', 'chill', 'upbeat', 'corporate', 'emotional', 'suspense'].includes(d.music) ? [] : [[d.music, d.music]])], d.music)}</div>
       <div><label>Làm sạch giọng</label>${sel('pf-cl', [['off', 'Tắt'], ['nhe', 'Nhẹ'], ['vua', 'Vừa'], ['manh', 'Mạnh']], d.clean)}</div>
       <div><label>Cắt lỗi nói / lặp từ</label>${sel('pf-fl', [['1', 'Bật'], ['1c', 'Bật + Claude dò câu hỏng'], ['0', 'Tắt']], d.fillers ? (d.fillers_claude ? '1c' : '1') : '0')}</div>
@@ -219,7 +220,7 @@
     $('#pf-save').onclick = async () => {
       const fl = v('pf-fl');
       const prof = { ...(p ? { id: p.id } : {}), name: v('pf-name'), brand: v('pf-brand'), pack: v('pf-pack'), template: v('pf-tpl'), caption_style: v('pf-cap').trim(), goal: v('pf-goal'), tone: v('pf-tone'),
-        ai: v('pf-ai') === '1', ai_density: v('pf-aid'), broll_density: v('pf-bd'), broll_src: all('pf-bs'), sound: v('pf-snd'), music: v('pf-mus'), clean: v('pf-cl'), fillers: fl !== '0', fillers_claude: fl === '1c',
+        ai: v('pf-ai') === '1', ai_density: v('pf-aid'), broll_density: v('pf-bd'), broll_goal: v('pf-bg') || 'auto', broll_src: all('pf-bs'), sound: v('pf-snd'), music: v('pf-mus'), clean: v('pf-cl'), fillers: fl !== '0', fillers_claude: fl === '1c',
         whisper: v('pf-wh'), lang: v('pf-lang'), orient: v('pf-or'), aspects: all('pf-asp'), quality: v('pf-q'), qc: v('pf-qc') === '1', cta: v('pf-cta'), platforms: all('pf-pl'), slot: v('pf-slot'), learn: v('pf-learn') === '1', extra: v('pf-extra') };
       const r = await api('/api/autopilot/profile', { action: 'save', profile: prof });
       if (r.error) return Studio.toast(r.error);

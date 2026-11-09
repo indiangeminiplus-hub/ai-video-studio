@@ -4,7 +4,7 @@ Ba nguồn, dùng theo thứ tự ưu tiên:
 
 | Nguồn | Số lượng | Khi nào |
 |---|---|---|
-| **Procedural** (`engine/broll.js`) | 43 template × 10 palette → **4.232 preset** trong `assets/broll/catalog.json` (139 chủ đề tiếng Việt) + vô hạn khi đổi `text/num/items/seed` | số liệu, khái niệm, UI, cảm xúc, nền — render thẳng trong timeline, không cần file |
+| **Procedural** (`engine/broll.js`) | 55 template × 10 palette → **9.080 preset** trong `assets/broll/catalog.json` (307 chủ đề tiếng Việt) + vô hạn khi đổi `text/num/items/seed` | số liệu, khái niệm, UI, cảm xúc, nền — render thẳng trong timeline, không cần file |
 | **Stock thật** (`scripts/broll_fetch.py`) | Pexels / Pixabay (key miễn phí), Wikimedia Commons + Openverse (không key) | cảnh đời thực: văn phòng, thành phố, đồ ăn, người… |
 | **Từ chính clip** | A-roll, ảnh chụp màn hình | bằng chứng, hậu trường |
 
@@ -12,7 +12,7 @@ Ba nguồn, dùng theo thứ tự ưu tiên:
 ```bash
 node scripts/broll.mjs search "tháng này doanh thu tăng gấp đôi" --n 8        # id tốt nhất (≤2 mỗi template)
 node scripts/broll.mjs sheet qc/broll.jpg --q "thời gian" --limit 24           # xem thử dạng lưới
-node scripts/broll.mjs sheet qc/all.jpg --pal neon                             # 43 template trong 1 palette
+node scripts/broll.mjs sheet qc/all.jpg --pal neon                             # 55 template trong 1 palette
 ```
 Dùng trong `timeline.json` — chép các field của preset, sửa chữ cho đúng câu nói:
 ```json
@@ -27,6 +27,8 @@ Muốn dùng preset như *media* (trong `mosaic.columns`, `slam_bg.tiles`, `step
 `node scripts/broll.mjs render <id> --frames broll/<id> --dur 3` → `{"seq":"broll/<id>/%05d.jpg","fps":30,"count":90}`.
 Gói mẫu để xem/dùng lại: `node scripts/broll.mjs pack broll_pack --per-template 2 --limit 86` (≈ 1,3 s/clip).
 
+Khổ dọc: `{"type":"broll","layout":"full","fit":"portrait"}` = nền preset kéo hết 9:16, nội dung giữ ở giữa (không viền đen, không cắt chữ; `zoom` phóng thêm). `fit:"cover"` cũ vẫn chạy nhưng cắt hai bên.
+
 ## 2. Template (tham số chung: `text`, `sub`, `icon` emoji, `num`, `unit`, `items[]`, `seed`, `pal`)
 | Nhóm | Template | Dữ liệu riêng |
 |---|---|---|
@@ -39,6 +41,7 @@ Gói mẫu để xem/dùng lại: `node scripts/broll.mjs pack broll_pack --per-
 | Địa điểm | `globe` · `map_pins` (`items` = tên nơi) | |
 | So sánh | `versus` (`items:[A,B]`, `icon` trái, `sub` emoji phải) | |
 | Cảm xúc / nhấn | `icon_hero` · `emoji_burst` · `sunburst` · `rings` · `spotlight` · `typewriter` (trích dẫn) · `quote_card` · `ticker` (băng chữ chéo) · `rocket` · `files` | |
+| Đời sống / bán hàng (v5) | `food_steam` (món + hơi nóng) · `plane_route` (`items:[A,B]`) · `heartbeat` (`num` BPM) · `house_build` · `shopping_cart` (`items` emoji, `num` tổng) · `price_tag` (`sub` giá cũ gạch, `num` giá mới) · `star_rating` (`num` ≤ 5) · `gift_box` · `book_open` · `gauge` (`num` %) · `trophy` · `logo_hero` (`icon:"si:<slug>"`, `hex` màu thương hiệu) | |
 | Nền trừu tượng | `particles` · `blobs` · `wave_lines` · `hex_grid` · `grid_tunnel` · `starfield` · `equalizer` | id `bg--<template>--<pal>--<seed>` |
 
 Palette: `ember` (mặc định, khớp video mẫu) · `neon` · `ocean` · `forest` · `gold` · `violet` · `mono` · `sunset` · `light` · `candy` (2 cái cuối nền sáng).

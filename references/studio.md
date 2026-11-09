@@ -62,7 +62,7 @@ Trường `_orig` trên một phần tử là bản thiết kế gốc (để d�
 | `GET /api/history`, `GET /api/history/<id>` | lịch sử |
 | `GET /api/library` | danh sách SFX / nhạc |
 | `GET /api/waveform` | biên độ mỗi 1/50 s |
-| `GET /api/broll?q=` | tìm trong 4.232 b-roll |
+| `GET /api/broll?q=` | tìm trong 9.080 b-roll |
 | `POST /api/autosfx` | chạy `auto_sfx.py --keep-manual` |
 | `POST /api/export` | `{quality:"720"\|"1080"\|"4k", from?, to?}` |
 | `POST /api/new` | `{video, dir?, model?, pack?, title?, orient?:"vertical"|"horizontal"}` |

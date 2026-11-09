@@ -262,7 +262,7 @@ async function MEDIA_LOAD() { MEDIA = await api('/api/media'); if (panel === 'me
 function panelMedia() {
   const seg = `<div class="seg">${[['mine', 'Của tôi'], ['broll', 'B-roll động']].map(([k, l]) => `<button data-mtab="${k}" class="${mediaTab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
   if (mediaTab === 'broll') {
-    $('#libbody').innerHTML = seg + `<div class="help">Gõ chủ đề vào ô tìm rồi Enter (VD: “tiền”, “AI”, “nhà đẹp”). 4.232 b-roll động — bấm để chèn tại playhead.</div>
+    $('#libbody').innerHTML = seg + `<div class="help">Gõ chủ đề vào ô tìm rồi Enter (VD: “tiền”, “AI”, “nhà đẹp”). 9.080 b-roll động — bấm để chèn tại playhead.</div>
       <div class="bres">${BRES.map((b, i) => `<div data-b="${i}"><i class="ti ti-movie"></i><div><b>${esc(b.text || b.id)}</b><small>${esc(b.template)} · ${esc(b.id)}</small></div><i class="ti ti-plus add"></i></div>`).join('')}</div>`;
     return;
   }

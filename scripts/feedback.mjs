@@ -96,7 +96,7 @@ const qcIssues = dirs => {
   return c;
 };
 // Whitelisted fields the AI may change on a profile (anything else becomes a suggestion only).
-const SAFE = { ai_density: ['thua', 'vua', 'day'], broll_density: ['off', 'thua', 'vua', 'day', 'ratday'], sound: ['off', 'nhe', 'vua', 'phongphu'], clean: ['off', 'nhe', 'vua', 'manh'] };
+const SAFE = { ai_density: ['thua', 'vua', 'day'], broll_goal: ['auto', 'banhang', 'bds', 'khoahoc', 'review', 'tintuc', 'kechuyen', 'doanhnghiep', 'amthuc', 'giaitri'], broll_density: ['off', 'thua', 'vua', 'day', 'ratday'], sound: ['off', 'nhe', 'vua', 'phongphu'], clean: ['off', 'nhe', 'vua', 'manh'] };
 // A profile patch coming from the AI (or a stored suggestion): only known fields with valid values survive.
 export function cleanPatch(patch = {}) {
   const out = {};

@@ -49,7 +49,7 @@
               <div class="nm">${esc(it.license || '')}</div></div>`).join('')}</div>`
           : `<div class="empty"><i class="ti ti-mood-empty"></i><b>Không có kết quả</b><span>Thử từ khoá tiếng Anh đơn giản hơn${RES.missing.length ? ', hoặc thêm key Pexels/Pixabay' : ''}.</span></div>`}`;
     } else if (tab === 'ai') {
-      h = `<div class="help">Claude đọc phụ đề, chọn câu đáng minh hoạ và đề xuất: <b>b-roll động</b> có sẵn trong thư viện (4.232 preset) hoặc <b>từ khoá ảnh stock</b>. Tick những mục muốn dùng rồi chèn.</div>
+      h = `<div class="help">Claude đọc phụ đề, chọn câu đáng minh hoạ và đề xuất: <b>b-roll động</b> có sẵn trong thư viện (9.080 preset) hoặc <b>từ khoá ảnh stock</b>. Tick những mục muốn dùng rồi chèn.</div>
         <div class="acts"><button class="primary" data-abact="suggest"><i class="ti ti-sparkles"></i> ${SUG ? 'Gợi ý lại' : 'AI gợi ý b-roll'}</button>${SUG?.length ? `<button data-abact="insert"><i class="ti ti-plus"></i> Chèn ${PICK.size} mục</button>` : ''}</div>${SUG?.length && vert() ? `<div class="chips" style="margin:8px 0 0">${[['full', 'B-roll động toàn màn'], ['card', 'Dạng thẻ']].map(([k, l]) => `<button class="chip ${INS === k ? 'on' : ''}" data-abins="${k}">${l}</button>`).join('')}</div>` : ''}
         ${SUG ? SUG.length ? `<div class="ablist">${SUG.map((s, i) => `<label class="absug ${PICK.has(i) ? 'on' : ''}"><input type="checkbox" data-abpick="${i}" ${PICK.has(i) ? 'checked' : ''}>
             <div><div class="t"><a data-abseek="${s.t0}">${fmt(s.t0)}–${fmt(s.t1)}</a> <span class="kd ${s.kind}">${s.kind === 'preset' ? 'B-roll động' : 'Ảnh stock'}</span></div>

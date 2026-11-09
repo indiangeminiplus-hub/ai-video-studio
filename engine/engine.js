@@ -346,7 +346,7 @@ function compose(t) {
 }
 
 // Whole-frame transition accents: timeline.fx = [{ t, type, dur?, amp? }] — captions stay steady on top.
-const FX_DUR = { shake: .35, punch: .25, zoom_in: .6, whip: .3, blur_in: .35, glitch: .3, flash: .25, rgb: .3 };
+const FX_DUR = { shake: .35, punch: .25, zoom_in: .6, whip: .3, blur_in: .35, glitch: .3, flash: .25, rgb: .3, push: 2, mono: 1.5 };
 function fxWrap(t, html) {
   const list = (TL.fx || []).filter(f => t >= f.t && t < f.t + (f.dur ?? FX_DUR[f.type] ?? .3));
   if (!list.length) return html;
@@ -356,6 +356,10 @@ function fxWrap(t, html) {
     if (f.type === 'shake') { const m = (f.amp ?? 14) * (1 - k); tr += ` translate(${(Math.sin(j * 2.1) * m).toFixed(1)}px,${(Math.cos(j * 1.7) * m).toFixed(1)}px) scale(${(1 + m / 300).toFixed(4)})`; }
     if (f.type === 'punch') tr += ` scale(${(1 + (f.amp ?? .12) * (1 - E.outCubic(k))).toFixed(4)})`;
     if (f.type === 'zoom_in') tr += ` scale(${(1 + (f.amp ?? .15) * E.inOutSine(k)).toFixed(4)})`;
+    // push: slow push-in on the speaker, held, eased back over the last 25 % (auto b-roll "aroll" source)
+    if (f.type === 'push') tr += ` scale(${(1 + (f.amp ?? .1) * E.inOutSine(clamp(k / .35)) * (1 - E.inOutSine(clamp((k - .75) / .25)))).toFixed(4)})`;
+    // mono: a black-and-white, high-contrast beat that fades back to colour
+    if (f.type === 'mono') { const m = 1 - E.inOutSine(clamp((k - .7) / .3)); fl += ` grayscale(${m.toFixed(3)}) contrast(${(1 + .25 * m).toFixed(3)})`; }
     if (f.type === 'whip') {
       const x = k < .5 ? -E.inCubic(k * 2) * 420 : (1 - E.outCubic((k - .5) * 2)) * 420;
       tr += ` translateX(${x.toFixed(1)}px) scale(${(1 + Math.abs(x) / 620).toFixed(4)})`; fl += ` blur(${(Math.sin(Math.PI * k) * 22).toFixed(1)}px)`;

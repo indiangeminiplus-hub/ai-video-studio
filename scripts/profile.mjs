@@ -19,7 +19,8 @@ export const DEFAULT_PROFILE = {
   goal: 'Chia sẻ', tone: 'Tự nhiên, gần gũi', ai_density: 'vua', extra: '',
   ai: true,                  // AI dựng giúp (claude -p)
   broll_density: 'vua',      // off | thua | vua | day | ratday
-  broll_src: ['preset', 'text', 'emoji'],
+  broll_src: ['preset', 'hf', 'text', 'emoji', 'logo', 'aroll', 'lib'],
+  broll_goal: 'auto',
   broll_claude: false,
   sound: 'vua',              // off | nhe | vua | phongphu  (auto_sfx.py --level)
   music: 'auto',             // auto (AI's pick, else a bed per section) | off | <mood>

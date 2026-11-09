@@ -46,7 +46,7 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 | **24 gói style** | Slate grid (kiểu "Claude edit"), Bubble hướng dẫn, AI Hype Cam, Luxury, Neon, Keynote, Glow, Podcast, Kinetic, Khoá học, BĐS, Review, Chia sẻ, Chia đôi màn hình, Trước/sau, Phông xanh, Bản tin, Podcast nhiều góc máy, Hỏi đáp, Top N, Điện ảnh, Ảnh theo nhịp nhạc, Quay màn hình… |
 | **Edit chuyên sâu** | Track nhiều clip: cắt (⌘B), xoá tự dồn, đảo thứ tự, tốc độ 0,25–4×, lật, nền mờ, 8 bộ lọc màu, chỉnh màu, 15 chuyển cảnh. Keyframe tự do, mặt nạ 8 hình, tách nền và thay phông, sticker người |
 | **AI (Claude)** | **AI dựng giúp**: đọc lời nói rồi tự đặt graphic, sửa phụ đề, chọn nhạc và SFX. **Cắt lỗi nói**: bỏ câu lặp, ngắt dài, nói vấp. **Sửa video bằng chữ**: xoá chữ là cắt video |
-| **Tự động** | B-roll tự động 4 mức dày, không che mặt. SFX tự đặt 3 mức. Nhạc tự chọn và tự hạ khi đang nói |
+| **Tự động** | B-roll tự động theo **9 mục tiêu video** và vai trò từng câu, từ **11 nguồn** (9.080 preset, khối HyperFrames, logo công cụ, hiệu ứng trên người nói, thư viện b-roll của bạn, ảnh/video stock, ảnh AI…), 4 mức dày, chống lặp, không che mặt, mỗi cảnh có 2–3 phương án đổi 1 bấm. SFX tự đặt 3 mức. Nhạc tự chọn và tự hạ khi đang nói |
 | **Âm thanh** | 309 SFX và 30 bản nhạc nền do máy tự tạo, không vướng bản quyền. Lọc ồn giọng 3 mức. Nhiều track âm thanh có fade và EQ. Chuẩn −14 LUFS |
 | **Khung hình & ngôn ngữ** | Bám mặt tự động khi đổi khổ. Một lần xuất ra 9:16, 1:1 và 16:9. Dịch, lồng tiếng, phụ đề song ngữ |
 | **Tạo style** | **Clone style từ video bất kỳ**, hoặc **tạo style từ mô tả bằng chữ**. Claude viết gói style mới, template và skill riêng |
@@ -522,9 +522,46 @@ Không ưng thì Hoàn tác.
 ![Lời thoại](docs/images/07-loi-thoai.jpg)
 
 ### Tự động: B-roll và âm thanh
-- **B-roll:** chọn mật độ (thưa, vừa, dày, rất dày) và nguồn (b-roll động có sẵn, chữ nổi, emoji, ảnh của bạn, ảnh stock, Claude chọn).
+Một bấm, máy đọc lời thoại rồi chèn b-roll đúng lúc nói, đặt SFX, chọn nhạc. B-roll được chọn theo **mục tiêu video** và **vai trò từng câu**, từ **11 nguồn** khác nhau, nên mỗi loại video ra một kiểu riêng, không lặp lại.
+
+1. **Chọn mục tiêu video:** Tự nhận, Bán hàng, BĐS, Khoá học / Hướng dẫn, Review, Tin tức, Kể chuyện / Chia sẻ, Doanh nghiệp, Ẩm thực / Du lịch, Giải trí. Ví dụ:
+   - **Bán hàng** thiên về thẻ giá, đếm số, sao đánh giá, thông báo có đơn, lời kêu gọi.
+   - **Kể chuyện** thiên về cảnh thật, trích dẫn, hiệu ứng trên người nói, ít graphic.
+   - **Khoá học** thiên về các bước, checklist, logo công cụ.
+2. **Máy hiểu từng câu đang làm gì**, rồi chọn b-roll hợp:
+
+   | Câu đang nói | B-roll |
+   |---|---|
+   | Con số | Đếm số |
+   | Giá | Thẻ giá |
+   | "4,8 sao" | Sao đánh giá |
+   | Liệt kê | Checklist đúng các ý vừa nói |
+   | So sánh | Versus |
+   | Nhắc ChatGPT, Canva, Shopee, Grab… | Logo đúng màu thương hiệu |
+   | Cảnh đời thực | Ảnh / video thật |
+   | Cảm xúc mạnh | Emoji hoặc hiệu ứng trên người nói |
+   | Kêu gọi | Nút hành động |
+
+3. **11 nguồn**, bật/tắt từng nguồn:
+   - B-roll động: 9.080 preset, 55 kiểu, 307 chủ đề.
+   - Khối HyperFrames.
+   - Chữ nổi.
+   - Emoji 3D.
+   - Logo công cụ: 100 logo.
+   - Hiệu ứng trên chính người nói: đẩy cận, nhấn, đen trắng.
+   - Media của dự án.
+   - **Thư viện b-roll của tôi.**
+   - Ảnh stock.
+   - Video stock: cần key Pexels hoặc Pixabay miễn phí.
+   - Ảnh AI: cần key OpenAI hoặc Gemini.
+4. **Thanh Đều tay ↔ Đa dạng:** càng đa dạng càng ít lặp lại cùng nguồn, cùng kiểu, cùng bố cục.
+5. **Claude chọn** (tuỳ chọn): Claude xem các phương án của từng câu, chọn cái hợp nhất và viết chữ cho đúng ý.
+6. **Phương án khác:** mỗi b-roll tự động có sẵn 2–3 phương án. Bấm vào cảnh, mở tab **Phương án khác**, bấm để đổi. Phương án cũ vẫn giữ lại để đổi về.
+7. **Thư viện b-roll của tôi:** tải ảnh hoặc clip của bạn lên một lần (sản phẩm, cửa hàng, văn phòng…). Bấm **Claude gắn thẻ** để Claude xem ảnh và viết thẻ, hoặc tự gõ thẻ. Mọi dự án sau đều tự dùng khi câu nói khớp thẻ.
+- B-roll toàn khung trong video dọc giờ phủ kín 9:16, không còn viền đen, không bị cắt chữ.
 - **Âm thanh:** chọn mức SFX (nhẹ, vừa, phong phú) và bật nhạc tự động.
-- Bấm **Tự thêm B-roll + âm thanh**. Chạy lại sẽ chỉ thay phần tự động, phần bạn đã sửa tay được giữ nguyên.
+- Bấm **Tự thêm B-roll + âm thanh**. Chạy lại chỉ thay phần tự động, phần bạn đã sửa tay được giữ nguyên.
+- Hồ sơ kênh (Tự lái, Telegram) có thêm **Mục tiêu b-roll** và các nguồn mới.
 
 ![Tự động](docs/images/05-tu-dong.jpg)
 
@@ -804,7 +841,7 @@ ai-video-studio/
 ├─ scripts/                render, trộn âm thanh, nhận giọng, AI, b-roll, hàng loạt, tạo style, app Mac,
 │                          telegram.mjs (agent), feedback.mjs (phản hồi + đề xuất), platform.mjs (khác biệt Mac/Windows)…
 ├─ templates/              64 template + previews/ (video xem trước) + user/ (mẫu bạn lưu)
-├─ assets/                 309 SFX, 30 nhạc, danh mục 4.232 b-roll động, model nhận diện mặt
+├─ assets/                 309 SFX, 30 nhạc, danh mục 9.080 b-roll động (55 kiểu, 307 chủ đề), 9 mục tiêu, 100 logo, model nhận diện mặt
 ├─ examples/               timeline ví dụ cho từng gói, ảnh mẫu, file hàng loạt ví dụ
 ├─ references/             tài liệu kỹ thuật từng phần
 └─ docs/images/            ảnh chụp màn hình
