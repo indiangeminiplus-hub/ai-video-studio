@@ -135,11 +135,22 @@ const shiftT = (o, T) => JSON.parse(JSON.stringify(o), (k, v) => (['t', 't0', 't
 // ---------- templates (templates/*.json, spec: references/templates.md) ----------
 // Applies a template to a timeline in place: pack + caption style + brand (user's own values win) + music + fx,
 // scenes from the pack recipe (opts = tpl.recipe_opts) plus the template's own scenes, re-timed to this video:
-// t < 3 s stays, t > base_dur − 4 s is anchored to the end, anything else is scaled by duration / base_dur.
+// a START at t < 3 s stays, t > base_dur − 4 s is anchored to the end, anything else is scaled by duration / base_dur.
+// Only whole-video scenes (frames, tickers, progress bars: ≥ 40 % of base_dur, HyperFrames blocks excepted, or start-to-end) stretch with the video; every
+// other scene keeps its own length (shrinks on shorter clips, grows ≤ 25 % on longer ones) so a 4 s card never becomes 30 s.
 function applyTemplate(tl, tpl, captions, title) {
   const dur = tl.duration, base = tpl.base_dur || dur, d = dur - base, k = dur / base;
   const at = t => (t == null ? t : Math.round((t < 3 ? t : t > base - 4 ? t + d : t * k) * 100) / 100);
-  const retime = o => JSON.parse(JSON.stringify(o), (key, v) => (/^(t|t0|t1|out|strike_at)$|_t$/.test(key) && typeof v === 'number' ? Math.max(0, Math.min(dur, at(v))) : v));
+  const TK = /^(t|t0|t1|out|strike_at)$|_t$/, r2 = v => Math.round(v * 100) / 100;
+  const remap = (o, f) => JSON.parse(JSON.stringify(o), (key, v) => (TK.test(key) && typeof v === 'number' ? Math.max(0, Math.min(dur, r2(f(v)))) : v));
+  const whole = s => s.keep || (s.type !== 'hf' && s.t1 - s.t0 >= base * .4) || (s.t0 < 3 && s.t1 > base - 4);
+  const retime = s => {
+    if (s.t0 == null || s.t1 == null || whole(s)) return remap(s, at);
+    const len = s.t1 - s.t0, nl = len * Math.min(k, 1.25);
+    let n0 = at(s.t0); const n1 = Math.min(dur, n0 + nl);
+    if (n1 - n0 < Math.min(nl, .8)) n0 = Math.max(0, n1 - nl);
+    return remap(s, v => n0 + (v - s.t0) * (n1 - n0) / Math.max(.01, len));
+  };
   tl.pack = tpl.pack || tl.pack;
   if (tpl.caption_style != null) tl.caption_style = tpl.caption_style || undefined;
   if (tpl.brand) tl.brand = { ...tpl.brand, ...(tl.brand || {}) };

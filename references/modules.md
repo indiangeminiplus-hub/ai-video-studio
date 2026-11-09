@@ -21,6 +21,13 @@ Media (`image`, `tiles`, `cards`, `columns[]`): `"broll/a.jpg"` hoặc `{ "seq":
 `emoji_dir` (tuỳ chọn): thư mục cache Fluent 3D để render không cần mạng.
 `person` = elip mềm (%) dùng khi thiếu cutout. `grade.mode`: normal | bw | sad | mellow | blur | chuỗi CSS filter tuỳ ý.
 
+**Vào/ra cảnh (mọi module):** engine tự bọc mỗi scene một lớp chuyển cảnh để không graphic nào bật/tắt trong 1 khung:
+overlay hiện dần 0.2 s và mờ dần 0.26 s quanh `t1`; scene phủ toàn khung (`cover` hoặc tự ẩn phụ đề) hiện dần 0.32 s kèm zoom
+1.04→1 + blur nhẹ. Khi một scene toàn khung được nối ngay bởi scene khác (t0 sau cách t1 < 0.1 s), nó **giữ nguyên và chạy tiếp
+0.32 s dưới** scene mới đang hiện dần — hai phông/panel liền nhau hoà chéo, không lộ camera ở giữa. Khối `hf` (iframe) nhận
+cùng độ mờ. Không áp ở đầu/cuối video, cho `broll`/`photo` (tự có fade), hoặc khi đặt `"cut": true` (muốn cắt cứng đúng nhịp);
+scene `keep` chỉ có phần hiện vào. Chữ dùng `anim()` khi ra: 0.22 s mờ + thu nhỏ nhẹ.
+
 ## Bảng module
 
 | type | Dùng khi | Props chính |

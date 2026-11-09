@@ -29,8 +29,9 @@ function anim(t, tin, tout, kind = 'label', extra = '') {
   const k = P.ease(prog(t, tin, P.dur));
   const kl = clamp(k, 0, 1);
   let o = kind === 'pop' || kind === 'stamp' ? clamp(prog(t, tin, P.dur * .5)) : kl;
-  if (tout != null) o *= 1 - E.inCubic(prog(t, tout - .15, .15));
-  const y = lerp(P.y, 0, k), s = lerp(P.s, 1, k), b = lerp(P.b, 0, kl);
+  const ko = tout != null ? E.inOutSine(prog(t, tout - .22, .22)) : 0;
+  o *= 1 - ko;
+  const y = lerp(P.y, 0, k) - ko * 6, s = lerp(P.s, 1, k) * (1 - ko * .06), b = lerp(P.b, 0, kl) + ko * 4;
   return `opacity:${o.toFixed(3)};transform:translateY(${y.toFixed(1)}px) scale(${s.toFixed(3)}) ${extra};` +
     (b > .3 ? `filter:blur(${b.toFixed(1)}px);` : '');
 }
@@ -326,21 +327,68 @@ function applyLineKf(stage, t) {
 
 const DEFAULT_HIDE_CAPS = new Set(['slam_bg', 'mega', 'orbit', 'mosaic', 'mosaic_wall', 'end_card', 'flash_ring']);
 
+// Scene in/out envelope for every module, so no graphic pops on or off in a single frame: overlays ease in over 0.2 s and
+// out over 0.26 s centred on t1; full-frame scenes (cover) ease in over 0.32 s with a slight zoom + blur settle. A full-frame
+// scene followed straight away by another scene ("handoff": next t0 within 0.1 s of its t1) stays whole and keeps running
+// for 0.32 s UNDER the next one, which crossfades in on top, so two backdrops/panels never dip to the raw camera between them.
+// Not applied at the very start/end of the video, to scenes with their own fades (broll, photo), or when s.cut = true
+// (a deliberate hard cut on the beat); `keep` scenes (stay to the end) only get the ease-in.
+const ENV = { in: .2, out: .26, fin: .32, fout: .32 }, OWN_FADE = new Set(['broll', 'photo']);
+const enveloped = s => !s.cut && !OWN_FADE.has(s.type);
+function envelope(s, t, full, hand) {
+  if (!enveloped(s)) return null;
+  const D = TL.duration || 1e9, di = full ? ENV.fin : ENV.in, dout = full ? ENV.fout : ENV.out;
+  const ki = s.t0 > .05 ? clamp((t - s.t0) / di) : 1;
+  const ko = s.keep ? 0 : hand ? clamp((t - s.t1 - ENV.fin * .5) / (ENV.fin * .5)) : s.t1 < D - .05 ? clamp((t - (s.t1 - dout / 2)) / dout) : 0;
+  if (ki >= 1 && ko <= 0) return null;
+  return { ki, ko, o: (full ? E.inOutSine(ki) : E.outCubic(ki)) * (1 - E.inOutSine(ko)) };
+}
+function envWrap(html, v, full) {
+  if (!html) return html;
+  const sc = full ? lerp(1.04, 1, E.outCubic(v.ki)) * lerp(1, 1.02, v.ko) : lerp(.97, 1, E.outCubic(v.ki)) * lerp(1, .97, v.ko);
+  const bl = full ? (1 - v.ki) * 8 + v.ko * 6 : 0;
+  return `<div class="full" style="opacity:${v.o.toFixed(3)};transform:scale(${sc.toFixed(4)});transform-origin:50% 50%;${bl > .3 ? `filter:blur(${bl.toFixed(1)}px);` : ''}pointer-events:none">${html}</div>`;
+}
+const isFull = (s, r) => !!r.cover || DEFAULT_HIDE_CAPS.has(s.type);
+// Does this scene hand off to one starting at its t1? (probed once per scene object: full at its last frame + a successor)
+const HANDOFF = new WeakMap();
+function handsOff(s, all) {
+  if (HANDOFF.has(s)) return HANDOFF.get(s);
+  const fn = MODULES[s.type];
+  let h = false;
+  if (fn && enveloped(s) && !s.keep && s.t1 < (TL.duration || 1e9) - .05 && all.some(o => o !== s && Math.abs(o.t0 - s.t1) < .1)) {
+    try { h = isFull(s, fn(s, s.t1 - .02, s.t1 - .02 - s.t0) || {}); } catch { h = false; }
+  }
+  HANDOFF.set(s, h);
+  return h;
+}
 function compose(t) {
-  // Full-frame b-rolls linger 0.25 s under whatever follows so back-to-back b-rolls crossfade instead of dipping to black.
-  const scenes = (TL.scenes || []).filter(s => !s.hidden && t >= s.t0 && (t < s.t1 || (s.type === 'broll' && (s.layout || 'full') === 'full' && t < s.t1 + .25)));
+  const D = TL.duration || 1e9, all = (TL.scenes || []).filter(s => !s.hidden), hand = [], live = [];
+  for (const s of all) {
+    if (t < s.t0) continue;
+    // Full-frame b-rolls linger 0.25 s under whatever follows so back-to-back b-rolls crossfade instead of dipping to black.
+    if (t < s.t1 || (s.type === 'broll' && (s.layout || 'full') === 'full' && t < s.t1 + .25)) (handsOff(s, all) ? hand : live).push(s);
+    else if (enveloped(s) && !s.keep && s.t1 < D - .05 && t < s.t1 + ENV.fin) {
+      if (handsOff(s, all)) hand.push(s);
+      else if (t < s.t1 + ENV.out / 2) live.push(s);
+    }
+  }
   let cover = false, person = false, hideCaps = false;
   const back = [], front = [];
-  for (const s of scenes) {
-    const fn = MODULES[s.type];
+  // hand-off scenes first (drawn under the scene that replaces them); their module sees t1 + 0.32 s so its own fade-out
+  // happens under the incoming scene too
+  for (const s0 of [...hand, ...live]) {
+    const h = hand.includes(s0), s = h ? { ...s0, t1: s0.t1 + ENV.fin } : s0, fn = MODULES[s.type];
     if (!fn) { console.warn('unknown module', s.type); continue; }
     const r = fn(s, t, t - s.t0) || {};
     if (s.kf?.length || s.mask) { r.back = sceneFx(s, r.back, t); r.front = sceneFx(s, r.front, t); r.cover = false; }
+    const full = h || isFull(s, r), v = envelope(s0, t, full, h);
+    if (v) { r.back = envWrap(r.back, v, full); r.front = envWrap(r.front, v, full); r.cover = false; }
     if (r.cover) cover = true;
     if (r.person) person = true;
     if (r.back) back.push(r.back);
     if (r.front) front.push(r.front);
-    if (s.hideCaptions ?? (r.hideCaptions || DEFAULT_HIDE_CAPS.has(s.type))) hideCaps = true;
+    if (t < s0.t1 && (s.hideCaptions ?? (r.hideCaptions || DEFAULT_HIDE_CAPS.has(s.type)))) hideCaps = true;
   }
   return fxWrap(t, (cover ? '' : arollImg(t)) + back.join('') + (person ? personLayer(t) : '') + front.join('')) + (hideCaps ? '' : captionHTML(t));
 }

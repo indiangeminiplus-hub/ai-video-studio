@@ -73,7 +73,10 @@
       live.add(key); f.used = n;
       await f.ready;
       const k = +sl.dataset.k;
-      f.host.style.cssText = `${sl.style.cssText};overflow:hidden;opacity:${sl.dataset.op};display:block;z-index:${live.size}`;
+      // the iframe lives outside #stage: carry over the opacity of the slot's wrappers (scene in/out envelope, keyframes)
+      let op = +sl.dataset.op;
+      for (let e = sl.parentElement; e && e !== stage; e = e.parentElement) if (e.style.opacity !== '') op *= +e.style.opacity;
+      f.host.style.cssText = `${sl.style.cssText};overflow:hidden;opacity:${op.toFixed(3)};display:block;z-index:${live.size}`;
       f.ifr.style.transform = `translate(${-sl.dataset.ox * k}px,${-sl.dataset.oy * k}px) scale(${k})`;
       try { hfSeek(f.ifr.contentWindow, +sl.dataset.t); } catch (e) { console.warn('hf seek', key, e); }
     }

@@ -53,12 +53,14 @@ Hàm `window.applyTemplate(tl, tpl, captions, title)` ở cuối `engine/packs/c
 1. `tl.pack = tpl.pack`; `caption_style` của template (nếu có); `brand` = `{...tpl.brand, ...tl.brand}` (người dùng thắng); `theme` gộp vào `tl`.
 2. Giữ các scene người dùng tự thêm (không có `_recipe`/`_tpl`), bỏ scene recipe/template cũ → đổi template nhiều lần không bị chồng.
 3. Nếu `use_recipe !== false`: chạy `pack.recipe({dur, captions, brand, vertical, title, opts: recipe_opts})` — đặt graphic theo từ khoá trong phụ đề của video thật. Scene recipe được gắn `_recipe`.
-4. Scene của template được **co giãn theo độ dài video**: `t < 3 s` giữ nguyên (intro), `t > base_dur − 4 s` neo vào cuối (CTA/outro), còn lại nhân `dur / base_dur`. Áp cho các khoá `t, t0, t1, out` ở mọi cấp (kể cả `items[].t`). Gắn `_tpl`.
-5. `fx` của recipe + template (co giãn như trên); nhạc = `tpl.music` hoặc nhạc recipe, phủ cả video, gain `music_gain` (−20).
+4. Scene của template được **đặt lại theo độ dài video**. Điểm **bắt đầu**: `t0 < 3 s` giữ nguyên (intro), `t0 > base_dur − 4 s` neo vào cuối (CTA/outro), còn lại nhân `dur / base_dur`. **Độ dài**: chỉ scene phủ cả video (khung, ticker, thanh tiến trình: dài ≥ 40 % `base_dur` — trừ khối `hf` — hoặc chạy từ đầu tới cuối, hoặc `keep`) mới giãn theo video; mọi scene khác **giữ độ dài của nó** (video ngắn hơn thì co theo tỉ lệ, dài hơn chỉ giãn tối đa 25 %), nên thẻ 4 s không bao giờ thành 30 s trên clip 2 phút. Mọi khoá thời gian bên trong scene (`t, t0, t1, out, strike_at, *_t`, kể cả `items[].t`) đi theo scene. Gắn `_tpl`.
+5. `fx` của recipe + template (đặt lại như điểm bắt đầu ở trên); nhạc = `tpl.music` hoặc nhạc recipe, phủ cả video, gain `music_gain` (−20).
 
-Lưu ý khi viết template: các khoá thời gian tuyệt đối có tên khác (`hero_t`, `kw_t`, `word_t`, `reveal_t`, `like_t`, `tap_t`,
-`hl_t`, `key_t`, `text_t`, `strike_at`, `flash`…) **không** được co giãn. Chúng chỉ đúng khi video dài xấp xỉ `base_dur`; với video dài
-hơn nhiều, module vẫn chạy (hiện ngay hoặc theo mặc định) nhưng nhịp có thể lệch. Ưu tiên các trường tương đối (`*_at`, `stagger`) khi module hỗ trợ.
+Lưu ý khi viết template: các khoá thời gian tuyệt đối có tên khác (`word_t`… đã theo `*_t`; còn `flash`, `kw_at` dạng mảng…) không được
+dời theo scene; ưu tiên các trường tương đối (`*_at`, `stagger`) khi module hỗ trợ.
+
+Kiểm tra mọi template sau khi sửa: `node scripts/fx_audit.mjs <dự án> [--durs 15,30,60,120] [--frames] [--only id]` — báo scene quá
+dài / 0 giây / nằm ngoài video, và với `--frames` render khung nhỏ quanh mỗi điểm vào/ra cảnh để bắt chỗ **giật** (một khung đổi hẳn).
 
 ## Danh sách template
 

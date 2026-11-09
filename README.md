@@ -737,6 +737,7 @@ $PY  $S/scripts/dub.py --help                                      # dịch + l�
 $PY  $S/scripts/face_track.py --help                               # bám mặt
 node $S/scripts/build_templates.mjs ~/.ai-video-studio/footage/clip-mau   # render lại preview mẫu
 node $S/scripts/selftest.mjs $S/engine/index.html ~/.ai-video-studio/footage/clip-mau/timeline.json
+node $S/scripts/fx_audit.mjs ~/.ai-video-studio/footage/clip-mau --frames   # quét mọi mẫu: cảnh quá dài, chỗ chuyển cảnh giật
 bash $S/scripts/make_app.sh                                        # tạo lại app Mac
 
 # Agent, phản hồi, đề xuất
