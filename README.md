@@ -1,5 +1,9 @@
 # 🎬 AI Video Studio
 
+> **Tác giả: Nguyễn Tất Kiểm** · 🎁 **Tặng khoá học AI miễn phí:** <https://nguyentatkiem.com.vn/aiplusntk/>
+>
+> Mã nguồn mở theo giấy phép MIT. Khi sao chép, sửa hoặc phát hành lại (kể cả nhờ AI sửa), **giữ nguyên ghi công tác giả**. Xem [mục 16. Bản quyền và ghi công](#16-bản-quyền-và-ghi-công).
+
 **Phần mềm edit video chạy ngay trên máy của bạn (macOS và Windows 10/11), có AI hỗ trợ.** Làm Reels, TikTok, YouTube Shorts và video ngang YouTube cho khoá học, bất động sản, review, chia sẻ, tin tức, bán hàng, podcast.
 
 Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói style**, **64 template có video xem trước**, **khoảng 200 khối hoạt ảnh HyperFrames**, AI dựng giúp bằng Claude, b-roll và âm thanh tự động, làm hàng loạt từ Excel. Bạn còn có thể **clone style từ bất kỳ video nào** bạn thích.
@@ -19,16 +23,18 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 2. [Yêu cầu](#2-yêu-cầu)
 3. [Cài đặt](#3-cài-đặt) · [macOS](#31-cài-trên-macos) · [Windows](#32-cài-trên-windows-1011) · [Cập nhật](#33-cập-nhật-bản-mới) · [Gỡ cài đặt](#34-gỡ-cài-đặt)
 4. [Bắt đầu trong 5 phút](#4-bắt-đầu-trong-5-phút)
-5. [Hướng dẫn giao diện](#5-hướng-dẫn-giao-diện)
-6. [Các tính năng AI](#6-các-tính-năng-ai-cần-claude-code-cli)
-7. [Làm hàng loạt, thương hiệu, đăng mạng xã hội](#7-làm-hàng-loạt-thương-hiệu-đăng-mạng-xã-hội)
-8. [Agent Telegram, tự cải tiến, tự đề xuất](#8-agent-telegram-tự-cải-tiến-tự-đề-xuất)
-9. [Dùng với Claude Code (chat để edit)](#9-dùng-với-claude-code-chat-để-edit)
-10. [Dòng lệnh](#10-dòng-lệnh-cho-người-dùng-nâng-cao)
-11. [Phím tắt](#11-phím-tắt)
-12. [Câu hỏi thường gặp và sửa lỗi](#12-câu-hỏi-thường-gặp-và-sửa-lỗi)
-13. [Cấu trúc thư mục](#13-cấu-trúc-thư-mục)
-14. [Bản quyền](#14-bản-quyền)
+5. [**Hệ thống template**](#5-hệ-thống-template)
+6. [**Tạo style bằng cách giải mã video bất kỳ**](#6-tạo-style-bằng-cách-giải-mã-video-bất-kỳ)
+7. [Hướng dẫn giao diện](#7-hướng-dẫn-giao-diện)
+8. [Các tính năng AI](#8-các-tính-năng-ai-cần-claude-code-cli)
+9. [Làm hàng loạt, thương hiệu, đăng mạng xã hội](#9-làm-hàng-loạt-thương-hiệu-đăng-mạng-xã-hội)
+10. [Agent Telegram, tự cải tiến, tự đề xuất](#10-agent-telegram-tự-cải-tiến-tự-đề-xuất)
+11. [Dùng với Claude Code (chat để edit)](#11-dùng-với-claude-code-chat-để-edit)
+12. [Dòng lệnh](#12-dòng-lệnh-cho-người-dùng-nâng-cao)
+13. [Phím tắt](#13-phím-tắt)
+14. [Câu hỏi thường gặp và sửa lỗi](#14-câu-hỏi-thường-gặp-và-sửa-lỗi)
+15. [Cấu trúc thư mục](#15-cấu-trúc-thư-mục)
+16. [Bản quyền và ghi công](#16-bản-quyền-và-ghi-công)
 
 ---
 
@@ -74,9 +80,9 @@ Linux chạy được phần lõi (dùng `install.sh`), nhưng không có app ha
 
 ## 3. Cài đặt
 
-Repo này **riêng tư**. Có hai cách lấy mã nguồn:
-- **File zip** (`ai-video-studio-full.zip`) do chủ repo gửi. Cách này không cần tài khoản GitHub.
-- **`git clone`**: tài khoản GitHub của bạn phải được mời vào repo. Đăng nhập một lần bằng `gh auth login` (GitHub CLI), hoặc dùng Personal Access Token khi git hỏi mật khẩu.
+Repo **công khai**, ai cũng tải được. Có hai cách lấy mã nguồn:
+- **File zip:** trên trang GitHub của repo bấm **Code → Download ZIP** (hoặc dùng file `ai-video-studio-full.zip` được gửi cho bạn). Không cần tài khoản GitHub.
+- **`git clone`:** dễ cập nhật bản mới về sau bằng `git pull`.
 
 ### 3.1. Cài trên macOS
 
@@ -88,10 +94,10 @@ brew install --cask google-chrome
 
 **Bước 2: Lấy mã nguồn**, chọn một trong hai cách:
 ```bash
-# cách 1: từ file zip (giả sử zip nằm trong Downloads)
+# cách 1: từ file zip (giả sử zip nằm trong Downloads; zip tải từ GitHub giải nén ra thư mục ai-video-studio-main)
 cd ~/Downloads && unzip ai-video-studio-full.zip && cd ai-video-studio
 
-# cách 2: git clone (cần quyền vào repo)
+# cách 2: git clone
 git clone https://github.com/nguyentatkiem/ai-video-studio.git && cd ai-video-studio
 ```
 
@@ -118,7 +124,7 @@ Lần đầu mất khoảng 5–10 phút (tải thư viện Python). Tuỳ chọ
 
 **Bước 1: Lấy mã nguồn**
 - **Từ file zip:** chuột phải `ai-video-studio-full.zip` → **Extract All…** → chọn thư mục ngắn, không dấu, ví dụ `C:\AI`. Kết quả là thư mục `C:\AI\ai-video-studio`.
-- **Hoặc git clone** (cần quyền vào repo), trong PowerShell:
+- **Hoặc git clone**, trong PowerShell:
   ```powershell
   winget install --id Git.Git -e
   git clone https://github.com/nguyentatkiem/ai-video-studio.git C:\AI\ai-video-studio
@@ -202,17 +208,7 @@ Trình duyệt mở **http://localhost:5186** với clip mẫu.
 ### Bước 2: Chọn mẫu
 Bấm **Mẫu** ở thanh trái, rồi bấm **Xem lớn** để mở thư viện. Rê chuột lên mẫu để xem video, bấm vào mẫu để xem chi tiết, sau đó bấm **Dùng mẫu này**. Không ưng thì bấm ⌘Z.
 
-Chọn mẫu xong, phần mềm tự **bám lời thoại** của clip:
-- Video chưa có phụ đề thì nó tự nhận dạng giọng nói trước.
-- Mỗi graphic của mẫu được canh xuất hiện đúng lúc bạn nói tới nội dung đó.
-- Chữ mẫu (tên sản phẩm, ưu/nhược điểm, lời kêu gọi…) và emoji được Claude viết lại theo đúng lời bạn nói.
-- Ảnh mẫu được thay bằng ảnh tìm theo câu đang nói.
-- Từ khoá trong phụ đề được tô nổi bật.
-
-Video 1 phút mất khoảng 20–60 giây. Muốn chạy lại thì bấm **Bám lời thoại** ở tab **Dự án**. Không có Claude thì chữ được lấy thẳng từ lời nói, nên đọc lại. Không có mạng thì giữ ảnh mẫu.
-
-![Thư viện mẫu](docs/images/02-thu-vien-mau.jpg)
-![Chi tiết mẫu](docs/images/03-chi-tiet-mau.jpg)
+Chọn mẫu xong, phần mềm tự **bám lời thoại**: tạo phụ đề nếu chưa có, canh từng graphic đúng lúc nói, viết lại chữ mẫu và thay ảnh mẫu theo nội dung clip. Chi tiết ở [mục 5](#5-hệ-thống-template).
 
 ### Bước 3: Dùng video của bạn
 Bấm **Video mới** trên thanh trên → **Chọn video từ máy…** (trên Mac còn có thể kéo video thả vào icon app). Chọn gói style, tiêu đề, khổ dọc hoặc ngang. App tự làm phần còn lại:
@@ -241,7 +237,215 @@ Bấm **Xuất** và chọn chất lượng (720p, 1080p hoặc 4K). Muốn có 
 
 ---
 
-## 5. Hướng dẫn giao diện
+## 5. Hệ thống template
+
+**Template (mẫu)** là một bản dựng có sẵn, gồm:
+- gói style và bảng màu,
+- kiểu phụ đề và nhạc nền,
+- các graphic đã đặt sẵn (intro, thẻ thông tin, biểu đồ, lời kêu gọi, cảnh kết…).
+
+Bạn chọn một mẫu, phần mềm áp lên video của bạn và tự sửa cho khớp với lời bạn nói. Không cần dựng từ đầu.
+
+### 5.1. Có những mẫu nào
+
+Có **64 mẫu**: 62 mẫu có sẵn và 2 mẫu tạo bằng tính năng Tạo style. 11 mẫu khổ ngang 16:9, còn lại khổ dọc 9:16. Mẫu nào cũng có video xem trước dựng trên clip thật.
+
+| Nhóm | Số mẫu | Ví dụ |
+|---|---|---|
+| **Doanh nghiệp** | 12 | Giới thiệu công ty, Ra mắt sản phẩm, Demo phần mềm, Báo cáo số liệu, Tuyển dụng, Sự kiện – hội thảo, Bản tin doanh nghiệp, Keynote ngang, SaaS ngang |
+| **Bán hàng** | 10 | Livestream chốt đơn, Flash sale mã giảm giá, Ưu đãi có hạn, Khách hàng nói gì, Trước – sau, Sản phẩm theo nhịp, Bubble chốt đơn |
+| **BĐS** | 8 + 1 | Căn hộ sang trọng, Nhà phố xanh – vay vốn, Review dự án qua web, Nội thất trước – sau, Tour ảnh theo nhịp nhạc, BĐS Đen Gold |
+| **Khoá học** | 8 | Bài giảng xanh, Bảng trắng + code, Dạy kèm màn hình, Hỏi đáp học viên, Top 5 mẹo học, Hướng dẫn phần mềm ngang |
+| **Chia sẻ** | 7 | Điện ảnh kể chuyện, Kể chuyện ấm áp, Neon đêm khuya, Hành trình YouTube ngang |
+| **Review** | 6 | Đánh giá chi tiết, Đập hộp, So sánh A vs B, Top 5 đáng mua, Mỹ phẩm trước – sau |
+| **Tin tức** | 4 | Bản tin truyền hình, Phản ứng bài báo, Tin nóng dồn dập, Điểm tin trên lưới |
+| **AI** | 4 + 1 | 3 câu lệnh AI, AI Hype Cam ngang, Công cụ AI neon, Studio lưới AI |
+| **Khác** | 3 | Podcast 2 người (dọc / ngang), Podcast studio vàng |
+
+### 5.2. Chọn và dùng mẫu
+1. Bấm **Mẫu** ở thanh trái để xem danh sách, hoặc bấm **Xem lớn** để mở thư viện cỡ lớn.
+2. Lọc mẫu:
+   - theo **nhóm** (Doanh nghiệp, BĐS, Khoá học…),
+   - theo **khổ** (Mọi khổ, Dọc 9:16, Ngang 16:9),
+   - hoặc gõ vào ô tìm, ví dụ *căn hộ*, *review*, *chốt đơn*.
+3. Rê chuột lên mẫu để xem video. Bấm vào mẫu để mở chi tiết, gồm:
+   - mô tả,
+   - mục **Bạn cần chuẩn bị** (ảnh sản phẩm, giá, số điện thoại…),
+   - cảnh báo nếu khổ của mẫu khác khổ dự án.
+   
+   Dùng phím ← → để chuyển mẫu.
+4. Bấm **Dùng mẫu này** (hoặc Enter). Không ưng thì bấm ⌘Z (Windows: Ctrl+Z) để quay lại. Đổi mẫu khác bao nhiêu lần cũng được: graphic của mẫu cũ được thay hết, còn những gì bạn tự thêm thì giữ nguyên.
+
+![Thư viện mẫu](docs/images/02-thu-vien-mau.jpg)
+![Chi tiết mẫu](docs/images/03-chi-tiet-mau.jpg)
+
+### 5.3. Mẫu tự bám lời thoại
+Mẫu được làm trên một clip mẫu, nên chữ trong mẫu là chữ giữ chỗ ("Tên sản phẩm", "Ưu điểm thứ nhất"…) và ảnh là ảnh mẫu. Ngay sau khi bạn chọn mẫu, phần mềm tự chạy bước **bám lời thoại**:
+
+| Bước | Làm gì |
+|---|---|
+| 1. Tạo lời thoại | Video chưa có phụ đề thì máy tự nghe giọng nói (Whisper) và tạo phụ đề có thời gian từng chữ |
+| 2. Canh thời điểm | Mỗi graphic xuất hiện đúng lúc bạn nói tới nội dung đó, không chồng lên nhau |
+| 3. Viết lại chữ | Claude viết lại mọi chữ giữ chỗ và emoji theo đúng lời bạn nói: tên sản phẩm, giá, ưu/nhược điểm, điểm số, lời kêu gọi. Độ dài và kiểu chữ (in hoa, xuống dòng) giữ như thiết kế |
+| 4. Thay ảnh | Ảnh mẫu được thay bằng ảnh miễn phí tìm theo câu đang nói (Openverse, Wikimedia Commons; có key thì thêm Pexels, Pixabay). Nguồn và tác giả ghi trong `media/credits.json` |
+| 5. Nhấn từ khoá | 1–2 từ quan trọng mỗi dòng phụ đề được tô nổi bật |
+
+Ví dụ: chọn mẫu **Đánh giá chi tiết** cho một clip nói về skill "Humanizer". Phần mềm tự ra:
+- thẻ sản phẩm "Humanizer";
+- Ưu điểm: "Gọi 1 câu là xong", "Văn bản như người viết";
+- Nhược điểm: "Cần nhớ tên lệnh";
+- điểm chi tiết theo các tiêu chí Tự nhiên, Tiện, Dễ gọi;
+- kết luận "Đáng mua".
+
+Thời gian chạy:
+- Clip 15 giây mất khoảng 20 giây.
+- Clip 1 phút mất khoảng 20–60 giây.
+
+Lưu ý:
+- Muốn chạy lại bước này: tab **Dự án** → **Bám lời thoại**.
+- Không có Claude: chữ được lấy thẳng từ lời nói, nên đọc lại.
+- Không có mạng: giữ ảnh mẫu.
+- Chỗ nào lời nói không nhắc tới (ví dụ giá), phần mềm liệt kê để bạn tự sửa.
+
+### 5.4. Sửa sau khi áp mẫu
+- Bấm thẳng vào chữ hoặc graphic trên khung xem trước để sửa. Kéo để di chuyển, kéo góc để đổi cỡ. Bảng bên phải có màu, font, hiệu ứng vào, thời gian.
+- Bấm vào khối trên timeline để kéo dài, rút ngắn hoặc dời thời điểm.
+- **Thương hiệu** (thanh trên): đặt màu, logo, tên, số điện thoại một lần. Mọi mẫu tự dùng brand kit của bạn thay cho màu mẫu.
+- Ảnh của riêng bạn: kéo vào mục **Media**, rồi chọn ảnh đó trong bảng thuộc tính của graphic.
+
+### 5.5. Lưu video đang làm thành mẫu riêng
+Ở mục **Mẫu**, bấm biểu tượng **Lưu thành mẫu** rồi:
+1. đặt tên, chọn nhóm,
+2. chọn thời điểm chụp ảnh bìa,
+3. viết mô tả và thẻ.
+
+Mẫu lưu lại gồm:
+- gói style, kiểu phụ đề, nhạc, brand kit, hiệu ứng;
+- mọi graphic bạn tự đặt.
+
+Graphic của bản dựng tự động sẽ được dựng lại theo video mới. Mẫu của bạn nằm trong `templates/user/` và hiện chung trong thư viện.
+
+### 5.6. Dùng mẫu ở chỗ khác
+- **Tự lái và thư mục tự động:** trong hồ sơ kênh, chọn **Template**. Mọi video thả vào đều được áp mẫu đó rồi bám lời thoại.
+- **Agent Telegram:** gửi video vào chat. Bot dùng mẫu của hồ sơ kênh đang chọn.
+- **Hàng loạt từ Excel/CSV:** chọn một mẫu, ghép cột vào chữ và ảnh của mẫu (ví dụ cột `gia` vào giá, cột `anh_1` vào ảnh), mỗi dòng ra một video. Xem [mục 9](#9-làm-hàng-loạt-thương-hiệu-đăng-mạng-xã-hội).
+- **Claude Code:** gõ trong chat, ví dụ *"dựng video này theo mẫu Căn hộ sang trọng"*.
+
+### 5.7. Dành cho người viết mẫu
+Mỗi mẫu là một file JSON trong `templates/` và gồm:
+- `pack`: gói style;
+- `caption_style`, `music`, `brand`;
+- `scenes`: các graphic, có thời gian tính theo `base_dur` (20,2 giây);
+- `use_recipe`: có chạy bản dựng tự động của gói hay không;
+- `needs`: những gì người dùng cần chuẩn bị;
+- `preview`: đoạn video xem trước.
+
+Khi áp lên video dài ngắn khác nhau, thời gian được co giãn:
+- 3 giây đầu giữ nguyên;
+- 4 giây cuối neo vào cuối video;
+- phần giữa giãn theo tỉ lệ;
+- sau đó bước bám lời thoại canh lại theo câu nói.
+
+Đặc tả đầy đủ, danh sách từng mẫu và cách thêm mẫu: [references/templates.md](references/templates.md). Bước bám lời thoại: [references/tpl-fit.md](references/tpl-fit.md).
+```bash
+node scripts/build_templates.mjs <dự án footage> [<id>…]   # dựng lại video xem trước + ảnh bìa, kiểm tra lỗi mẫu
+node scripts/tpl_fit.mjs <dự án> --claude                   # chạy bám lời thoại bằng dòng lệnh
+```
+
+---
+
+## 6. Tạo style bằng cách giải mã video bất kỳ
+
+Bạn thấy một video TikTok, Reels hay YouTube có cách edit đẹp và muốn video của mình cũng như vậy. Tính năng **Tạo style** làm việc này: **giải mã** video đó (nhịp cắt, màu, font, vị trí chữ, kiểu phụ đề, graphic, nhạc, SFX), rồi nhờ Claude **viết hẳn một gói style mới** để bạn dùng lại cho mọi video sau này.
+
+Mỗi lần tạo cho ra **4 thứ**:
+1. **Gói style mới**, gồm graphic, kiểu phụ đề riêng và bản dựng tự động. Gói hiện trong danh sách gói giống các gói có sẵn.
+2. **Mẫu (template)** có video xem trước, nằm trong thư viện mẫu.
+3. **Style spec**: bản mô tả phong cách (màu, font, phụ đề, graphic, chuyển cảnh, nhạc, nhịp).
+4. **Skill riêng cho Claude Code** (`~/.claude/skills/video-style-<tên>`). Từ đó bạn chỉ cần nói với Claude *"edit video này theo style <tên>"*.
+
+Cần **Claude Code CLI** đã cài và đăng nhập. Phần mềm dùng gói Claude của bạn, không cần API key.
+
+### 6.1. Giải mã từ video (Clone từ video)
+1. Bấm **Tạo style** ở thanh trái (biểu tượng chuỗi DNA), chọn tab **Clone từ video**.
+2. **Đưa video vào**: kéo thả, bấm để chọn file, hoặc dán đường dẫn (ví dụ `~/Downloads/video.mp4`). Nên dùng:
+   - video **đã edit xong**, dài 20–90 giây;
+   - có đủ các phần đặc trưng của style (intro, chữ, phụ đề, cảnh kết).
+3. Bấm **Phân tích**. Máy tự đo trong khoảng 10 giây, không cần mạng, rồi hiện kết quả:
+   - **Contact sheet**: lưới khung hình có ghi thời gian, ô đỏ là chỗ cắt cảnh. Bấm để phóng to, đổi đoạn bằng các nút thời gian.
+   - **Bảng màu** chủ đạo và màu nhấn.
+   - **Nhịp dựng**: độ dài, khổ, số lần cắt cảnh (và số lần mỗi phút), độ dài trung bình mỗi cảnh.
+   - **Âm thanh**: có nhạc nền không, nhịp BPM, số tiếng động mạnh (SFX), tỉ lệ thời gian có lời nói.
+   - **Vùng chữ / phụ đề**: chữ thường nằm ở khoảng nào của khung, màu chữ, màu hộp.
+4. Đặt **tên style** (không bắt buộc) và chọn **model Claude**:
+   - **Sonnet:** nhanh, tốn ít lượt hơn.
+   - **Opus:** làm kỹ hơn.
+   - Hoặc dùng model mặc định.
+5. Bấm **Tạo style bằng Claude**. Bảng tiến độ hiện 4 bước, có đồng hồ và nút **Dừng**:
+   1. Phân tích video.
+   2. Claude xem contact sheet rồi viết gói style.
+   3. **Kiểm tra trong engine thật**. Mọi graphic được dựng thử ở nhiều thời điểm, khổ dọc lẫn ngang, phải không lỗi và không trống. Gặp lỗi thì Claude tự sửa, tối đa 2 vòng.
+   4. Cài gói, mẫu, skill và dựng video xem trước.
+6. Xem **kết quả**:
+   - video xem trước của style mới;
+   - **Claude thấy**: những gì Claude nhận ra trong video gốc;
+   - ảnh **So sánh**: hàng trên là video gốc, hàng dưới là style mới trên clip mẫu;
+   - style spec.
+
+   Có 3 nút:
+   - **Áp dụng cho dự án**: áp ngay lên video đang mở, hoàn tác được.
+   - **Mở trong thư viện mẫu**.
+   - **Xoá style**.
+
+Mỗi lần tạo mất khoảng 2–10 phút, tuỳ model và độ dài video.
+
+![Tạo style](docs/images/06-tao-style.jpg)
+
+### 6.2. Tạo style từ mô tả
+Không có video mẫu thì chọn tab **Từ mô tả**:
+- Gõ mô tả style bằng tiếng Việt, ví dụ *"Video bất động sản sang trọng tông đen – vàng gold, chữ serif, intro tên dự án, thẻ giá đếm số, bản đồ vị trí, CTA gọi điện"*.
+- Chọn khổ **Dọc 9:16** hoặc **Ngang 16:9**.
+- Có thể điền thêm **ngành**, **màu thương hiệu** (mã màu), **font** và tối đa **4 ảnh tham khảo** để Claude xem.
+- Bấm **Tạo style bằng Claude**. Các bước kiểm tra và kết quả giống như clone từ video.
+
+### 6.3. Dùng style đã tạo
+- Danh sách **Style của tôi** (cuối bảng Tạo style) có đủ các style đã tạo, mỗi style có nút áp dụng, mở trong thư viện và xoá.
+- Style mới xuất hiện ở 3 chỗ:
+  - trong **thư viện mẫu**, cùng nhóm ngành;
+  - trong danh sách **Gói style** ở tab Dự án;
+  - trong **Kiểu phụ đề**.
+- Dùng được ở mọi chỗ dùng mẫu: Tự lái, Telegram, hàng loạt, và bước bám lời thoại.
+- **Trong Claude Code:** skill `video-style-<tên>` tự được gọi khi bạn nói, ví dụ *"edit video kiểu studio lưới AI"*.
+- **Cài lại phần mềm** không mất style: bản lưu nằm ở `~/.ai-video-studio/packs/`. Trình cài tự khôi phục cả gói lẫn skill.
+
+Repo có sẵn 2 style làm theo cách này để bạn xem thử:
+- **Studio lưới AI**: giải mã từ một video tin công nghệ;
+- **BĐS Đen Gold**: tạo từ mô tả.
+
+### 6.4. Mẹo để giải mã đẹp
+- Chọn video có style **nhất quán** từ đầu đến cuối. Video quá nhiều kiểu thì Claude sẽ lấy kiểu chiếm nhiều nhất.
+- Video có độ phân giải tốt và chữ rõ thì đọc font, màu và vị trí phụ đề chuẩn hơn.
+- Kết quả chưa ưng thì tạo lại với **Opus**, hoặc chuyển sang tab **Từ mô tả** và mô tả thêm chỗ cần sửa (ví dụ *"giống video kia nhưng phụ đề to hơn, ít hiệu ứng hơn"*).
+- Sau khi áp style, vẫn chỉnh từng graphic như mọi mẫu khác và **Lưu thành mẫu** để giữ phiên bản bạn ưng.
+
+### 6.5. Giới hạn cần biết
+- Claude tái tạo **phong cách** từ khoảng 40–48 khung hình tĩnh cộng số liệu đo được, không xem chuyển động thật. Kiểu hiệu ứng động và chuyển cảnh là suy đoán gần đúng.
+- Cảnh đặc thù của video gốc (quay màn hình, b-roll thật, góc máy khác) không có trong video người nói của bạn. Những cảnh đó được mô phỏng bằng graphic.
+- Kiểm tra tự động chỉ bắt lỗi kỹ thuật, không chấm thẩm mỹ. Hãy luôn xem video xem trước.
+- Phần mềm **chỉ học phong cách**, không chép logo, tên, handle, watermark hay nội dung của người làm video gốc. Hãy tôn trọng bản quyền: dùng style làm cảm hứng, đừng giả làm kênh của người khác.
+
+### 6.6. Dòng lệnh
+```bash
+node scripts/style_lab.mjs clone ~/Downloads/video.mp4 --name "Tên style" [--model sonnet|opus]
+node scripts/style_lab.mjs describe "Video BĐS sang trọng đen – gold…" --orient vertical --colors "#0B0B0B,#C9A44C"
+node scripts/style_lab.mjs apply <id> <thư mục dự án>      # áp style vào một dự án
+node scripts/style_lab.mjs list | delete <id> | sync | check
+```
+Chi tiết kỹ thuật (các bước phân tích, cách kiểm tra, file được tạo): [references/style-lab.md](references/style-lab.md).
+
+---
+
+## 7. Hướng dẫn giao diện
 
 ```
 ┌ Thanh trên: Hoàn tác · Lịch sử · Video mới · Lưu · AI dựng giúp · Thương hiệu · Đăng · Xuất ┐
@@ -296,7 +500,7 @@ Bấm **Xuất** và chọn chất lượng (720p, 1080p hoặc 4K). Muốn có 
 
 ---
 
-## 6. Các tính năng AI (cần Claude Code CLI)
+## 8. Các tính năng AI (cần Claude Code CLI)
 
 Các tính năng này gọi lệnh `claude -p` ngay trên máy, dùng **tài khoản Claude của chính bạn**. Không cần API key riêng.
 
@@ -324,17 +528,8 @@ Không ưng thì Hoàn tác.
 
 ![Tự động](docs/images/05-tu-dong.jpg)
 
-### Tạo style: clone từ video hoặc từ mô tả
-- **Clone từ video:**
-  1. Đưa vào video đã edit mà bạn thích (TikTok, Reels, YouTube).
-  2. Máy phân tích nhịp cắt, màu, vị trí chữ, nhạc và SFX.
-  3. Claude xem ảnh khung hình rồi viết **gói style mới**, **template** có video xem trước, và **skill riêng** cho Claude Code (`~/.claude/skills/video-style-<tên>`).
-- **Từ mô tả:** gõ ví dụ *"Video BĐS sang trọng tông đen – vàng gold, chữ serif, intro tên dự án, thẻ giá, bản đồ vị trí, CTA gọi điện"*.
-- Code Claude viết được **dựng thử tự động trong engine**. Có lỗi thì Claude tự sửa (tối đa 2 lần) rồi mới cài.
-- Mỗi lượt mất khoảng 7–10 phút với model mặc định. Muốn nhanh và rẻ hơn thì chọn Sonnet.
-- Repo đã có sẵn 2 style tạo theo cách này: **Studio lưới AI** (clone từ video) và **BĐS Đen Gold** (từ mô tả).
-
-![Tạo style](docs/images/06-tao-style.jpg)
+### Tạo style: giải mã video bất kỳ hoặc từ mô tả
+Đưa vào một video đã edit mà bạn thích, hoặc mô tả bằng chữ: Claude viết **gói style mới**, **template** và **skill riêng**. Hướng dẫn đầy đủ ở [mục 6](#6-tạo-style-bằng-cách-giải-mã-video-bất-kỳ).
 
 ### B-roll AI, dịch và lồng tiếng
 - **B-roll AI:**
@@ -371,7 +566,7 @@ Không ưng thì Hoàn tác.
 
 ---
 
-## 7. Làm hàng loạt, thương hiệu, đăng mạng xã hội
+## 9. Làm hàng loạt, thương hiệu, đăng mạng xã hội
 
 ### Hàng loạt từ Excel hoặc CSV
 1. Mở **Hàng loạt** ở thanh trái và chọn nguồn: một template, hoặc dự án đang mở.
@@ -407,7 +602,7 @@ App kiểm tra lịch mỗi phút khi đang mở. Dòng lệnh: `node scripts/pu
 
 ---
 
-## 8. Agent Telegram, tự cải tiến, tự đề xuất
+## 10. Agent Telegram, tự cải tiến, tự đề xuất
 
 Agent là "trợ lý dựng video" chạy trên máy bạn: điều khiển qua Telegram, học từ điểm bạn chấm, và tự đề xuất việc nên làm. Mở mục **Agent** (biểu tượng robot) ở thanh trái để cài đặt.
 
@@ -456,7 +651,7 @@ Agent là "trợ lý dựng video" chạy trên máy bạn: điều khiển qua 
 
 ---
 
-## 9. Dùng với Claude Code (chat để edit)
+## 11. Dùng với Claude Code (chat để edit)
 
 Sau khi cài, mở Claude Code và nói chuyện bình thường, ví dụ:
 
@@ -474,7 +669,7 @@ Claude dùng skill `ai-video-studio` để chọn gói, dựng, render và kiể
 
 ---
 
-## 10. Dòng lệnh (cho người dùng nâng cao)
+## 12. Dòng lệnh (cho người dùng nâng cao)
 
 ```bash
 S=~/.claude/skills/ai-video-studio; PY=$S/scripts/.venv/bin/python
@@ -530,7 +725,7 @@ Tài liệu kỹ thuật chi tiết nằm trong `references/`. Nên bắt đầu
 
 ---
 
-## 11. Phím tắt
+## 13. Phím tắt
 
 Trên Windows dùng **Ctrl** thay cho **⌘**, và **Alt** thay cho **⌥**.
 
@@ -551,7 +746,7 @@ Trên Windows dùng **Ctrl** thay cho **⌘**, và **Alt** thay cho **⌥**.
 
 ---
 
-## 12. Câu hỏi thường gặp và sửa lỗi
+## 14. Câu hỏi thường gặp và sửa lỗi
 
 **Mở http://localhost:5186 không lên?**
 Server chưa chạy.
@@ -595,7 +790,7 @@ Giảm số luồng: `--workers 2`. Mỗi luồng tốn khoảng 300 MB RAM.
 
 ---
 
-## 13. Cấu trúc thư mục
+## 15. Cấu trúc thư mục
 
 ```
 ai-video-studio/
@@ -619,9 +814,16 @@ Dữ liệu của bạn nằm ngoài repo, ở `~/.ai-video-studio/` (Windows: `
 
 ---
 
-## 14. Bản quyền
+## 16. Bản quyền và ghi công
 
-- **Mã nguồn:** giấy phép MIT, xem [LICENSE](LICENSE).
+**Tác giả: Nguyễn Tất Kiểm** · 🎁 Tặng khoá học AI miễn phí: <https://nguyentatkiem.com.vn/aiplusntk/>
+
+- **Mã nguồn:** giấy phép MIT, xem [LICENSE](LICENSE) và [NOTICE](NOTICE). Bạn được dùng, sửa, phát hành lại, kể cả cho mục đích thương mại.
+- **Ghi công khi sao chép hoặc sửa lại:** áp dụng cho mọi người, mọi công cụ AI (Claude, ChatGPT, Cursor, Copilot…) và mọi bản fork.
+  - **Bắt buộc theo giấy phép MIT:** giữ nguyên dòng `Copyright (c) 2026 Nguyễn Tất Kiểm` và toàn văn giấy phép trong file `LICENSE`, trong mọi bản sao hoặc phần đáng kể của phần mềm.
+  - **Tác giả đề nghị thêm:** giữ file `NOTICE`, màn giới thiệu tác giả khi mở phần mềm (`studio/features/00_author.js`) và dòng *"Dựa trên AI Video Studio của Nguyễn Tất Kiểm"* cùng link repo gốc trong README của bản bạn phát hành.
+  - Không ghi bản sửa đổi là của mình làm từ đầu, không xoá tên tác giả gốc.
+  - Hướng dẫn cho AI sửa mã nằm ở [AGENTS.md](AGENTS.md) / [CLAUDE.md](CLAUDE.md).
 - **Video mẫu** (`sample/`, cùng các ảnh xem trước trong `templates/previews/`, `studio/thumbs/`, `docs/images/` được làm từ video này): thuộc chủ sở hữu repo. Chỉ được dùng để xem thử và học cách dùng phần mềm. **Không** dùng lại, cắt ghép hay đăng lại cho mục đích khác.
 - **Thư viện SFX, nhạc nền, b-roll động:** do script tự tạo (`scripts/gen_sfx.py`, `gen_music.py`, `engine/broll.js`), dùng tự do kể cả cho mục đích thương mại.
 - **Thành phần bên thứ ba:**

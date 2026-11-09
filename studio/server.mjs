@@ -421,5 +421,6 @@ server.on('error', e => {
 server.listen(PORT, '127.0.0.1', () => {
   const link = `http://localhost:${PORT}`;
   console.log(`AI Video Studio ${VERSION} → ${link}`);
+  console.log('Tác giả: Nguyễn Tất Kiểm · Tặng khoá học AI miễn phí: https://nguyentatkiem.com.vn/aiplusntk/');
   if (args.includes('--open')) openPath(link);
 });

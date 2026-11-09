@@ -113,3 +113,5 @@ Write-Host ''
 Write-Host '  Mở Studio với clip mẫu:   bấm đúp "AI Video Studio" ngoài Desktop (hoặc studio.cmd)'
 Write-Host "  Mở với video của bạn:     `"$REPO\studio.cmd`" --new C:\đường\dẫn\video.mp4"
 Write-Host '  Trình duyệt sẽ mở http://localhost:5186 — giữ cửa sổ đen (server) mở trong lúc dùng.'
+Write-Host ''
+Write-Host '  Tác giả: Nguyễn Tất Kiểm · Tặng khoá học AI miễn phí: https://nguyentatkiem.com.vn/aiplusntk/' -ForegroundColor Magenta

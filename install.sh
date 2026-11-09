@@ -67,4 +67,6 @@ cat <<EOF
 $([ -d "$HOME/Applications/AI Video Studio.app" ] && echo '  Hoặc bấm app "AI Video Studio" trong Launchpad / ~/Applications.')
 
   Trình duyệt sẽ mở http://localhost:5186
+
+  Tác giả: Nguyễn Tất Kiểm · Tặng khoá học AI miễn phí: https://nguyentatkiem.com.vn/aiplusntk/
 EOF
