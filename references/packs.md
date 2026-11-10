@@ -69,3 +69,7 @@ Mỗi gói là **1 file JS** nạp sau `slate.js` và trước `engine.js` (xem 
 | `cinema` | mới v3 | điện ảnh kể chuyện (letterbox, màu phim, typewriter) |
 | `beatslide` | mới v3 | ảnh → video theo nhịp nhạc |
 | `screencast` | mới v3 | quay màn hình hướng dẫn: zoom theo vùng thao tác, vòng click, phím tắt |
+| `print` | chuyển thể ghost-editor (MIT) | in ấn: lưới Thuỵ Sĩ, hồ sơ halftone, giấy thủ công, phim tài liệu đen trắng, biểu đồ bút chì — `references/pack-print.md` |
+| `broadcast` | chuyển thể ghost-editor (MIT) | truyền hình: phụ đề bản tin khối vàng, phóng sự, vẽ phân tích (telestrator), HUD hologram — `references/pack-broadcast.md` |
+| `explain` | chuyển thể ghost-editor (MIT) | giải thích: Clean OS (người trong điện thoại), trang sản phẩm, màn hình sau lưng, bộ thẻ số, bảng vẽ tay — `references/pack-explain.md` |
+| `montage` | chuyển thể ghost-editor (MIT) | danh sách Seoul, podcast RESULT / quanh mặt, POV montage, hoạt hình vector — `references/pack-montage.md` |

@@ -33,7 +33,7 @@ function capsFor(D) {
   return out;
 }
 // Background-ish modules that are meant to sit under the whole video (frames, persistent layouts) — not "too long".
-const LONG_OK = /frame|layout|bg|backdrop|split|bubble_layout|screen|cinema_bars|letterbox|multicam|greenscreen|ticker|podcast|chrome|grid|watermark|progress|badge|bars|live|reaction|scrim|grade/;
+const LONG_OK = /frame|layout|bg|backdrop|split|bubble_layout|screen|cinema_bars|letterbox|multicam|greenscreen|ticker|podcast|chrome|grid|watermark|progress|badge|bars|live|reaction|scrim|grade|facecam|strap/;
 function checkTl(tl, D) {
   const issues = [];
   const sc = (tl.scenes || []).filter(s => !s.hidden);

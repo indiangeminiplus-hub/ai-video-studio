@@ -1,7 +1,7 @@
 # Thư viện template (`templates/`)
 
 Template = **một bản dựng mẫu có sẵn phong cách** (gói, bảng màu, kiểu phụ đề, nhạc, các graphic đã đặt sẵn) mà người dùng
-chọn trong Studio rồi áp lên video của mình. Hiện có **45 template** (6 ngang 16:9, còn lại dọc 9:16), mỗi cái có
+chọn trong Studio rồi áp lên video của mình. Hiện có **88 template** (11 ngang 16:9, còn lại dọc 9:16; 26 mẫu chuyển thể từ ghost-editor — xem `references/pack-print.md`, `pack-broadcast.md`, `pack-explain.md`, `pack-montage.md`), mỗi cái có
 video xem trước 6 s và ảnh bìa trong `templates/previews/`.
 
 ```

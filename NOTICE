@@ -21,6 +21,13 @@ GHI CÔNG KHI SAO CHÉP, SỬA ĐỔI HOẶC PHÁT HÀNH LẠI
 Thành phần bên thứ ba giữ giấy phép riêng: HyperFrames (HeyGen, Apache-2.0) trong
 engine/hf/ (xem engine/hf/LICENSE-HyperFrames.txt), Emoji 3D Fluent (Microsoft, MIT),
 YuNet (OpenCV Zoo, MIT), Simple Icons (CC0), Google Fonts (OFL).
+Các gói print, broadcast, explain, montage (engine/packs/) và 7 mẫu preset chuyển thể
+phong cách từ ghost-editor (https://github.com/kurbaitaev/ghost-editor, MIT,
+Copyright (c) 2026 kurbaitaev — engine/packs/LICENSE-ghost-editor.txt); các style
+swiss-grid, halftone-dossier, data-story, caption-news, news-package, telestrator,
+hologram-hud trong đó lại dựa trên lemo-opuscar (https://github.com/lemomo-ai/lemo-opuscar,
+MIT, Copyright (c) 2026 LemoLab — engine/packs/LICENSE-lemo-opuscar.txt). Mã được viết
+lại cho engine này; không chép font, nhạc, video hay ảnh mẫu của hai repo trên.
 Video mẫu trong sample/ và ảnh/video xem trước dựng từ video đó thuộc tác giả,
 chỉ dùng để xem thử phần mềm.
 

@@ -6,7 +6,7 @@
 
 **Phần mềm edit video chạy ngay trên máy của bạn (macOS và Windows 10/11), có AI hỗ trợ.** Làm Reels, TikTok, YouTube Shorts và video ngang YouTube cho khoá học, bất động sản, review, chia sẻ, tin tức, bán hàng, podcast.
 
-Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói style**, **64 template có video xem trước**, **khoảng 200 khối hoạt ảnh HyperFrames**, AI dựng giúp bằng Claude, b-roll và âm thanh tự động, làm hàng loạt từ Excel. Bạn còn có thể **clone style từ bất kỳ video nào** bạn thích.
+Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **28 gói style**, **90 template có video xem trước**, **khoảng 200 khối hoạt ảnh HyperFrames**, AI dựng giúp bằng Claude, b-roll và âm thanh tự động, làm hàng loạt từ Excel. Bạn còn có thể **clone style từ bất kỳ video nào** bạn thích.
 
 **Tự lái:** thả video thô vào, khoảng 2 phút sau có video hoàn chỉnh, gồm phụ đề, graphic, b-roll, nhạc, SFX, ảnh bìa và caption đăng. Thả video vào **thư mục tự động** (hoặc AirDrop từ điện thoại) là app tự dựng. Video dài được tự cắt thành nhiều clip ngắn. Gõ chủ đề là ra video mà không cần quay. Có lịch đăng và tự đăng lên YouTube.
 
@@ -42,8 +42,8 @@ Giao diện tối kiểu editor chuyên nghiệp. Phần mềm có **24 gói sty
 
 | Nhóm | Có gì |
 |---|---|
-| **Dựng nhanh** | 64 template chia 9 nhóm: BĐS, Khoá học, Review, Chia sẻ, Tin tức, Bán hàng, Doanh nghiệp, AI, Khác. Có popup thư viện lớn và video xem trước. 24 gói style, 420 graphic (217 graphic gốc + 203 khối HyperFrames: sản phẩm & demo app, số liệu, đánh giá & chốt đơn, logo & tiêu đề động, tên & chức danh, chú thích, chuyển cảnh, nền), 39 kiểu phụ đề |
-| **24 gói style** | Slate grid (kiểu "Claude edit"), Bubble hướng dẫn, AI Hype Cam, Luxury, Neon, Keynote, Glow, Podcast, Kinetic, Khoá học, BĐS, Review, Chia sẻ, Chia đôi màn hình, Trước/sau, Phông xanh, Bản tin, Podcast nhiều góc máy, Hỏi đáp, Top N, Điện ảnh, Ảnh theo nhịp nhạc, Quay màn hình… |
+| **Dựng nhanh** | 90 template chia 9 nhóm: BĐS, Khoá học, Review, Chia sẻ, Tin tức, Bán hàng, Doanh nghiệp, AI, Khác. Có popup thư viện lớn và video xem trước. 28 gói style, 420 graphic (217 graphic gốc + 203 khối HyperFrames: sản phẩm & demo app, số liệu, đánh giá & chốt đơn, logo & tiêu đề động, tên & chức danh, chú thích, chuyển cảnh, nền), 39 kiểu phụ đề |
+| **28 gói style** | Slate grid (kiểu "Claude edit"), Bubble hướng dẫn, AI Hype Cam, Luxury, Neon, Keynote, Glow, Podcast, Kinetic, Khoá học, BĐS, Review, Chia sẻ, Chia đôi màn hình, Trước/sau, Phông xanh, Bản tin, Podcast nhiều góc máy, Hỏi đáp, Top N, Điện ảnh, Ảnh theo nhịp nhạc, Quay màn hình, In ấn – tạp chí, Truyền hình, Giải thích – sản phẩm, Montage – podcast giấy… |
 | **Edit chuyên sâu** | Track nhiều clip: cắt (⌘B), xoá tự dồn, đảo thứ tự, tốc độ 0,25–4×, lật, nền mờ, 8 bộ lọc màu, chỉnh màu, 15 chuyển cảnh. Keyframe tự do, mặt nạ 8 hình, tách nền và thay phông, sticker người |
 | **AI (Claude)** | **AI dựng giúp**: đọc lời nói rồi tự đặt graphic, sửa phụ đề, chọn nhạc và SFX. **Cắt lỗi nói**: bỏ câu lặp, ngắt dài, nói vấp. **Sửa video bằng chữ**: xoá chữ là cắt video |
 | **Tự động** | B-roll tự động theo **9 mục tiêu video** và vai trò từng câu, từ **11 nguồn** (9.080 preset, khối HyperFrames, logo công cụ, hiệu ứng trên người nói, thư viện b-roll của bạn, ảnh/video stock, ảnh AI…), 4 mức dày, chống lặp, không che mặt, mỗi cảnh có 2–3 phương án đổi 1 bấm. SFX tự đặt 3 mức. Nhạc tự chọn và tự hạ khi đang nói |
@@ -248,19 +248,19 @@ Bạn chọn một mẫu, phần mềm áp lên video của bạn và tự sửa
 
 ### 5.1. Có những mẫu nào
 
-Có **64 mẫu**: 62 mẫu có sẵn và 2 mẫu tạo bằng tính năng Tạo style. 11 mẫu khổ ngang 16:9, còn lại khổ dọc 9:16. Mẫu nào cũng có video xem trước dựng trên clip thật.
+Có **90 mẫu**: 88 mẫu có sẵn và 2 mẫu tạo bằng tính năng Tạo style. 11 mẫu khổ ngang 16:9, còn lại khổ dọc 9:16. Mẫu nào cũng có video xem trước dựng trên clip thật.
 
 | Nhóm | Số mẫu | Ví dụ |
 |---|---|---|
-| **Doanh nghiệp** | 12 | Giới thiệu công ty, Ra mắt sản phẩm, Demo phần mềm, Báo cáo số liệu, Tuyển dụng, Sự kiện – hội thảo, Bản tin doanh nghiệp, Keynote ngang, SaaS ngang |
-| **Bán hàng** | 10 | Livestream chốt đơn, Flash sale mã giảm giá, Ưu đãi có hạn, Khách hàng nói gì, Trước – sau, Sản phẩm theo nhịp, Bubble chốt đơn |
+| **Doanh nghiệp** | 13 | Giới thiệu công ty, Ra mắt sản phẩm, Demo phần mềm, Báo cáo số liệu, Câu chuyện số liệu, Tuyển dụng, Sự kiện – hội thảo, Keynote ngang, SaaS ngang |
+| **Bán hàng** | 11 | Livestream chốt đơn, Flash sale mã giảm giá, Ưu đãi có hạn, Khách hàng nói gì, Trước – sau, Sản phẩm theo nhịp, Tạp chí pop hồng |
 | **BĐS** | 8 + 1 | Căn hộ sang trọng, Nhà phố xanh – vay vốn, Review dự án qua web, Nội thất trước – sau, Tour ảnh theo nhịp nhạc, BĐS Đen Gold |
-| **Khoá học** | 8 | Bài giảng xanh, Bảng trắng + code, Dạy kèm màn hình, Hỏi đáp học viên, Top 5 mẹo học, Hướng dẫn phần mềm ngang |
-| **Chia sẻ** | 7 | Điện ảnh kể chuyện, Kể chuyện ấm áp, Neon đêm khuya, Hành trình YouTube ngang |
-| **Review** | 6 | Đánh giá chi tiết, Đập hộp, So sánh A vs B, Top 5 đáng mua, Mỹ phẩm trước – sau |
-| **Tin tức** | 4 | Bản tin truyền hình, Phản ứng bài báo, Tin nóng dồn dập, Điểm tin trên lưới |
-| **AI** | 4 + 1 | 3 câu lệnh AI, AI Hype Cam ngang, Công cụ AI neon, Studio lưới AI |
-| **Khác** | 3 | Podcast 2 người (dọc / ngang), Podcast studio vàng |
+| **Khoá học** | 12 | Bài giảng xanh, Bảng trắng + code, Bảng vẽ tay, Bộ thẻ từng bước, Màn hình sau lưng, Hoạt hình giải thích, Top 5 mẹo học |
+| **Chia sẻ** | 15 | Điện ảnh kể chuyện, Lưới Thuỵ Sĩ, Giấy thủ công, Phim tài liệu đen trắng, Danh sách kiểu Seoul, POV hành trình, Tạp chí editorial, Chữ động nền vàng |
+| **Review** | 8 | Đánh giá chi tiết, Đập hộp, So sánh A vs B, Trang sản phẩm, Vẽ phân tích, Mỹ phẩm trước – sau |
+| **Tin tức** | 7 | Bản tin truyền hình, Phụ đề bản tin, Phóng sự truyền hình, Hồ sơ mật, Phản ứng bài báo, Tin nóng dồn dập |
+| **AI** | 7 + 1 | 3 câu lệnh AI, AI Hype Cam ngang, Clean OS, Quét hologram, Ra mắt sản phẩm tím, Studio lưới AI |
+| **Khác** | 7 | Podcast 2 người, Podcast RESULT, Podcast quanh mặt, Meme vui nhộn, Gọn sạch doanh nhân |
 
 ### 5.2. Chọn và dùng mẫu
 1. Bấm **Mẫu** ở thanh trái để xem danh sách, hoặc bấm **Xem lớn** để mở thư viện cỡ lớn.
@@ -460,7 +460,7 @@ Chi tiết kỹ thuật (các bước phân tích, cách kiểm tra, file đư�
 
 | Mục | Dùng để |
 |---|---|
-| **Mẫu** | 64 template (có nhóm **Doanh nghiệp**: giới thiệu công ty, ra mắt sản phẩm, demo app, báo cáo số liệu, tuyển dụng, sự kiện…); **Xem lớn** để mở popup; **Lưu thành mẫu** để lưu video đang làm làm mẫu riêng |
+| **Mẫu** | 90 template (có nhóm **Doanh nghiệp**: giới thiệu công ty, ra mắt sản phẩm, demo app, báo cáo số liệu, tuyển dụng, sự kiện…); **Xem lớn** để mở popup; **Lưu thành mẫu** để lưu video đang làm làm mẫu riêng |
 | **Media** | Ảnh và video của bạn (kéo thả để tải lên), b-roll có sẵn |
 | **Âm thanh** | 30 bản nhạc nền và 309 SFX, bấm để nghe thử, kéo vào timeline |
 | **Chữ** | 14 kiểu chữ có sẵn (vàng, neon, lửa, sang trọng, đánh máy…) và 9 kiểu hoạt ảnh |
@@ -870,5 +870,6 @@ Dữ liệu của bạn nằm ngoài repo, ở `~/.ai-video-studio/` (Windows: `
   - Icon thương hiệu Simple Icons (CC0), tải lúc render. Logo vẫn là thương hiệu của từng hãng, chỉ dùng khi nhắc đúng sản phẩm.
   - Font Google Fonts (OFL).
   - Khối hoạt ảnh HyperFrames (HeyGen, Apache-2.0) trong `engine/hf/`. Toàn văn giấy phép ở `engine/hf/LICENSE-HyperFrames.txt`; thư viện đi kèm (GSAP, three.js, font) theo giấy phép riêng ghi trong thư mục từng khối.
+  - 4 gói `print`, `broadcast`, `explain`, `montage` và 26 mẫu đi kèm chuyển thể phong cách từ [ghost-editor](https://github.com/kurbaitaev/ghost-editor) (kurbaitaev, MIT); một số style trong đó dựa trên [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) (LemoLab, MIT). Mã viết lại cho engine này, không chép font/nhạc/video mẫu; giấy phép ở `engine/packs/LICENSE-ghost-editor.txt` và `LICENSE-lemo-opuscar.txt`.
   - Ảnh stock tải về qua tính năng B-roll AI theo giấy phép của từng nguồn; app ghi lại nguồn và tác giả.
 - Số liệu, giá, SĐT trong mẫu và file ví dụ đều là **dữ liệu ví dụ**.
