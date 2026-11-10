@@ -63,7 +63,7 @@
         <div><label class="lf-lbl">Khung</label><select id="lf-or"><option value="vertical">Dọc 9:16</option><option value="horizontal" ${LS('or') === 'horizontal' ? 'selected' : ''}>Ngang 16:9</option></select></div>
         <div><label class="lf-lbl">Dài tối thiểu (giây)</label><input id="lf-min" type="number" min="5" max="120" value="${LS('min') || 20}"></div>
         <div><label class="lf-lbl">Dài tối đa (giây)</label><input id="lf-max" type="number" min="10" max="180" value="${LS('max') || 60}"></div>
-        <div class="full"><label class="lf-lbl">Nhận giọng</label><select id="lf-model"><option value="small">Nhanh (small)</option><option value="medium" ${LS('model') === 'medium' ? 'selected' : ''}>Chính xác hơn (medium, chậm ~3×)</option></select></div>
+        <div class="full"><label class="lf-lbl">Nhận giọng</label><select id="lf-model"><option value="large-v3-turbo">Chính xác (large-v3-turbo)</option><option value="small" ${LS('model') === 'small' ? 'selected' : ''}>Nhanh (small, sai nhiều hơn)</option></select></div>
       </div>
       <button class="primary lf-go" id="lf-go"><i class="ti ti-sparkles"></i> Tìm khoảnh khắc hay</button>
       <div class="lf-help">Máy nghe cả video một lần (lưu lại, lần sau không nghe lại), Claude chọn các đoạn tự đứng được — hook mạnh 3 giây đầu, trọn ý — rồi dựng mỗi đoạn thành một dự án (cắt lặng, phụ đề; video ngang vào khung dọc thì tự bám mặt).</div></div>

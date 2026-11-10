@@ -307,7 +307,7 @@ export async function buildRow(job, i, { preview = false, dirOverride, log = () 
       if (mode === 'video') {
         if (preview) throw new Error('xem trước không hỗ trợ dòng có video người nói (cần nhận giọng ~1 phút) — bấm Bắt đầu để dựng');
         const v = await resolveFile(video, ctx, dl), S = f => path.join(HERE, f);
-        log('nhận giọng nói (whisper)'); await sh(PY, ['-I', '-X', 'utf8', S('transcribe.py'), v, path.join(dir, 'work/words_raw.json'), '--model', job.model || 'small']);
+        log('nhận giọng nói (whisper)'); await sh(PY, ['-I', '-X', 'utf8', S('transcribe.py'), v, path.join(dir, 'work/words_raw.json'), '--model', job.model || 'large-v3-turbo']);
         log('cắt khoảng lặng'); await sh(PY, ['-I', '-X', 'utf8', S('cut.py'), v, path.join(dir, 'work/words_raw.json'), path.join(dir, 'work')]);
         fs.mkdirSync(path.join(dir, 'work/frames'), { recursive: true });
         const [FW, FH] = vert ? [720, 1280] : [1280, 720];

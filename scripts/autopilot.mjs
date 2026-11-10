@@ -202,7 +202,7 @@ export async function autopilot(input, { profile: profId, out: outDir, project: 
 
   const impl = {
     async new() {
-      await newProject({ video: abs, dir, model: prof.whisper || 'small', pack: !['auto', 'keep', ''].includes(prof.pack) ? prof.pack : 'slate', title: '', orient: prof.orient || 'auto', lang: prof.lang },
+      await newProject({ video: abs, dir, model: prof.whisper || 'large-v3-turbo', pack: !['auto', 'keep', ''].includes(prof.pack) ? prof.pack : 'slate', title: '', orient: prof.orient || 'auto', lang: prof.lang },
         { run: (c, a, l) => run(c, a, l), onStep: (s, p) => sayS(p, s) });
       const { tl, caps } = loadTL(dir);
       return `${caps.length} dòng phụ đề · ${tl.duration}s · ${tl.height > tl.width ? 'dọc' : 'ngang'}`;

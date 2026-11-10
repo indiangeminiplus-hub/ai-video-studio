@@ -1,6 +1,6 @@
 // "Tạo lời thoại tự động": whisper the project's voice as it plays on the timeline (all clips, cuts, speed),
 // rebuild captions (scripts/captions.py) and save. Old captions are backed up in .studio/.
-// POST /api/transcribe {model: small|medium|large-v3, lang: vi|auto, max: 4}  → job; GET /api/transcribe/status
+// POST /api/transcribe {model: small|medium|large-v3-turbo|large-v3, lang: vi|auto, max: 4}  → job; GET /api/transcribe/status
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -13,7 +13,7 @@ export default ctx => async (req, res, p) => {
   }
   if (p !== '/api/transcribe' || req.method !== 'POST') return false;
   const b = await ctx.body(req);
-  const model = ['small', 'medium', 'large-v3'].includes(b.model) ? b.model : 'small';
+  const model = ['small', 'medium', 'large-v3-turbo', 'large-v3'].includes(b.model) ? b.model : 'large-v3-turbo';
   const lang = b.lang === 'auto' ? 'auto' : 'vi';
   const max = Math.min(8, Math.max(2, +b.max || 4));
   const ok = ctx.startJob('transcribe', () => transcribe(ctx, { model, lang, max }), {});
@@ -22,7 +22,7 @@ export default ctx => async (req, res, p) => {
 };
 
 // The job body, also used by "Bám lời thoại" (27_tplfit) when a template is chosen before the project has captions.
-export async function transcribe(ctx, { model = 'small', lang = 'vi', max = 4 } = {}) {
+export async function transcribe(ctx, { model = 'large-v3-turbo', lang = 'vi', max = 4 } = {}) {
   const S = f => path.join(ctx.SKILL, 'scripts', f);
   const job = ctx.job, P = ctx.P;
   const { timeline: tl, captions: old } = ctx.readProject();

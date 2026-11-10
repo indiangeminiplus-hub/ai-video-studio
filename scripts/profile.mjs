@@ -26,7 +26,7 @@ export const DEFAULT_PROFILE = {
   music: 'auto',             // auto (AI's pick, else a bed per section) | off | <mood>
   clean: 'vua',              // off | nhe | vua | manh  (TL.audio.clean)
   fillers: true, fillers_claude: false,
-  whisper: 'small', lang: 'vi', orient: 'auto',
+  whisper: 'large-v3-turbo', lang: 'vi', orient: 'auto',
   aspects: ['9:16'],         // formats to deliver; the native one is always rendered
   quality: '1080',
   qc: true,                  // A2's scripts/ai_qc.mjs --fix when present

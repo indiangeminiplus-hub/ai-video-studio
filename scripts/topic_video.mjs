@@ -1,7 +1,7 @@
 // Chủ đề → video (không cần quay). Spec: references/longform-topic.md
 // usage: node scripts/topic_video.mjs "<chủ đề>" --out <dir> [--dur 45] [--voice Linh|edge:vi-VN-HoaiMyNeural] [--rate 190]
 //        [--orient vertical|horizontal] [--pack kinetic] [--images <dir | a.jpg,b.jpg>] [--stock] [--handle @kenh]
-//        [--claude-model sonnet] [--model small] [--export] [--quality 1080]
+//        [--claude-model sonnet] [--model large-v3-turbo] [--export] [--quality 1080]
 // 1. Claude writes a Vietnamese short-video script (hook, 3–5 beats, CTA) with on-screen text + visual intent per beat (JSON).
 // 2. TTS per line (macOS `say -v Linh` offline; edge-tts if installed and asked for), real durations measured, lines joined
 //    into work/voice.wav; word timings by re-transcribing the TTS audio with transcribe.py and aligning to the script words.
@@ -228,7 +228,7 @@ async function main() {
   // 3. forced alignment: transcribe the TTS audio, align to the script words
   say(.46, 'Căn thời gian từng chữ (nhận giọng lại bản đọc)');
   let heard = [];
-  try { await sh(PY, ['-I', '-X', 'utf8', S('transcribe.py'), path.join(out, 'work/voice.wav'), path.join(out, 'work/words_tts.json'), '--model', opt('--model', 'small')]); heard = JSON.parse(fs.readFileSync(path.join(out, 'work/words_tts.json'), 'utf8')); }
+  try { await sh(PY, ['-I', '-X', 'utf8', S('transcribe.py'), path.join(out, 'work/voice.wav'), path.join(out, 'work/words_tts.json'), '--model', opt('--model', 'large-v3-turbo')]); heard = JSON.parse(fs.readFileSync(path.join(out, 'work/words_tts.json'), 'utf8')); }
   catch (e) { console.error('nhận giọng bản đọc lỗi, chia thời gian theo số ký tự: ' + e.message); }
   for (const L of lines) L.words = alignLine(L.say, L.s, L.e, heard);
   const matched = lines.reduce((a, L) => a + L.words.length, 0);

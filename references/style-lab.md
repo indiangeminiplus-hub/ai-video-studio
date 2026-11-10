@@ -10,7 +10,7 @@ Claude Code CLI (`claude -p`) chạy trên máy người dùng ngay lúc bấm. 
    - khung hình tại mọi điểm cắt + mỗi ~1 s (`keyframes/`), **3–4 contact sheet** `sheet_N.jpg` (lưới khung có nhãn thời gian, ô đỏ CUT);
    - bảng màu (k-means numpy) + màu nhấn bão hoà, độ sáng/tương phản/bão hoà;
    - vùng chữ/phụ đề (hàng có mật độ cạnh sắc cao bất thường, ổn định theo thời gian) + ảnh cắt `text_zones.jpg`, màu chữ / màu hộp;
-   - lời nói (`transcribe.py`, model small, `--lang vi|auto`), tỉ lệ thời gian có lời;
+   - lời nói (`transcribe.py`, model large-v3-turbo, `--lang vi|auto`), tỉ lệ thời gian có lời;
    - âm thanh: có nhạc nền (mức nền trong khoảng lặng + độ đều của nhịp), BPM (`beats.py`), tiếng động mạnh (SFX) và những cái trùng điểm cắt.
    Kết quả: `analysis.json`.
 2. **Claude**: `claude -p --allowedTools Read --output-format json` với cwd = thư mục phân tích, nên Claude tự mở các

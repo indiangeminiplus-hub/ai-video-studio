@@ -1,6 +1,6 @@
 """Offline analysis of an already-edited reference video (TikTok / Reels / YouTube) for "Clone style từ video".
 
-usage: python -I scripts/style_analyze.py <video> <out_dir> [--model small] [--lang vi|auto] [--no-transcribe] [--sheets 4]
+usage: python -I scripts/style_analyze.py <video> <out_dir> [--model large-v3-turbo] [--lang vi|auto] [--no-transcribe] [--sheets 4]
 Writes into <out_dir>:
   analysis.json          duration/aspect, cuts + cut rate, motion, palette, text zones, transcript, speech ratio, audio (music/BPM/transients)
   sheet_1..4.jpg         contact sheets (grid of frames with timestamps, CUT marks)  → shown to Claude
@@ -199,9 +199,9 @@ if text_zones:
 # ---------- transcript ----------
 words, lang = [], opt("--lang", "vi")
 if HAS_AUDIO and "--no-transcribe" not in args:
-    say(.6, "Nhận dạng lời nói (whisper " + opt("--model", "small") + ")")
+    say(.6, "Nhận dạng lời nói (whisper " + opt("--model", "large-v3-turbo") + ")")
     wf = os.path.join(OUT, "words.json")
-    r = subprocess.run([sys.executable, "-I", os.path.join(HERE, "transcribe.py"), SRC, wf, "--model", opt("--model", "small"), "--lang", lang], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-I", os.path.join(HERE, "transcribe.py"), SRC, wf, "--model", opt("--model", "large-v3-turbo"), "--lang", lang], capture_output=True, text=True)
     if r.returncode == 0 and os.path.exists(wf): words = json.load(open(wf))
     for f in (wf + ".16k.wav",):
         if os.path.exists(f): os.remove(f)

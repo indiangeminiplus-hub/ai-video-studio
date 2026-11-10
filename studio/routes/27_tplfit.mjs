@@ -1,6 +1,6 @@
 // "Bám lời thoại" (scripts/tpl_fit.mjs, references/tpl-fit.md): run right after a template is applied in the Studio.
 //   POST /api/tplfit {claude=true, images=true, model} → job "tplfit": creates captions first when the project has none
-//        (whisper small, same as 25_transcribe), then rewrites the template's scenes from the speech. job.out = summary.
+//        (whisper large-v3-turbo, same as 25_transcribe), then rewrites the template's scenes from the speech. job.out = summary.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -19,7 +19,7 @@ export default ctx => async (req, res, p) => {
     if (!before.captions.length) {
       // transcribe() reports 0..1 on its own; squeeze it into the first 60 % of this job
       const pj = new Proxy(job, { set(t, k, v) { t[k] = k === 'progress' ? v * .6 : k === 'step' ? 'Tạo lời thoại: ' + v : v; return true; } });
-      await transcribe({ ...ctx, get job() { return pj; }, P: ctx.P, project: ctx.project }, { model: 'small', lang: 'vi', max: 4 });
+      await transcribe({ ...ctx, get job() { return pj; }, P: ctx.P, project: ctx.project }, { lang: 'vi', max: 4 });
       made = job.out;
     }
     const { fitProject } = await import(pathToFileURL(path.join(ctx.SKILL, 'scripts/tpl_fit.mjs')).href);

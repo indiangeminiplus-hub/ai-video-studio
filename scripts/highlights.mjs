@@ -1,7 +1,7 @@
 // Video dài → nhiều clip ngắn (highlights). Spec: references/longform-topic.md
 // usage:
 //   node scripts/highlights.mjs <long_video> --out <dir> [--n 6] [--min 20 --max 60] [--orient vertical|horizontal]
-//        [--model small] [--claude-model sonnet] [--chunk 480] [--min-score 40] [--pack slate] [--export] [--quality 1080]
+//        [--model large-v3-turbo] [--claude-model sonnet] [--chunk 480] [--min-score 40] [--pack slate] [--export] [--quality 1080]
 //   node scripts/highlights.mjs --export <out_dir> [--only 1,3] [--quality 720|1080]      (render projects listed in highlights.json)
 // 1. Transcribe the whole video once (transcribe.py, cached in $AVS_HOME/cache/transcripts/), silences via ffmpeg silencedetect.
 // 2. Sentences → chunks of ≤ --chunk seconds (bounded prompt) → `claude -p` picks self-contained moments per chunk (JSON),
@@ -336,7 +336,7 @@ async function main() {
   if (!src) throw new Error('cách dùng: node scripts/highlights.mjs <video dài> --out <thư mục> [--n 6] [--min 20 --max 60] [--orient vertical|horizontal]');
   if (!fs.existsSync(src)) throw new Error(`không thấy video ${src}`);
   const o = { n: Math.max(1, Math.min(20, +opt('--n', 6))), min: +opt('--min', 20), max: +opt('--max', 60), orient: opt('--orient', 'vertical'),
-    model: opt('--model', 'small'), claudeModel: opt('--claude-model', 'sonnet'), chunk: Math.max(60, +opt('--chunk', 480)), pack: opt('--pack', 'slate'), minScore: +opt('--min-score', 40) };
+    model: opt('--model', 'large-v3-turbo'), claudeModel: opt('--claude-model', 'sonnet'), chunk: Math.max(60, +opt('--chunk', 480)), pack: opt('--pack', 'slate'), minScore: +opt('--min-score', 40) };
   if (!(o.min > 3 && o.max > o.min)) throw new Error('--min/--max không hợp lệ');
   const out = path.resolve(opt('--out', path.join(path.dirname(src), path.basename(src, path.extname(src)) + '_highlights')));
   fs.mkdirSync(out, { recursive: true });

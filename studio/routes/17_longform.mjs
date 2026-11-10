@@ -82,7 +82,7 @@ export default ctx => {
         if (!b.video || !fs.existsSync(video) || !fs.statSync(video).isFile()) return J({ ok: false, error: `Không thấy video ${b.video || ''}` }, 400);
         const out = path.join(ROOT, 'highlights', `${slug(path.basename(video, path.extname(video)))}_${ctx.stamp()}`);
         const argv = [HL, video, '--out', out, '--n', String(Math.max(1, Math.min(12, +b.n || 6))), '--min', String(+b.min || 20), '--max', String(+b.max || 60),
-          '--orient', b.orient === 'horizontal' ? 'horizontal' : 'vertical', '--model', ['small', 'medium', 'large-v3'].includes(b.model) ? b.model : 'small'];
+          '--orient', b.orient === 'horizontal' ? 'horizontal' : 'vertical', '--model', ['small', 'medium', 'large-v3-turbo', 'large-v3'].includes(b.model) ? b.model : 'large-v3-turbo'];
         const ok = ctx.startJob('highlights', () => runCli(argv, r => { ctx.job.out = { dir: out, n: r?.n || 0 }; }), b);
         return ok ? J({ ok, dir: out }) : busy();
       }

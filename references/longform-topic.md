@@ -6,7 +6,7 @@ Cả hai là CLI chạy được không cần Studio, in tiến trình `@@ <0..1
 ## 1. Video dài → nhiều clip ngắn
 ```bash
 node scripts/highlights.mjs live.mp4 --out ~/Desktop/clips [--n 6] [--min 20 --max 60] [--orient vertical|horizontal]
-     [--model small|medium] [--claude-model sonnet] [--chunk 480] [--min-score 40] [--pack slate] [--export] [--quality 1080]
+     [--model large-v3-turbo|small] [--claude-model sonnet] [--chunk 480] [--min-score 40] [--pack slate] [--export] [--quality 1080]
 node scripts/highlights.mjs --export ~/Desktop/clips [--only 1,3]      # xuất (trộn tiếng + render) các dự án trong highlights.json
 ```
 1. **Nhận giọng một lần** (`transcribe.py`), lưu ở `$AVS_HOME/cache/transcripts/<hash>.json` (theo đường dẫn + cỡ + giờ sửa file + model) kèm ranh giới câu của whisper (tiếng Việt gần như không có dấu câu). Khoảng lặng: `ffmpeg silencedetect`.

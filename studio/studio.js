@@ -1034,7 +1034,7 @@ $('#newproj').addEventListener('click', () => {
     <label class="lbl">Gói style</label><div class="packs">${packs().filter(p => p.recipe).map((p, i) => `<label><input type="radio" name="npack" value="${p.id}" ${i === 0 ? 'checked' : ''}><b>${p.icon} ${esc(p.name)}</b><span class="muted">${esc(p.desc || '')}</span></label>`).join('')}</div>
     <label class="lbl">Tiêu đề / chủ đề (dùng cho intro)</label><input id="ntitle" placeholder="VD: 3 mẹo dùng ChatGPT">
     <div class="row2"><div><label class="lbl">Khổ hình</label><select id="norient"><option value="vertical">Dọc 9:16 (Reels, TikTok, Shorts)</option><option value="horizontal">Ngang 16:9 (YouTube)</option></select></div>
-    <div><label class="lbl">Độ chính xác nhận giọng</label><select id="nmodel"><option value="small">small (nhanh)</option><option value="medium">medium</option><option value="large-v3">large-v3 (chính xác nhất)</option></select></div></div>
+    <div><label class="lbl">Độ chính xác nhận giọng</label><select id="nmodel"><option value="large-v3-turbo">large-v3-turbo (chính xác, khuyên dùng)</option><option value="small">small (nhanh, sai nhiều hơn)</option><option value="large-v3">large-v3 (chậm nhất)</option></select></div></div>
     <p class="muted">Tự làm: nhận giọng → cắt khoảng lặng → cắt khung → phụ đề → bản dựng theo gói (intro, graphic theo từ khoá, CTA, nhạc). Sau đó bạn (hoặc Claude) chỉnh tiếp.</p>
     <div class="actions"><button onclick="closeModal()">Huỷ</button><button class="primary" id="ngo">Tạo</button></div>`);
   $('#npick').onclick = () => $('#nfile').click();

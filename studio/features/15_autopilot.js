@@ -184,7 +184,7 @@
   let BRANDS = null, TPLS = null;
   async function editProfile(p) {
     [BRANDS, TPLS] = await Promise.all([BRANDS || api('/api/brands').catch(() => []), TPLS || api('/api/templates').catch(() => [])]);
-    const d = p || { name: 'Kênh mới', pack: 'auto', template: '', caption_style: '', goal: 'Chia sẻ', tone: 'Tự nhiên, gần gũi', ai: true, ai_density: 'vua', broll_density: 'vua', broll_goal: 'auto', broll_src: ['preset', 'hf', 'text', 'emoji', 'logo', 'aroll', 'lib'], sound: 'vua', music: 'auto', clean: 'vua', fillers: true, fillers_claude: false, whisper: 'small', lang: 'vi', orient: 'auto', aspects: ['9:16'], quality: '1080', qc: true, cta: '', platforms: ['tiktok', 'youtube', 'facebook'], slot: '19:00', learn: true, extra: '', brand: '' };
+    const d = p || { name: 'Kênh mới', pack: 'auto', template: '', caption_style: '', goal: 'Chia sẻ', tone: 'Tự nhiên, gần gũi', ai: true, ai_density: 'vua', broll_density: 'vua', broll_goal: 'auto', broll_src: ['preset', 'hf', 'text', 'emoji', 'logo', 'aroll', 'lib'], sound: 'vua', music: 'auto', clean: 'vua', fillers: true, fillers_claude: false, whisper: 'large-v3-turbo', lang: 'vi', orient: 'auto', aspects: ['9:16'], quality: '1080', qc: true, cta: '', platforms: ['tiktok', 'youtube', 'facebook'], slot: '19:00', learn: true, extra: '', brand: '' };
     const packs = (Studio.win?.PACKS || []).filter(x => x.recipe || x.items);
     const sel = (id, opts, v) => `<select id="${id}">${opts.map(([k, l]) => `<option value="${esc(k)}" ${String(v) === String(k) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
     const chk = (name, opts, vals) => `<div class="chk">${opts.map(([k, l]) => `<label><input type="checkbox" name="${name}" value="${esc(k)}" ${(vals || []).includes(k) ? 'checked' : ''}> ${esc(l)}</label>`).join('')}</div>`;
@@ -204,7 +204,7 @@
       <div><label>Nhạc nền</label>${sel('pf-mus', [['auto', 'Tự chọn (AI / theo đoạn)'], ['off', 'Không nhạc'], ['tech', 'tech'], ['chill', 'chill'], ['upbeat', 'upbeat'], ['corporate', 'corporate'], ['emotional', 'emotional'], ['suspense', 'suspense'], ...(['auto', 'off', 'tech', 'chill', 'upbeat', 'corporate', 'emotional', 'suspense'].includes(d.music) ? [] : [[d.music, d.music]])], d.music)}</div>
       <div><label>Làm sạch giọng</label>${sel('pf-cl', [['off', 'Tắt'], ['nhe', 'Nhẹ'], ['vua', 'Vừa'], ['manh', 'Mạnh']], d.clean)}</div>
       <div><label>Cắt lỗi nói / lặp từ</label>${sel('pf-fl', [['1', 'Bật'], ['1c', 'Bật + Claude dò câu hỏng'], ['0', 'Tắt']], d.fillers ? (d.fillers_claude ? '1c' : '1') : '0')}</div>
-      <div><label>Nhận giọng (whisper)</label>${sel('pf-wh', [['small', 'small (nhanh)'], ['medium', 'medium'], ['large-v3', 'large-v3 (chính xác)']], d.whisper)}</div>
+      <div><label>Nhận giọng (whisper)</label>${sel('pf-wh', [['large-v3-turbo', 'large-v3-turbo (chính xác)'], ['small', 'small (nhanh)'], ['large-v3', 'large-v3 (chậm nhất)']], d.whisper)}</div>
       <div><label>Ngôn ngữ</label>${sel('pf-lang', [['vi', 'Tiếng Việt'], ['auto', 'Tự nhận']], d.lang)}</div>
       <div><label>Khổ dựng</label>${sel('pf-or', [['auto', 'Theo video'], ['vertical', 'Dọc 9:16'], ['horizontal', 'Ngang 16:9']], d.orient)}</div>
       <div class="full"><label>Xuất các khổ</label>${chk('pf-asp', [['9:16', 'Dọc 9:16'], ['1:1', 'Vuông 1:1'], ['16:9', 'Ngang 16:9']], d.aspects)}</div>

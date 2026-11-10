@@ -16,9 +16,11 @@
   .tr-models small { display: block; color: var(--tx3); margin-top: 2px; }`;
   document.head.appendChild(css);
 
-  const MODELS = [['small', 'Nhanh', 'model small · ~1 phút cho video 1 phút · đủ dùng cho giọng rõ'],
-    ['medium', 'Chính xác hơn', 'model medium · chậm hơn ~3 lần · lần đầu tải ~1,5 GB'],
-    ['large-v3', 'Chính xác nhất', 'model large-v3 · chậm nhất · lần đầu tải ~3 GB']];
+  // Measured on the sample clip (Vietnamese, 29 s, hand-corrected reference): word error small 13.5 %, medium 11 %,
+  // large-v3 6 %, large-v3-turbo 2.3 % at ~2× the time of small — so turbo is the default.
+  const MODELS = [['large-v3-turbo', 'Chính xác (khuyên dùng)', 'model large-v3-turbo · sai ~2 % số từ · ~20 giây cho video 1 phút · lần đầu tải ~1,6 GB'],
+    ['small', 'Nhanh', 'model small · sai ~13 % số từ · ~10 giây cho video 1 phút · nên sửa lại phụ đề'],
+    ['large-v3', 'Model lớn nhất', 'model large-v3 · chậm ~5 lần small · lần đầu tải ~3 GB']];
 
   S.ctaTranscribe = what => `<div class="tr-cta"><b><i class="ti ti-microphone"></i> Chưa có lời thoại</b>
     <p>${what ? `${what} cần lời thoại (phụ đề có thời gian từng chữ). ` : ''}Bấm để máy nghe tiếng nói trong video và tự tạo phụ đề.</p>

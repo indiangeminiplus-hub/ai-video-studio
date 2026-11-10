@@ -1,5 +1,5 @@
 // "Video mới": raw talking-head video → starter project (shared by studio/server.mjs /api/new and scripts/autopilot.mjs).
-// usage: node scripts/new_project.mjs <video> [project_dir] [--model small] [--lang vi|auto] [--pack slate] [--title "…"]
+// usage: node scripts/new_project.mjs <video> [project_dir] [--model large-v3-turbo] [--lang vi|auto] [--pack slate] [--title "…"]
 //                                     [--orient vertical|horizontal|auto]
 // Steps: whisper (transcribe.py) → cut silences (cut.py) → 30 fps frames → face position (find_face.py) → captions (captions.py)
 // → timeline.json (frame_grid + title_card, music bed). Progress lines "@@ <0..1> <step>" on stdout; exit ≠ 0 + Vietnamese error.
@@ -38,10 +38,10 @@ export function videoOrient(src) {
 
 /**
  * Build the starter project. Returns the project dir.
- * o: { video, dir?, model='small', pack='slate', title='', orient='vertical'|'horizontal'|'auto', lang? }
+ * o: { video, dir?, model='large-v3-turbo', pack='slate', title='', orient='vertical'|'horizontal'|'auto', lang? }
  * env: { run(cmd, argv, onLine) → Promise, onStep(text, progress) }
  */
-export async function newProject({ video, dir, model = 'small', pack = 'slate', title = '', orient = 'vertical', lang }, { run = runCmd, onStep = () => {} } = {}) {
+export async function newProject({ video, dir, model = 'large-v3-turbo', pack = 'slate', title = '', orient = 'vertical', lang }, { run = runCmd, onStep = () => {} } = {}) {
   const src = path.resolve(String(video).trim().replace(/^["']|["']$/g, '').replace(/^~(?=[\\/]|$)/, os.homedir()));
   if (!fs.existsSync(src)) throw new Error(`không thấy video ${src}`);
   if (orient === 'auto') orient = videoOrient(src);
@@ -88,8 +88,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(path.re
   const args = process.argv.slice(2);
   const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
   const pos = args.filter((a, i) => !a.startsWith('--') && !(i > 0 && args[i - 1].startsWith('--')));
-  if (!pos[0]) { console.error('usage: node scripts/new_project.mjs <video> [project_dir] [--model small] [--lang vi|auto] [--pack slate] [--title …] [--orient vertical|horizontal|auto]'); process.exit(2); }
-  newProject({ video: pos[0], dir: pos[1], model: opt('--model', 'small'), pack: opt('--pack', 'slate'), title: opt('--title', ''), orient: opt('--orient', 'vertical'), lang: opt('--lang') },
+  if (!pos[0]) { console.error('usage: node scripts/new_project.mjs <video> [project_dir] [--model large-v3-turbo] [--lang vi|auto] [--pack slate] [--title …] [--orient vertical|horizontal|auto]'); process.exit(2); }
+  newProject({ video: pos[0], dir: pos[1], model: opt('--model', 'large-v3-turbo'), pack: opt('--pack', 'slate'), title: opt('--title', ''), orient: opt('--orient', 'vertical'), lang: opt('--lang') },
     { onStep: (s, p) => console.log(`@@ ${p.toFixed(2)} ${s}`) })
     .then(d => { console.log(`@@ 1.00 Xong`); console.log(JSON.stringify({ dir: d })); })
     .catch(e => { console.error('LỖI: ' + e.message + (e.log ? '\n' + e.log.slice(-600) : '')); process.exit(1); });
